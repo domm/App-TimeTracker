@@ -1,0 +1,10 @@
+Build.PL
+Changes
+MANIFEST
+META.yml # Will be created by "make dist"
+README
+lib/TimeTracker.pm
+t/00-load.t
+t/boilerplate.t
+t/pod-coverage.t
+t/pod.t
