@@ -1,15 +1,6 @@
 TimeTracker
 
-The README is used to introduce the module and provide instructions on
-how to install the module, any machine dependencies it may have (for
-example C compilers and installed libraries) and any other information
-that should be provided before the module is installed.
-
-A README file is required for CPAN modules since CPAN extracts the README
-file from a module distribution so that people browsing the archive
-can use it get an idea of the modules uses. It is usually a good idea
-to provide version information here so that people can decide whether
-fixes for the module are worth downloading.
+Track time spend on tasks
 
 INSTALLATION
 
@@ -26,20 +17,6 @@ SUPPORT AND DOCUMENTATION
 After installing, you can find documentation for this module with the perldoc command.
 
     perldoc TimeTracker
-
-You can also look for information at:
-
-    Search CPAN
-        http://search.cpan.org/dist/TimeTracker
-
-    CPAN Request Tracker:
-        http://rt.cpan.org/NoAuth/Bugs.html?Dist=TimeTracker
-
-    AnnoCPAN, annotated CPAN documentation:
-        http://annocpan.org/dist/TimeTracker
-
-    CPAN Ratings:
-        http://cpanratings.perl.org/d/TimeTracker
 
 COPYRIGHT AND LICENCE
 
