@@ -4,7 +4,8 @@ use strict;
 use warnings;
 use TimeTracker;
 my $tracker=TimeTracker->new;
-$tracker->start(\@ARGV);
+my $project=shift(@ARGV);
+$tracker->start($project,\@ARGV);
 
 __END__
 

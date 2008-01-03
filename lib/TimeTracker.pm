@@ -54,26 +54,30 @@ sub new {
 
 =head3 start
 
-    $tracker->start(@tags);
+    $tracker->start($project,@tags);
 
-Takes a list of tags and adds a new entry to the task DB. It sets the 
-start time to the current time.
+Takes project name and a list of tags and adds a new entry to the task 
+DB. It sets the start time to the current time.
 
 =cut
 
 sub start {
-    my ($self,$tags)=@_;
-    X::BadParams->throw("No tags specified") unless $tags;
-
+    my ($self,$project,$tags)=@_;
+    X::BadParams->throw("No project specified") unless $project;
 
     # stop last active task
     $self->stop();
 
     # start new task
-    my $now=DateTime->now->epoch;
+    my $now=DateTime->now;
     open (my $out, '>>', $self->path_to_tracker_db)
         || X::File->throw(file=>$self->path_to_tracker_db,message=>$!);
-    say $out "$now\tACTIVE\t".join(';',@$tags);
+    say $out 
+        $now->epoch
+        ."\tACTIVE\t$project\t"
+        .($tags ? join(' ',@$tags) :'')
+        ."\t".$now->strftime("%Y-%m-%d %H:%M:%S")
+        ;
     close $out;
 }
 
