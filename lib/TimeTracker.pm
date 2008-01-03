@@ -17,8 +17,11 @@ TimeTracker tracks time spend on various projects in simple flat file.
 
 use base 'Class::Accessor';
 use DateTime;
-use File::Spec::Functions;
+use File::Spec::Functions qw(splitpath catfile catdir);
 use TimeTracker::ConfigData;
+use File::HomeDir;
+use File::Path;
+use Getopt::Long;
 
 use Exception::Class(
     'X',
@@ -30,7 +33,7 @@ use Exception::Class(
     },
 );
 
-__PACKAGE__->mk_accessors(qw());
+__PACKAGE__->mk_accessors(qw(opts));
 
 =head1 METHODS
 
@@ -49,8 +52,33 @@ sub new {
 
     my $self=bless {},$class;
 
+    $self->opts({
+        file    => catfile( File::HomeDir->my_home,'.TimeTracker','tracker.db' ),
+    });
+
     return $self;
 }
+
+=head3 parse_commandline
+
+    $tracker->parse_commandline;
+
+Parses the commandline opts using Getopt::Long. Options are stored in $self->opts.
+
+Returns $self (for method chaining).
+
+=cut
+
+sub parse_commandline {
+    my $self=shift;
+
+    my $opts=$self->opts;
+    GetOptions($opts,
+        'file=s',
+    );
+    return $self;
+}
+
 
 =head3 start
 
@@ -65,17 +93,18 @@ sub start {
     my ($self,$project,$tags)=@_;
     X::BadParams->throw("No project specified") unless $project;
 
+    my $now=DateTime->now;
+    
     # stop last active task
-    $self->stop();
+    $self->stop($now);
 
     # start new task
-    my $now=DateTime->now;
     open (my $out, '>>', $self->path_to_tracker_db)
         || X::File->throw(file=>$self->path_to_tracker_db,message=>$!);
     say $out 
         $now->epoch
         ."\tACTIVE\t$project\t"
-        .($tags ? join(' ',@$tags) :'')
+        .($tags ? join('',@$tags) :'')
         ."\t".$now->strftime("%Y-%m-%d %H:%M:%S")
         ;
     close $out;
@@ -83,14 +112,16 @@ sub start {
 
 =head3 stop
 
-    $self->stop();
+    $self->stop($datetime);
 
 Find the last active task and sets the current time as the stop time
+
+$datetime is optional and defaults to DateTime->now
 
 =cut
 
 sub stop {
-    my $self=shift;
+    my ($self,$time)=@_;
 
     my @new;
     my $found_active;
@@ -105,7 +136,8 @@ sub stop {
                 X::BadData->throw("more than one ACTIVE task found in file. Fix manually!");
             }
             $found_active++;
-            my $now=DateTime->now->epoch;
+            
+            my $now=$time->epoch || DateTime->now->epoch;
             $line=~s/ACTIVE/$now/;
         }
         push(@new,$line);    
@@ -118,16 +150,6 @@ sub stop {
     close $out;
 }
 
-=head3 read_tdb
-
-=cut
-
-=head3 add_task
-
-    $tracker->add_task 
-
-=cut
-
 =head2 Helper Methods
 
 =cut
@@ -138,13 +160,53 @@ sub stop {
 
 Returns the absolute path to the tracker DB file.
 
+If the file does not exists, trys to init it using L<init_tracker_db>
+
 =cut
 
 sub path_to_tracker_db {
     my $self=shift;
+
+    my $file=$self->opts->{file};
+    return $file  if -e $file;
+    $self->init_tracker_db($file);
+    return $file;
+
     return catfile(TimeTracker::ConfigData->config( 'home' ),'tracker.db');
 
 }
+
+=head3 init_tracker_db
+
+    $self->init_tracker_db( $path_to_file );
+
+Initiates a new pseudo DB file.
+
+=cut
+
+sub init_tracker_db {
+    my ($self,$file)=@_;
+    $file or X::BadParams->throw("No file path passed to init_tracker_db");
+    if (-e $file) {
+        X::File->throw("$file exists. Will not re-init...");
+    }
+
+    # do we have the dir?
+    my ($vol,$dir,$filename)=splitpath($file);
+    unless (-d $dir) {
+        eval { mkpath($dir) };
+        X::File->throw(file=>$dir,message=>"Cannot make dir: $@") if $@;
+    }
+
+    open(my $OUT,'>',$file) || X::File->throw(file=>$file,message=>$!);
+    print $OUT <<EOINITTRACKER;
+# Pseudo-DB for TimeTracker
+# Do not edit by hand unless you know what you're doing!
+
+EOINITTRACKER
+    close $OUT;
+}
+
 
 # 1 is boring
 q{ listeing to:

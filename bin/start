@@ -3,9 +3,26 @@ use 5.010;
 use strict;
 use warnings;
 use TimeTracker;
-my $tracker=TimeTracker->new;
-my $project=shift(@ARGV);
-$tracker->start($project,\@ARGV);
+eval {
+    my $tracker=TimeTracker->new->parse_commandline;
+    my $project=shift(@ARGV);
+    $tracker->start($project,\@ARGV);
+};
+if ($@) {
+    if (my $e=X->caught) {
+        given (ref $e) {
+            when ('X::File') { say $e->message.": ".$e->file }
+            default {
+                say ref($e).": ".$e->message;
+            }
+        }
+        say $e->trace;
+    }
+    else {
+        say "Uncaught exception: $@"
+    }
+}
+
 
 __END__
 
