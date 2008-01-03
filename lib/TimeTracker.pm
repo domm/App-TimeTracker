@@ -137,7 +137,7 @@ sub stop {
             }
             $found_active++;
             
-            my $now=$time->epoch || DateTime->now->epoch;
+            my $now=$time ? $time->epoch : DateTime->now->epoch;
             $line=~s/ACTIVE/$now/;
         }
         push(@new,$line);    
