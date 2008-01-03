@@ -1,0 +1,25 @@
+---
+name: TimeTracker
+version: 0.01
+author:
+  - 'Thomas Klausner <domm@cpan.org>'
+abstract: Track time spend on projects from the commandline
+license: perl
+requires:
+  Class::Accessor: 0.31
+  DateTime: 0.41
+  Exception::Class: 1.23
+  File::HomeDir: 0.67
+build_requires:
+  Test::More: 0
+  Test::NoWarnings: 0.084
+generated_by: Module::Build version 0.280801
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.2.html
+  version: 1.2
+provides:
+  TimeTracker:
+    file: lib/TimeTracker.pm
+    version: 0.01
+resources:
+  license: http://dev.perl.org/licenses/

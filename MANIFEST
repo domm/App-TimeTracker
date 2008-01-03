@@ -1,10 +1,13 @@
+bin/start
+bin/stop
 Build.PL
 Changes
-MANIFEST
-META.yml # Will be created by "make dist"
-README
 lib/TimeTracker.pm
+MANIFEST
+META.yml			# Will be created by "make dist"
+README
 t/00-load.t
 t/boilerplate.t
+t/path_to_tracker_db.t
 t/pod-coverage.t
 t/pod.t
