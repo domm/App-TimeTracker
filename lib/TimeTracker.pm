@@ -3,7 +3,7 @@ package TimeTracker;
 use 5.010;
 use warnings;
 use strict;
-use version; our $VERSION=version->new('0.01');
+use version; our $VERSION=version->new('0.02');
 
 =head1 NAME
 
@@ -141,7 +141,7 @@ sub stop {
 
             my @data=split(/\t/,$line);
             my $worked=$data[1] - $data[0];
-            say "worked ".$self->beautify_seconds($worked);
+            say "worked ".$self->beautify_seconds($worked)." on $data[2]".($data[3]?" ($data[3])":'');
         }
         push(@new,$line);    
     }
@@ -219,15 +219,21 @@ Turns an amount of seconds ('271') into a nicer representation ("4 minutes, 31 s
 =cut
 
 sub beautify_seconds {
-    my ($self,$seconds)=@_;
+    my ($self,$s)=@_;
 
-    my $d=DateTime::Duration->new(seconds=>$seconds);
+    if ($s < 60) {
+        return "$s second".($s==1?'':'s');
+    }
+    
+    my $m=int($s/60);
+    $s=$s-($m*60);
+    if ($m < 60) {
+        return "$m minute".($m==1?'':'s').", $s second".($s==1?'':'s');
+    }
 
-    return sprintf("%i hours, %i minutes, %i seconds",$d->hours,$d->minutes,$d->seconds);
-#$d->in_units('hours','minutes','seconds'));
-
-    return $seconds;
-
+    my $h=int($m/60);
+    $m=$m-($h*60);
+    return "$h hour".($h==1?'':'s').", $m minute".($m==1?'':'s').", $s second".($s==1?'':'s');
 }
 
 
