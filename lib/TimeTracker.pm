@@ -138,6 +138,10 @@ sub stop {
             
             my $now=$time ? $time->epoch : DateTime->now->epoch;
             $line=~s/ACTIVE/$now/;
+
+            my @data=split(/\t/,$line);
+            my $worked=$data[1] - $data[0];
+            say "worked ".$self->beautify_seconds($worked);
         }
         push(@new,$line);    
     }
@@ -204,6 +208,26 @@ sub init_tracker_db {
 
 EOINITTRACKER
     close $OUT;
+}
+
+=head3 beautify_seconds
+
+    my $nice_message = $self->beautify_seconds($seconds);
+
+Turns an amount of seconds ('271') into a nicer representation ("4 minutes, 31 seconds")
+
+=cut
+
+sub beautify_seconds {
+    my ($self,$seconds)=@_;
+
+    my $d=DateTime::Duration->new(seconds=>$seconds);
+
+    return sprintf("%i hours, %i minutes, %i seconds",$d->hours,$d->minutes,$d->seconds);
+#$d->in_units('hours','minutes','seconds'));
+
+    return $seconds;
+
 }
 
 
