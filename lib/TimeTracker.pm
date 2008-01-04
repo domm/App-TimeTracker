@@ -79,7 +79,6 @@ sub parse_commandline {
     return $self;
 }
 
-
 =head3 start
 
     $tracker->start($project,@tags);
@@ -104,7 +103,7 @@ sub start {
     say $out 
         $now->epoch
         ."\tACTIVE\t$project\t"
-        .($tags ? join('',@$tags) :'')
+        .($tags ? join(' ',@$tags) :'')
         ."\t".$now->strftime("%Y-%m-%d %H:%M:%S")
         ;
     close $out;
