@@ -3,7 +3,7 @@ package TimeTracker;
 use 5.010;
 use warnings;
 use strict;
-use version; our $VERSION=version->new('0.02');
+use version; our $VERSION = version->new('0.02');
 
 =head1 NAME
 
@@ -25,11 +25,11 @@ use Getopt::Long;
 
 use Exception::Class(
     'X',
-    'X::BadParams'  => { isa => 'X' },
-    'X::BadData'    => { isa => 'X' },
-    'X::File' => {
-        isa => 'X',
-        fields=>[qw(file)],
+    'X::BadParams' => { isa => 'X' },
+    'X::BadData'   => { isa => 'X' },
+    'X::File'      => {
+        isa    => 'X',
+        fields => [qw(file)],
     },
 );
 
@@ -48,13 +48,16 @@ Initiate a new tracker object.
 =cut
 
 sub new {
-    my $class=shift;
+    my $class = shift;
 
-    my $self=bless {},$class;
+    my $self = bless {}, $class;
 
-    $self->opts({
-        file    => catfile( File::HomeDir->my_home,'.TimeTracker','tracker.db' ),
-    });
+    $self->opts(
+        {
+            file =>
+              catfile( File::HomeDir->my_home, '.TimeTracker', 'tracker.db' ),
+        }
+    );
 
     return $self;
 }
@@ -70,12 +73,10 @@ Returns $self (for method chaining).
 =cut
 
 sub parse_commandline {
-    my $self=shift;
+    my $self = shift;
 
-    my $opts=$self->opts;
-    GetOptions($opts,
-        'file=s',
-    );
+    my $opts = $self->opts;
+    GetOptions( $opts, 'file=s', );
     return $self;
 }
 
@@ -89,41 +90,39 @@ DB. It sets the start time to the current time.
 =cut
 
 sub start {
-    my ($self,$project,$tags)=@_;
+    my ( $self, $project, $tags ) = @_;
     X::BadParams->throw("No project specified") unless $project;
 
     # check if we already know this task
     my %known;
-    foreach (@{$self->old_data}) {
+    foreach ( @{ $self->old_data } ) {
         next unless $_->[2];
-        $known{$_->[2]}++;
+        $known{ $_->[2] }++;
     }
-    unless ($known{$project}) {
+    unless ( $known{$project} ) {
         say "'$project' is not among the current list of projects:";
-        say join("\t",sort keys %known);
+        say join( "\t", sort keys %known );
         say "add it? (y|n) ";
-        my $prompt=<STDIN>;
+        my $prompt = <STDIN>;
         chomp($prompt);
-        unless ($prompt =~ /^y/i) {
+        unless ( $prompt =~ /^y/i ) {
             say "Aborting...";
             exit;
         }
     }
 
-    my $now=DateTime->now;
-    
+    my $now = DateTime->now;
+
     # stop last active task
     $self->stop($now);
 
     # start new task
-    open (my $out, '>>', $self->path_to_tracker_db)
-        || X::File->throw(file=>$self->path_to_tracker_db,message=>$!);
-    print $out 
-        $now->epoch
-        ."\tACTIVE\t$project\t"
-        .($tags ? join(' ',@$tags) :'')
-        ."\t".$now->strftime("%Y-%m-%d %H:%M:%S")
-        ."\n";
+    open( my $out, '>>', $self->path_to_tracker_db )
+      || X::File->throw( file => $self->path_to_tracker_db, message => $! );
+    print $out $now->epoch
+      . "\tACTIVE\t$project\t"
+      . ( $tags ? join( ' ', @$tags ) : '' ) . "\t"
+      . $now->strftime("%Y-%m-%d %H:%M:%S") . "\n";
     close $out;
 }
 
@@ -138,30 +137,34 @@ $datetime is optional and defaults to DateTime->now
 =cut
 
 sub stop {
-    my ($self,$time)=@_;
+    my ( $self, $time ) = @_;
 
-    my $old=$self->old_data;
+    my $old = $self->old_data;
     my $found_active;
 
-    foreach my $row (reverse @$old) {
-        if ($row->[1] && $row->[1] eq 'ACTIVE') {
+    foreach my $row ( reverse @$old ) {
+        if ( $row->[1] && $row->[1] eq 'ACTIVE' ) {
             if ($found_active) {
-                X::BadData->throw("more than one ACTIVE task found in file. Fix manually!");
+                X::BadData->throw(
+                    "more than one ACTIVE task found in file. Fix manually!");
             }
             $found_active++;
-            
-            my $now=$time ? $time->epoch : DateTime->now->epoch;
-            $row->[1]=$now;
 
-            my $worked=$row->[1] - $row->[0];
-            say "worked ".$self->beautify_seconds($worked)." on ".$row->[2].($row->[3]?" (".$row->[3].")":'');
+            my $now = $time ? $time->epoch : DateTime->now->epoch;
+            $row->[1] = $now;
+
+            my $worked = $row->[1] - $row->[0];
+            say "worked "
+              . $self->beautify_seconds($worked) . " on "
+              . $row->[2]
+              . ( $row->[3] ? " (" . $row->[3] . ")" : '' );
         }
     }
 
     # write data
-    open (my $out, '>', $self->path_to_tracker_db)
-        || X::File->throw(file=>$self->path_to_tracker_db,message=>$!);
-    print $out join("\n", map { join("\t",@$_) } @$old);
+    open( my $out, '>', $self->path_to_tracker_db )
+      || X::File->throw( file => $self->path_to_tracker_db, message => $! );
+    print $out join( "\n", map { join( "\t", @$_ ) } @$old );
     print $out "\n";
     close $out;
 }
@@ -179,23 +182,23 @@ Reads in the data from the pseudo DB. Returns an Array of Arrays.
 =cut
 
 sub old_data {
-    my $self=shift;
+    my $self = shift;
 
-    my $old=$self->_old_data;
+    my $old = $self->_old_data;
     return $old if $old;
-    
+
     my @lines;
-    open (my $in, '<', $self->path_to_tracker_db)
-        || X::File->throw(file=>$self->path_to_tracker_db,message=>$!); 
-    
-    while (my $line=<$in>) {
+    open( my $in, '<', $self->path_to_tracker_db )
+      || X::File->throw( file => $self->path_to_tracker_db, message => $! );
+
+    while ( my $line = <$in> ) {
         chomp($line);
-        my @row=split(/\t/,$line);
-        push(@lines,\@row);
+        my @row = split( /\t/, $line );
+        push( @lines, \@row );
     }
     close $in;
 
-    $self->_old_data(\@lines);
+    $self->_old_data( \@lines );
     return \@lines;
 }
 
@@ -210,14 +213,14 @@ If the file does not exists, trys to init it using L<init_tracker_db>
 =cut
 
 sub path_to_tracker_db {
-    my $self=shift;
+    my $self = shift;
 
-    my $file=$self->opts->{file};
-    return $file  if -e $file;
+    my $file = $self->opts->{file};
+    return $file if -e $file;
     $self->init_tracker_db($file);
     return $file;
 
-    return catfile(TimeTracker::ConfigData->config( 'home' ),'tracker.db');
+    return catfile( TimeTracker::ConfigData->config('home'), 'tracker.db' );
 
 }
 
@@ -230,20 +233,21 @@ Initiates a new pseudo DB file.
 =cut
 
 sub init_tracker_db {
-    my ($self,$file)=@_;
+    my ( $self, $file ) = @_;
     $file or X::BadParams->throw("No file path passed to init_tracker_db");
-    if (-e $file) {
+    if ( -e $file ) {
         X::File->throw("$file exists. Will not re-init...");
     }
 
     # do we have the dir?
-    my ($vol,$dir,$filename)=splitpath($file);
-    unless (-d $dir) {
+    my ( $vol, $dir, $filename ) = splitpath($file);
+    unless ( -d $dir ) {
         eval { mkpath($dir) };
-        X::File->throw(file=>$dir,message=>"Cannot make dir: $@") if $@;
+        X::File->throw( file => $dir, message => "Cannot make dir: $@" ) if $@;
     }
 
-    open(my $OUT,'>',$file) || X::File->throw(file=>$file,message=>$!);
+    open( my $OUT, '>', $file )
+      || X::File->throw( file => $file, message => $! );
     print $OUT <<EOINITTRACKER;
 # Pseudo-DB for TimeTracker
 # Do not edit by hand unless you know what you're doing!
@@ -261,23 +265,32 @@ Turns an amount of seconds ('271') into a nicer representation ("4 minutes, 31 s
 =cut
 
 sub beautify_seconds {
-    my ($self,$s)=@_;
+    my ( $self, $s ) = @_;
 
-    if ($s < 60) {
-        return "$s second".($s==1?'':'s');
-    }
-    
-    my $m=int($s/60);
-    $s=$s-($m*60);
-    if ($m < 60) {
-        return "$m minute".($m==1?'':'s').", $s second".($s==1?'':'s');
+    if ( $s < 60 ) {
+        return "$s second" . ( $s == 1 ? '' : 's' );
     }
 
-    my $h=int($m/60);
-    $m=$m-($h*60);
-    return "$h hour".($h==1?'':'s').", $m minute".($m==1?'':'s').", $s second".($s==1?'':'s');
+    my $m = int( $s / 60 );
+    $s = $s - ( $m * 60 );
+    if ( $m < 60 ) {
+        return
+            "$m minute"
+          . ( $m == 1 ? '' : 's' )
+          . ", $s second"
+          . ( $s == 1 ? '' : 's' );
+    }
+
+    my $h = int( $m / 60 );
+    $m = $m - ( $h * 60 );
+    return
+        "$h hour"
+      . ( $h == 1 ? '' : 's' )
+      . ", $m minute"
+      . ( $m == 1 ? '' : 's' )
+      . ", $s second"
+      . ( $s == 1 ? '' : 's' );
 }
-
 
 # 1 is boring
 q{ listeing to:
