@@ -33,7 +33,7 @@ use Exception::Class(
     },
 );
 
-__PACKAGE__->mk_accessors(qw(opts));
+__PACKAGE__->mk_accessors(qw(opts _old_data));
 
 =head1 METHODS
 
@@ -92,6 +92,24 @@ sub start {
     my ($self,$project,$tags)=@_;
     X::BadParams->throw("No project specified") unless $project;
 
+    # check if we already know this task
+    my %known;
+    foreach (@{$self->old_data}) {
+        next unless $_->[2];
+        $known{$_->[2]}++;
+    }
+    unless ($known{$project}) {
+        say "'$project' is not among the current list of projects:";
+        say join("\t",sort keys %known);
+        say "add it? (y|n) ";
+        my $prompt=<STDIN>;
+        chomp($prompt);
+        unless ($prompt =~ /^y/i) {
+            say "Aborting...";
+            exit;
+        }
+    }
+
     my $now=DateTime->now;
     
     # stop last active task
@@ -100,12 +118,12 @@ sub start {
     # start new task
     open (my $out, '>>', $self->path_to_tracker_db)
         || X::File->throw(file=>$self->path_to_tracker_db,message=>$!);
-    say $out 
+    print $out 
         $now->epoch
         ."\tACTIVE\t$project\t"
         .($tags ? join(' ',@$tags) :'')
         ."\t".$now->strftime("%Y-%m-%d %H:%M:%S")
-        ;
+        ."\n";
     close $out;
 }
 
@@ -122,40 +140,64 @@ $datetime is optional and defaults to DateTime->now
 sub stop {
     my ($self,$time)=@_;
 
-    my @new;
+    my $old=$self->old_data;
     my $found_active;
-    open (my $in, '<', $self->path_to_tracker_db)
-        || X::File->throw(file=>$self->path_to_tracker_db,message=>$!); 
-    my @reversed=reverse <$in>;
-    close $in;
 
-    foreach my $line (@reversed) {
-        if ($line =~/ACTIVE/) {
+    foreach my $row (reverse @$old) {
+        if ($row->[1] && $row->[1] eq 'ACTIVE') {
             if ($found_active) {
                 X::BadData->throw("more than one ACTIVE task found in file. Fix manually!");
             }
             $found_active++;
             
             my $now=$time ? $time->epoch : DateTime->now->epoch;
-            $line=~s/ACTIVE/$now/;
+            $row->[1]=$now;
 
-            my @data=split(/\t/,$line);
-            my $worked=$data[1] - $data[0];
-            say "worked ".$self->beautify_seconds($worked)." on $data[2]".($data[3]?" ($data[3])":'');
+            my $worked=$row->[1] - $row->[0];
+            say "worked ".$self->beautify_seconds($worked)." on ".$row->[2].($row->[3]?" (".$row->[3].")":'');
         }
-        push(@new,$line);    
     }
 
     # write data
     open (my $out, '>', $self->path_to_tracker_db)
         || X::File->throw(file=>$self->path_to_tracker_db,message=>$!);
-    print $out reverse @new;
+    print $out join("\n", map { join("\t",@$_) } @$old);
+    print $out "\n";
     close $out;
 }
 
 =head2 Helper Methods
 
 =cut
+
+=head3 old_data
+
+    my $data=$self->old_data;
+
+Reads in the data from the pseudo DB. Returns an Array of Arrays.
+
+=cut
+
+sub old_data {
+    my $self=shift;
+
+    my $old=$self->_old_data;
+    return $old if $old;
+    
+    my @lines;
+    open (my $in, '<', $self->path_to_tracker_db)
+        || X::File->throw(file=>$self->path_to_tracker_db,message=>$!); 
+    
+    while (my $line=<$in>) {
+        chomp($line);
+        my @row=split(/\t/,$line);
+        push(@lines,\@row);
+    }
+    close $in;
+
+    $self->_old_data(\@lines);
+    return \@lines;
+}
 
 =head3 path_to_tracker_db
 
