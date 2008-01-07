@@ -1,0 +1,14 @@
+Revision history for TimeTracker
+
+
+0.02    2008-01-04
+    - ask before adding a new project (to catch typos etc)
+    - added beautify_seconds and some nicer output to stop/start
+
+0.01    2008-01-03
+    - basic functionality working (start/stop)
+
+
+0.00    2008-01-02
+    - first draft
+
