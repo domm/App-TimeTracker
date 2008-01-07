@@ -3,7 +3,7 @@ package TimeTracker;
 use 5.010;
 use warnings;
 use strict;
-use version; our $VERSION = version->new('0.02');
+use version; our $VERSION = version->new('0.03');
 
 =head1 NAME
 
@@ -27,6 +27,7 @@ use Exception::Class(
     'X',
     'X::BadParams' => { isa => 'X' },
     'X::BadData'   => { isa => 'X' },
+    'X::BadDate'    => {isa=>'X'},
     'X::File'      => {
         isa    => 'X',
         fields => [qw(file)],
@@ -76,7 +77,7 @@ sub parse_commandline {
     my $self = shift;
 
     my $opts = $self->opts;
-    GetOptions( $opts, 'file=s', );
+    GetOptions( $opts, qw(file=s start=s stop=s) );
     return $self;
 }
 
@@ -111,18 +112,26 @@ sub start {
         }
     }
 
-    my $now = DateTime->now;
+    my $now = $self->now;
 
     # stop last active task
     $self->stop($now);
 
+    my $start;
+    if (my $manual=$self->opts->{start}) {
+        $start=$self->parse_datetime($manual)
+    }
+    else {
+        $start=$now;
+    }
+
     # start new task
     open( my $out, '>>', $self->path_to_tracker_db )
       || X::File->throw( file => $self->path_to_tracker_db, message => $! );
-    print $out $now->epoch
+    print $out $start->epoch
       . "\tACTIVE\t$project\t"
       . ( $tags ? join( ' ', @$tags ) : '' ) . "\t"
-      . $now->strftime("%Y-%m-%d %H:%M:%S") . "\n";
+      . $start->strftime("%Y-%m-%d %H:%M:%S") . "\n";
     close $out;
 }
 
@@ -142,6 +151,10 @@ sub stop {
     my $old = $self->old_data;
     my $found_active;
 
+    if ( my $manual = $self->opts->{stop} ) {
+        $time=$self->parse_datetime($manual);
+    }
+
     foreach my $row ( reverse @$old ) {
         if ( $row->[1] && $row->[1] eq 'ACTIVE' ) {
             if ($found_active) {
@@ -150,7 +163,7 @@ sub stop {
             }
             $found_active++;
 
-            my $now = $time ? $time->epoch : DateTime->now->epoch;
+            my $now = $time ? $time->epoch : $self->now->epoch;
             $row->[1] = $now;
 
             my $worked = $row->[1] - $row->[0];
@@ -291,6 +304,76 @@ sub beautify_seconds {
       . ", $s second"
       . ( $s == 1 ? '' : 's' );
 }
+
+=head3 parse_datetime 
+
+    my $dt = $self->parse_datetime("1245");
+    my $dt = $self->parse_datetime("0226-1245");
+
+Convert a simple time / datetime into a DateTime object
+
+Input can be a string containing Hour and Minute ("1245"), which will 
+use todays date. Or a string containing Month Day followed by Hour & 
+Minute (seperated by _ or -)
+
+=cut
+
+sub parse_datetime {
+    my ( $self, $datetime ) = @_;
+    return $self->now unless $datetime;
+    
+    my $n=$self->now;
+
+    my $date;
+    eval {
+        if ( $datetime =~ /^(?<hour>\d\d)(?<minute>\d\d)$/ ) {
+            $date = DateTime->new(
+                year=>$n->year,
+                month=>$n->month,
+                day=>$n->day,
+                hour=>$+{hour},
+                minute=>$+{minute},
+                second=>0,
+                time_zone=>'local',
+            );
+        }
+        elsif ($datetime =~ /
+            (?<month>\d\d) (?<day>\d\d)
+            [-_]
+            (?<hour>\d\d) (?<minute>\d\d)
+            /x ) {
+            $date = DateTime->new(
+                year=>$n->year,
+                month=>$+{month},
+                day=>$+{day},
+                hour=>$+{hour},
+                minute=>$+{minute},
+                second=>0,
+                time_zone=>'local',
+            );
+        }
+    };
+    if ($@) {
+        X::BadDate->throw("Cannot parse $datetime into a date: $@");
+    }
+    return $date;
+}
+
+=head3 now
+
+    my $now = $self->now;
+
+Wrapper around DateTime->now that also sets the timezone to local
+
+=cut
+
+sub now {
+    my $dt=DateTime->now();
+    $dt->set_time_zone('local');
+    return $dt;
+}
+
+
 
 # 1 is boring
 q{ listeing to:
