@@ -3,25 +3,7 @@ use 5.010;
 use strict;
 use warnings;
 use TimeTracker;
-eval {
-    my $tracker=TimeTracker->new->parse_commandline;
-    $tracker->stop();
-};
-if ($@) {
-    if (my $e=X->caught) {
-        given (ref $e) {
-            when ('X::File') { say $e->message.": ".$e->file }
-            default {
-                say ref($e).": ".$e->message;
-            }
-        }
-        say $e->trace;
-    }
-    else {
-        say "Uncaught exception: $@"
-    }
-}
-
+TimeTracker->run;
 __END__
 
 =pod
