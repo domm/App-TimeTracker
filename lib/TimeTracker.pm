@@ -3,7 +3,7 @@ package TimeTracker;
 use 5.010;
 use warnings;
 use strict;
-use version; our $VERSION = version->new('0.03');
+use version; our $VERSION = version->new('0.04');
 
 =head1 NAME
 
@@ -15,10 +15,10 @@ TimeTracker tracks time spend on various projects in simple flat file.
 
 =cut
 
-use base 'Class::Accessor';
+use base qw(Class::Accessor App::Cmd);
+use TimeTracker::ConfigData;
 use DateTime;
 use File::Spec::Functions qw(splitpath catfile catdir);
-use TimeTracker::ConfigData;
 use File::HomeDir;
 use File::Path;
 use Getopt::Long;
@@ -48,36 +48,41 @@ Initiate a new tracker object.
 
 =cut
 
+
+sub global_opts {
+    return (
+        [ "start=s",  "start time"],
+        [ "stop=s",   "stop time"],
+        [ 'file=s' => "data file", 
+            {default=>catfile( File::HomeDir->my_home, '.TimeTracker', 'tracker.db' ),} ],
+        [ 'foo'=>'sdfsdf',{default=>123}],
+
+    );
+}
+
+sub global_validate {
+    my ($self, $opt, $args) = @_;
+    
+    if (!-e $opt->{file}) {
+        $self->init_tracker_db($opt->{file});
+    }
+
+    foreach (qw(start stop)) {
+        if (my $manual=$opt->{$_}) {
+            $opt->{$_}=$self->parse_datetime($manual);
+        }
+        else {
+            $opt->{$_}=$self->now;
+        }
+    }
+    $self->opts($opt);
+
+}
+
 sub new {
     my $class = shift;
 
     my $self = bless {}, $class;
-
-    $self->opts(
-        {
-            file =>
-              catfile( File::HomeDir->my_home, '.TimeTracker', 'tracker.db' ),
-        }
-    );
-
-    return $self;
-}
-
-=head3 parse_commandline
-
-    $tracker->parse_commandline;
-
-Parses the commandline opts using Getopt::Long. Options are stored in $self->opts.
-
-Returns $self (for method chaining).
-
-=cut
-
-sub parse_commandline {
-    my $self = shift;
-
-    my $opts = $self->opts;
-    GetOptions( $opts, qw(file=s start=s stop=s) );
     return $self;
 }
 
@@ -89,51 +94,6 @@ Takes project name and a list of tags and adds a new entry to the task
 DB. It sets the start time to the current time.
 
 =cut
-
-sub start {
-    my ( $self, $project, $tags ) = @_;
-    X::BadParams->throw("No project specified") unless $project;
-
-    # check if we already know this task
-    my %known;
-    foreach ( @{ $self->old_data } ) {
-        next unless $_->[2];
-        $known{ $_->[2] }++;
-    }
-    unless ( $known{$project} ) {
-        say "'$project' is not among the current list of projects:";
-        say join( "\t", sort keys %known );
-        say "add it? (y|n) ";
-        my $prompt = <STDIN>;
-        chomp($prompt);
-        unless ( $prompt =~ /^y/i ) {
-            say "Aborting...";
-            exit;
-        }
-    }
-
-    my $now = $self->now;
-
-    # stop last active task
-    $self->stop($now);
-
-    my $start;
-    if (my $manual=$self->opts->{start}) {
-        $start=$self->parse_datetime($manual)
-    }
-    else {
-        $start=$now;
-    }
-
-    # start new task
-    open( my $out, '>>', $self->path_to_tracker_db )
-      || X::File->throw( file => $self->path_to_tracker_db, message => $! );
-    print $out $start->epoch
-      . "\tACTIVE\t$project\t"
-      . ( $tags ? join( ' ', @$tags ) : '' ) . "\t"
-      . $start->strftime("%Y-%m-%d %H:%M:%S") . "\n";
-    close $out;
-}
 
 =head3 stop
 
@@ -151,9 +111,7 @@ sub stop {
     my $old = $self->old_data;
     my $found_active;
 
-    if ( my $manual = $self->opts->{stop} ) {
-        $time=$self->parse_datetime($manual);
-    }
+    $time ||= $self->opts->{stop};
 
     foreach my $row ( reverse @$old ) {
         if ( $row->[1] && $row->[1] eq 'ACTIVE' ) {
@@ -163,7 +121,7 @@ sub stop {
             }
             $found_active++;
 
-            my $now = $time ? $time->epoch : $self->now->epoch;
+            my $now =  $time->epoch ;
             $row->[1] = $now;
 
             my $worked = $row->[1] - $row->[0];
@@ -175,8 +133,8 @@ sub stop {
     }
 
     # write data
-    open( my $out, '>', $self->path_to_tracker_db )
-      || X::File->throw( file => $self->path_to_tracker_db, message => $! );
+    open( my $out, '>', $self->opts->{file} )
+      || X::File->throw( file => $self->opts->{file}, message => $! );
     print $out join( "\n", map { join( "\t", @$_ ) } @$old );
     print $out "\n";
     close $out;
@@ -201,8 +159,8 @@ sub old_data {
     return $old if $old;
 
     my @lines;
-    open( my $in, '<', $self->path_to_tracker_db )
-      || X::File->throw( file => $self->path_to_tracker_db, message => $! );
+    open( my $in, '<', $self->opts->{file} )
+      || X::File->throw( file => $self->opts->{file}, message => $! );
 
     while ( my $line = <$in> ) {
         chomp($line);
@@ -213,28 +171,6 @@ sub old_data {
 
     $self->_old_data( \@lines );
     return \@lines;
-}
-
-=head3 path_to_tracker_db
-
-    my $path = $self->path_to_tracker_db;
-
-Returns the absolute path to the tracker DB file.
-
-If the file does not exists, trys to init it using L<init_tracker_db>
-
-=cut
-
-sub path_to_tracker_db {
-    my $self = shift;
-
-    my $file = $self->opts->{file};
-    return $file if -e $file;
-    $self->init_tracker_db($file);
-    return $file;
-
-    return catfile( TimeTracker::ConfigData->config('home'), 'tracker.db' );
-
 }
 
 =head3 init_tracker_db
