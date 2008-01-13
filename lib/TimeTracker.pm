@@ -55,8 +55,6 @@ sub global_opts {
         [ "stop=s",   "stop time"],
         [ 'file=s' => "data file", 
             {default=>catfile( File::HomeDir->my_home, '.TimeTracker', 'tracker.db' ),} ],
-        [ 'foo'=>'sdfsdf',{default=>123}],
-
     );
 }
 
@@ -114,6 +112,7 @@ sub stop {
     $time ||= $self->opts->{stop};
 
     foreach my $row ( reverse @$old ) {
+        #next if $row->[0]=~/^#/;
         if ( $row->[1] && $row->[1] eq 'ACTIVE' ) {
             if ($found_active) {
                 X::BadData->throw(
@@ -124,11 +123,8 @@ sub stop {
             my $now =  $time->epoch ;
             $row->[1] = $now;
 
-            my $worked = $row->[1] - $row->[0];
-            say "worked "
-              . $self->beautify_seconds($worked) . " on "
-              . $row->[2]
-              . ( $row->[3] ? " (" . $row->[3] . ")" : '' );
+            my $interval=$self->get_printable_interval($row->[0],$row->[1],$row);
+            say "worked $interval";
         }
     }
 
@@ -143,6 +139,16 @@ sub stop {
 =head2 Helper Methods
 
 =cut
+
+sub get_printable_interval {
+    my ($self,$start,$end,$row)=@_;
+    my $worked = $end - $start;
+    return $self->beautify_seconds($worked) . " on "
+            . $row->[2]
+            . ( $row->[3] ? " (" . $row->[3] . ")" : '' );
+
+}
+
 
 =head3 old_data
 

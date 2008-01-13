@@ -1,6 +1,7 @@
 Revision history for TimeTracker
 
 0.04-TOBE
+    - added command 'current'
     - now using App::Cmd
 
 
