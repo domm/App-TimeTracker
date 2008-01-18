@@ -3,7 +3,7 @@ package TimeTracker;
 use 5.010;
 use warnings;
 use strict;
-use version; our $VERSION = version->new('0.04');
+use version; our $VERSION = version->new('0.05');
 
 =head1 NAME
 
