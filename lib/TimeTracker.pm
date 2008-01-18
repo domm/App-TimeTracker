@@ -17,11 +17,14 @@ TimeTracker tracks time spend on various projects in simple flat file.
 
 use base qw(Class::Accessor App::Cmd);
 use TimeTracker::ConfigData;
+use TimeTracker::Schema;
 use DateTime;
+use DateTime::Format::Strptime;
 use File::Spec::Functions qw(splitpath catfile catdir);
 use File::HomeDir;
 use File::Path;
 use Getopt::Long;
+
 
 use Exception::Class(
     'X',
@@ -32,9 +35,10 @@ use Exception::Class(
         isa    => 'X',
         fields => [qw(file)],
     },
+    'X::DB' => {isa=>'X'},
 );
 
-__PACKAGE__->mk_accessors(qw(opts _old_data));
+__PACKAGE__->mk_accessors(qw(opts _old_data _schema));
 
 =head1 METHODS
 
@@ -51,7 +55,7 @@ sub global_opts {
         [ "start=s",  "start time"],
         [ "stop=s",   "stop time"],
         [ 'file|f=s' => "data file", 
-            {default=>catfile( File::HomeDir->my_home, '.TimeTracker', 'tracker.db' ),} ],
+            {default=>catfile( File::HomeDir->my_home, '.TimeTracker', 'timetracker.db' ),} ],
     );
 }
 
@@ -95,15 +99,6 @@ sub new {
     return $self;
 }
 
-=head3 start
-
-    $tracker->start($project,@tags);
-
-Takes project name and a list of tags and adds a new entry to the task 
-DB. It sets the start time to the current time.
-
-=cut
-
 =head3 stop
 
     $self->stop($datetime);
@@ -117,34 +112,20 @@ $datetime is optional and defaults to DateTime->now
 sub stop {
     my ( $self, $time ) = @_;
 
-    my $old = $self->old_data;
-    my $found_active;
-
+    my $schema=$self->schema;
     $time ||= $self->opts->{stop};
 
-    foreach my $row ( reverse @$old ) {
-        #next if $row->[0]=~/^#/;
-        if ( $row->[1] && $row->[1] eq 'ACTIVE' ) {
-            if ($found_active) {
-                X::BadData->throw(
-                    "more than one ACTIVE task found in file. Fix manually!");
-            }
-            $found_active++;
-
-            my $now =  $time->epoch ;
-            $row->[1] = $now;
-
-            my $interval=$self->get_printable_interval($row->[0],$row->[1],$row);
-            say "worked $interval";
-        }
+    my $active=$schema->resultset('Task')->find(1,{key=>'active'});
+    if ($active) {
+        $active->active(0);
+        $active->stop($time);
+        $active->update;
+        my $interval=$self->get_printable_interval($active);
+        say "worked $interval";
     }
-
-    # write data
-    open( my $out, '>', $self->opts->{file} )
-      || X::File->throw( file => $self->opts->{file}, message => $! );
-    print $out join( "\n", map { join( "\t", @$_ ) } @$old );
-    print $out "\n";
-    close $out;
+    else {
+        #say "not working on anything at the moment.";
+    }
 }
 
 =head2 Helper Methods
@@ -153,47 +134,19 @@ sub stop {
 
 =head3 get_printable_interval
 
-    my $string = $self->get_printable_interval($start, $end, $row);
+    my $string = $self->get_printable_interval($task, [$start, stop]);
 
 Returns a string like "worked 30 minutes, 23 seconds on Task (foo bar)"
 
 =cut
 
 sub get_printable_interval {
-    my ($self,$start,$end,$row)=@_;
-    my $worked = $end - $start;
-    return $self->beautify_seconds($worked) . " on "
-            . $row->[2]
-            . ( $row->[3] ? " (" . $row->[3] . ")" : '' );
-}
-
-=head3 old_data
-
-    my $data=$self->old_data;
-
-Reads in the data from the pseudo DB. Returns an Array of Arrays.
-
-=cut
-
-sub old_data {
-    my $self = shift;
-
-    my $old = $self->_old_data;
-    return $old if $old;
-
-    my @lines;
-    open( my $in, '<', $self->opts->{file} )
-      || X::File->throw( file => $self->opts->{file}, message => $! );
-
-    while ( my $line = <$in> ) {
-        chomp($line);
-        my @row = split( /\t/, $line );
-        push( @lines, \@row );
-    }
-    close $in;
-
-    $self->_old_data( \@lines );
-    return \@lines;
+    my ($self,$task,$start,$stop)=@_;
+    $start ||= $task->start;
+    $stop ||= $task->stop;
+    
+    my $worked = $stop - $start;
+    return $self->beautify_duration($worked) . " on " . $task->project->name;
 }
 
 =head3 init_tracker_db
@@ -217,51 +170,46 @@ sub init_tracker_db {
         eval { mkpath($dir) };
         X::File->throw( file => $dir, message => "Cannot make dir: $@" ) if $@;
     }
-
-    open( my $OUT, '>', $file )
-      || X::File->throw( file => $file, message => $! );
-    print $OUT <<EOINITTRACKER;
-# Pseudo-DB for TimeTracker
-# Do not edit by hand unless you know what you're doing!
-
-EOINITTRACKER
-    close $OUT;
+    eval {require DBI};
+    my $dbh=DBI->connect("dbi:SQLite:dbname=".$file);
+    my $schema=$self->sql_schema;
+    foreach my $statement (split /;/, $schema) {
+        next unless $statement=~/\w/;
+        say $statement;
+        $dbh->do($statement) || X::DB->throw("DB error in $statement: $DBI::errstr");
+    }
+    $dbh->disconnect;
+    
 }
 
-=head3 beautify_seconds
+=head3 beautify_duration
 
-    my $nice_message = $self->beautify_seconds($seconds);
+    my $nice_message = $self->beautify_duration($duration);
 
-Turns an amount of seconds ('271') into a nicer representation ("4 minutes, 31 seconds")
+Turns an DateTime::Duration object into a nicer representation ("4 minutes, 31 seconds")
 
 =cut
 
-sub beautify_seconds {
-    my ( $self, $s ) = @_;
+sub beautify_duration {
+    my ( $self, $delta ) = @_;
 
-    if ( $s < 60 ) {
-        return "$s second" . ( $s == 1 ? '' : 's' );
+    my $s=$delta->delta_seconds;
+    my $m=$delta->delta_minutes;
+    my $h;
+    if ($m>=60) {
+        $h = int( $m / 60 );
+        $m = $m - ( $h * 60 );
     }
-
-    my $m = int( $s / 60 );
-    $s = $s - ( $m * 60 );
-    if ( $m < 60 ) {
-        return
-            "$m minute"
-          . ( $m == 1 ? '' : 's' )
-          . ", $s second"
-          . ( $s == 1 ? '' : 's' );
+    
+    my $result;
+    if ($h) {
+        $result="$h hour". ( $h == 1 ? '' : 's' ).", ";
     }
-
-    my $h = int( $m / 60 );
-    $m = $m - ( $h * 60 );
-    return
-        "$h hour"
-      . ( $h == 1 ? '' : 's' )
-      . ", $m minute"
-      . ( $m == 1 ? '' : 's' )
-      . ", $s second"
-      . ( $s == 1 ? '' : 's' );
+    if ($m) {
+        $result.="$m minute". ( $m == 1 ? '' : 's' ).", ";
+    }
+    $result.="$s second". ( $s == 1 ? '' : 's' );
+    return $result;
 }
 
 =head3 parse_datetime 
@@ -285,7 +233,7 @@ sub parse_datetime {
 
     my $date;
     eval {
-        if ( $datetime =~ /^(?<hour>\d\d)(?<minute>\d\d)$/ ) {
+        if ( $datetime =~ /^(?<hour>\d\d):?(?<minute>\d\d)$/ ) {
             $date = DateTime->new(
                 year=>$n->year,
                 month=>$n->month,
@@ -297,9 +245,9 @@ sub parse_datetime {
             );
         }
         elsif ($datetime =~ /
-            (?<month>\d\d) (?<day>\d\d)
+            (?<month>\d\d)\.?(?<day>\d\d)
             [-_]
-            (?<hour>\d\d) (?<minute>\d\d)
+            (?<hour>\d\d):?(?<minute>\d\d)
             /x ) {
             $date = DateTime->new(
                 year=>$n->year,
@@ -332,7 +280,56 @@ sub now {
     return $dt;
 }
 
+=head3 sql_schema
 
+Return the SQLite Schema
+
+=cut
+
+sub sql_schema {
+    return <<EOSQL;
+create table project (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	name text
+);
+create unique index project_name on project (name);
+
+create table task (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	project INTEGER not null default 0,
+	active INTEGER not null default 1,
+    start date,
+	stop date
+);
+
+create table tag (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+    tag text
+);
+create unique index tag_tag on tag (tag);
+
+create table task_tag (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+    task integer not null default 0,
+    tag integer not null default 0
+);
+
+EOSQL
+}
+
+=head3 schema
+
+Returns the DBIx::Class schema object
+
+=cut
+
+sub schema {
+    my $self=shift;
+    return $self->_schema if $self->_schema;
+    my $schema=TimeTracker::Schema->connect('dbi:SQLite:dbname='.$self->opts->{file}) || X::DB->throw("Cannot connect to SQLite DB ".$self->opts->{file});
+    $self->_schema($schema);
+    return $schema;
+}
 
 # 1 is boring
 q{ listeing to:

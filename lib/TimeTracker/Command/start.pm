@@ -13,25 +13,23 @@ sub validate_args { return TimeTracker::global_validate(@_) }
 sub run {
     my ($self, $opt, $args) = @_;
 
-    my $project=shift(@$args);
-    X::BadParams->throw("No project specified") unless $project;
-    
+    my $project_name=shift(@$args);
+    X::BadParams->throw("No project specified") unless $project_name;
+    my $schema=$self->schema;
+
     # check if we already know this task
-    my %known;
-    foreach ( @{ $self->old_data } ) {
-        next unless $_->[2];
-        $known{ $_->[2] }++;
-    }
-    unless ( $known{$project} ) {
-        say "'$project' is not among the current list of projects:";
-        say join( "\t", sort keys %known );
-        say "add it? (y|n) ";
+    my $project=$schema->resultset('Project')->find($project_name,{key=>'name'});
+    if (!$project) {
+        say "'$project_name' is not among the current list of projects, add it? (y|n) ";
         my $prompt = <STDIN>;
         chomp($prompt);
         unless ( $prompt =~ /^y/i ) {
             say "Aborting...";
             exit;
         }
+        $project=$schema->resultset('Project')->create({
+            name=>$project_name,    
+        });
     }
 
     # stop last active task
@@ -40,13 +38,10 @@ sub run {
     my $start=$opt->{start};
 
     # start new task
-    open( my $out, '>>', $opt->{file} )
-      || X::File->throw( file => $self->{file}, message => $! );
-    print $out $start->epoch
-      . "\tACTIVE\t$project\t"
-      . ( $args ? join( ' ', @$args ) : '' ) . "\t"
-      . $start->strftime("%Y-%m-%d %H:%M:%S") . "\n";
-    close $out;
+    $project->add_to_tasks({
+        start=>$start,
+        active=>1,
+    });
 }
 
 q{Listening to:
