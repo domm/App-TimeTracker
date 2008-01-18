@@ -53,3 +53,47 @@ q{Listening to:
     Neigungsgruppe Sex Gewalt & gute Laune - Goodnight Vienna
 };
 
+__END__
+
+=head1 NAME
+
+TimeTracker::Command::start
+
+=head1 DESCRIPTION
+
+Implements the 'start' command, which tells TimeTracker that you're 
+starting to work on something.
+
+  ~$ tracker start task tag, another tag
+
+  ~$ tracker start --start 1000 task tag, another tag
+
+=head1 METHODS
+
+=head3 usage_desc
+
+Usage Description for Getopt::Long::Descriptive
+
+=head3 opt_spec
+
+Command line options definition
+
+=head3 validate_args
+
+Command line options validation
+
+=head3 run
+
+Implementation of command
+
+=head1 AUTHOR
+
+Thomas Klausner, C<< <domm at cpan.org> >>
+
+=head1 COPYRIGHT & LICENSE
+
+Copyright 2008 Thomas Klausner, all rights reserved.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+

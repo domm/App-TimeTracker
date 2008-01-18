@@ -40,23 +40,26 @@ __PACKAGE__->mk_accessors(qw(opts _old_data));
 
 =cut
 
-=head3 new
+=head3 global_opts
 
-    my $tracker = TimeTracker->new;
-
-Initiate a new tracker object.
+Defines the global option definition
 
 =cut
-
 
 sub global_opts {
     return (
         [ "start=s",  "start time"],
         [ "stop=s",   "stop time"],
-        [ 'file=s' => "data file", 
+        [ 'file|f=s' => "data file", 
             {default=>catfile( File::HomeDir->my_home, '.TimeTracker', 'tracker.db' ),} ],
     );
 }
+
+=head3 global_validate
+
+Global input validation
+
+=cut
 
 sub global_validate {
     my ($self, $opt, $args) = @_;
@@ -76,6 +79,14 @@ sub global_validate {
     $self->opts($opt);
 
 }
+
+=head3 new
+
+    my $tracker = TimeTracker->new;
+
+Initiate a new tracker object.
+
+=cut
 
 sub new {
     my $class = shift;
@@ -140,15 +151,21 @@ sub stop {
 
 =cut
 
+=head3 get_printable_interval
+
+    my $string = $self->get_printable_interval($start, $end, $row);
+
+Returns a string like "worked 30 minutes, 23 seconds on Task (foo bar)"
+
+=cut
+
 sub get_printable_interval {
     my ($self,$start,$end,$row)=@_;
     my $worked = $end - $start;
     return $self->beautify_seconds($worked) . " on "
             . $row->[2]
             . ( $row->[3] ? " (" . $row->[3] . ")" : '' );
-
 }
-
 
 =head3 old_data
 

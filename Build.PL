@@ -12,6 +12,7 @@ my $builder = Module::Build->new(
         'File::HomeDir'     => 0.67,
         'Class::Accessor'   => 0.31,
         'Exception::Class'  => 1.23,
+        'App::Cmd'          => 0.012,
     },
     build_requires      => {
         'Test::More'        => 0,

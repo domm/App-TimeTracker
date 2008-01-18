@@ -1,11 +1,13 @@
 Revision history for TimeTracker
 
-0.04-TOBE
+0.04    2008-01-18
+    - added docs
+    - added command 'worked'
     - added command 'current'
     - now using App::Cmd
 
 
-0.03    2006-01-07
+0.03    2008-01-07
     - override start/stop time from commandline
 
 
