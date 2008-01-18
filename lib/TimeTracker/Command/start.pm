@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use base qw(App::Cmd::Command TimeTracker);
 
-sub usage_desc { "yourcmd %o task [tags]" }
+sub usage_desc { "%c start %o task [tags]" }
 
 sub opt_spec { return TimeTracker::global_opts(@_) }
 

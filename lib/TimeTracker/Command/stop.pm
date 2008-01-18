@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use base qw(App::Cmd::Command TimeTracker);
 
-sub usage_desc { "stop %o" }
+sub usage_desc { "%c stop %o" }
 
 sub opt_spec { return TimeTracker::global_opts(@_) }
 
