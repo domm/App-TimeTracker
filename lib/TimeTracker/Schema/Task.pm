@@ -30,7 +30,10 @@ __PACKAGE__->set_primary_key("id");
 
 __PACKAGE__->add_unique_constraint(active=>['active']);
 __PACKAGE__->belongs_to(project=>'TimeTracker::Schema::Project');
-#__PACKAGE__->has_many('tags','TimeTracker::Schema::Entry','project');
+
+__PACKAGE__->has_many('task_tags' => 'TimeTracker::Schema::TaskTag', 'task');
+__PACKAGE__->many_to_many('tags' => 'task_tags', 'tag');
+
 
 __PACKAGE__->inflate_column('start',
     {

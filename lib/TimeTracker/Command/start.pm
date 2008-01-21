@@ -38,10 +38,22 @@ sub run {
     my $start=$opt->{start};
 
     # start new task
-    $project->add_to_tasks({
+    my $task=$project->add_to_tasks({
         start=>$start,
         active=>1,
     });
+
+    # add tags
+    my $tags=join(' ',@$args);
+    if ($tags) {
+        my @tags=split(/[,;]\s+/,$tags);
+        foreach my $tagname (@tags) {
+            my $tag=$schema->resultset('Tag')->find_or_create({
+                tag=>$tagname,
+            });
+            $task->add_to_tags($tag);
+        }
+    }
 }
 
 q{Listening to:

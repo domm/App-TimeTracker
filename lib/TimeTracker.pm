@@ -195,8 +195,19 @@ sub beautify_duration {
 
     my $s=$delta->delta_seconds;
     my $m=$delta->delta_minutes;
-    my $h;
-    if ($m>=60) {
+    return $self->beautify_seconds($s + ($m*60));
+}
+
+sub beautify_seconds {
+    my ( $self, $s ) = @_;
+
+    my ($m,$h);
+
+    if ($s>=60) {
+        $m=int($s / 60);
+        $s=$s - ( $m * 60);
+    }
+    if ($m && $m>=60) {
         $h = int( $m / 60 );
         $m = $m - ( $h * 60 );
     }

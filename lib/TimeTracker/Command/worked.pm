@@ -13,34 +13,48 @@ sub validate_args { return TimeTracker::global_validate(@_) }
 sub run {
     my ($self, $opt, $args) = @_;
 
-    my $project=shift(@$args);
-    
-    my %sum;
-    my $is_active=0;
-    foreach my $row (@{ $self->old_data}) {
-        if ($project) {
-            next unless $row->[2] && $row->[2] eq $project;
-        }
-        else {
-            next unless $row->[2];
-        }
-        my $tags=$row->[3];
-        my $to;
-        if ($row->[1] eq 'ACTIVE') {
-            $to=$self->now->epoch;
-            $is_active=1;
-        }
-        else {
-            $to=$row->[1];
-        }   
-        
-        my $dur=$to - $row->[0];
-        $sum{total}+=$dur;
-    }
-    $project //= "all projects"; 
-    say "You're still working on $project at the moment!" if $is_active;
-    say "worked ".$self->beautify_seconds($sum{total})." on $project"; 
+    my $project_name=shift(@$args);
+    my $project=$self->schema->resultset('Project')->find($project_name,{key=>'name'});
 
+
+    my $col=$self->schema->resultset('Task')->search(
+        {
+            'project.name'=>$project_name,
+            'active'=>0,
+        },
+        {
+            join=>['project'],
+            select=>[{sum=>"strftime('%s',stop) - strftime('%s',start)"}],
+            as=>['duration'],
+        }
+    );
+    my $sum=$col->first->get_column('duration');
+
+    if (my $active=$self->schema->resultset('Task')->search(
+        {
+            'project.name'=>$project_name,
+            'active'=>1,
+        }, {
+            join=>['project'],
+            select=>[\"strftime('%s',start)"],
+            as=>['start_epoch'],
+            }
+    )->first) {
+        my $start=$active->get_column('start_epoch'); 
+        my $stop=$self->now->epoch;
+        my $diff=$stop-$start;
+        $sum+=$diff;
+        say "You're still working on $project_name at the moment!";
+    }
+
+
+    if ($sum) {
+        say "worked ".$self->beautify_seconds($sum)." on $project_name"; 
+    }
+    else {
+        say "didn't work on $project_name at all!";
+
+    }
 }
 
 q{Listening to:
