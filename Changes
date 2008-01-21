@@ -1,6 +1,6 @@
 Revision history for TimeTracker
 
-0.05-tobe
+0.05    2008-01-21
     - switched to SQLite for storage
     - added DBIx::Class
     - rewrote a lot of stuff to work with DBIx::Class
