@@ -16,7 +16,6 @@ App::TimeTracker tracks time spend on various projects in simple flat file.
 =cut
 
 use base qw(Class::Accessor App::Cmd);
-use App::TimeTracker::ConfigData;
 use App::TimeTracker::Schema;
 use DateTime;
 use DateTime::Format::Strptime;
