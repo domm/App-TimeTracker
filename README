@@ -1,4 +1,4 @@
-TimeTracker
+App::TimeTracker
 
 Track time spend on tasks
 
@@ -16,7 +16,7 @@ SUPPORT AND DOCUMENTATION
 
 After installing, you can find documentation for this module with the perldoc command.
 
-    perldoc TimeTracker
+    perldoc App::TimeTracker
 
 COPYRIGHT AND LICENCE
 

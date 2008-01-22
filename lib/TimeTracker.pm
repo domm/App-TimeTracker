@@ -1,4 +1,4 @@
-package TimeTracker;
+package App::TimeTracker;
 
 use 5.010;
 use warnings;
@@ -7,17 +7,17 @@ use version; our $VERSION = version->new('0.05');
 
 =head1 NAME
 
-TimeTracker - Track time spend on projects from the commandline
+App::TimeTracker - Track time spend on projects from the commandline
 
 =head1 SYNOPSIS
 
-TimeTracker tracks time spend on various projects in simple flat file.
+App::TimeTracker tracks time spend on various projects in simple flat file.
 
 =cut
 
 use base qw(Class::Accessor App::Cmd);
-use TimeTracker::ConfigData;
-use TimeTracker::Schema;
+use App::TimeTracker::ConfigData;
+use App::TimeTracker::Schema;
 use DateTime;
 use DateTime::Format::Strptime;
 use File::Spec::Functions qw(splitpath catfile catdir);
@@ -55,7 +55,7 @@ sub global_opts {
         [ "start=s",  "start time"],
         [ "stop=s",   "stop time"],
         [ 'file|f=s' => "data file", 
-            {default=>catfile( File::HomeDir->my_home, '.TimeTracker', 'timetracker.db' ),} ],
+            {default=>catfile( File::HomeDir->my_home, '.App::TimeTracker', 'timetracker.db' ),} ],
     );
 }
 
@@ -86,7 +86,7 @@ sub global_validate {
 
 =head3 new
 
-    my $tracker = TimeTracker->new;
+    my $tracker = App::TimeTracker->new;
 
 Initiate a new tracker object.
 
@@ -337,7 +337,7 @@ Returns the DBIx::Class schema object
 sub schema {
     my $self=shift;
     return $self->_schema if $self->_schema;
-    my $schema=TimeTracker::Schema->connect('dbi:SQLite:dbname='.$self->opts->{file}) || X::DB->throw("Cannot connect to SQLite DB ".$self->opts->{file});
+    my $schema=App::TimeTracker::Schema->connect('dbi:SQLite:dbname='.$self->opts->{file}) || X::DB->throw("Cannot connect to SQLite DB ".$self->opts->{file});
     $self->_schema($schema);
     return $schema;
 }
@@ -357,7 +357,7 @@ Thomas Klausner, C<< <domm at cpan.org> >>
 
 Please report any bugs or feature requests to
 C<bug-timetracker at rt.cpan.org>, or through the web interface at
-L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=TimeTracker>.
+L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=App::TimeTracker>.
 I will be notified, and then you'll automatically be notified of progress on
 your bug as I make changes.
 
@@ -365,7 +365,7 @@ your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc TimeTracker
+    perldoc App::TimeTracker
 
 You can also look for information at:
 
@@ -373,19 +373,19 @@ You can also look for information at:
 
 =item * AnnoCPAN: Annotated CPAN documentation
 
-L<http://annocpan.org/dist/TimeTracker>
+L<http://annocpan.org/dist/App::TimeTracker>
 
 =item * CPAN Ratings
 
-L<http://cpanratings.perl.org/d/TimeTracker>
+L<http://cpanratings.perl.org/d/App::TimeTracker>
 
 =item * RT: CPAN's request tracker
 
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=TimeTracker>
+L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=App::TimeTracker>
 
 =item * Search CPAN
 
-L<http://search.cpan.org/dist/TimeTracker>
+L<http://search.cpan.org/dist/App::TimeTracker>
 
 =back
 

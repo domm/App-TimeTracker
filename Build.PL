@@ -3,10 +3,10 @@ use warnings;
 use Module::Build;
 
 my $builder = Module::Build->new(
-    module_name         => 'TimeTracker',
+    module_name         => 'App::TimeTracker',
     license             => 'perl',
     dist_author         => 'Thomas Klausner <domm@cpan.org>',
-    dist_version_from   => 'lib/TimeTracker.pm',
+    dist_version_from   => 'lib/App/TimeTracker.pm',
     requires            => {
         'DateTime'          => 0.41, 
         'File::HomeDir'     => 0.67,
@@ -20,7 +20,7 @@ my $builder = Module::Build->new(
         'Test::More'        => 0,
         'Test::NoWarnings'  => 0.084,
     },
-    add_to_cleanup      => [ 'TimeTracker-*' ],
+    add_to_cleanup      => [ 'App::TimeTracker-*' ],
 );
 
 $builder->create_build_script();

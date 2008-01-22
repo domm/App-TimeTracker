@@ -1,14 +1,14 @@
-package TimeTracker::Command::worked;
+package App::TimeTracker::Command::worked;
 use 5.010;
 use strict;
 use warnings;
-use base qw(App::Cmd::Command TimeTracker);
+use base qw(App::Cmd::Command App::TimeTracker);
 
 sub usage_desc { "worked %o task" }
 
-sub opt_spec { return TimeTracker::global_opts(@_) }
+sub opt_spec { return App::TimeTracker::global_opts(@_) }
 
-sub validate_args { return TimeTracker::global_validate(@_) }
+sub validate_args { return App::TimeTracker::global_validate(@_) }
 
 sub run {
     my ($self, $opt, $args) = @_;
@@ -65,7 +65,7 @@ __END__
 
 =head1 NAME
 
-TimeTracker::Command::worked
+App::TimeTracker::Command::worked
 
 =head1 DESCRIPTION
 

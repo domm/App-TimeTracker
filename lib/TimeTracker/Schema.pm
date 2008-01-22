@@ -1,4 +1,4 @@
-package TimeTracker::Schema;
+package App::TimeTracker::Schema;
 
 use strict;
 use warnings;

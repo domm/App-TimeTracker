@@ -1,9 +1,9 @@
 
 use Test::More tests => 7;
 use Test::NoWarnings;
-use TimeTracker;
+use App::TimeTracker;
 
-my $t=TimeTracker->new;
+my $t=App::TimeTracker->new;
 
 is($t->beautify_seconds(1),'1 second','1s');
 is($t->beautify_seconds(10),'10 seconds','10s');

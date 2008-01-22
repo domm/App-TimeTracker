@@ -1,4 +1,4 @@
-Revision history for TimeTracker
+Revision history for App::TimeTracker
 
 0.05    2008-01-21
     - switched to SQLite for storage

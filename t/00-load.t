@@ -3,7 +3,7 @@
 use Test::More tests => 1;
 
 BEGIN {
-	use_ok( 'TimeTracker' );
+	use_ok( 'App::TimeTracker' );
 }
 
-diag( "Testing TimeTracker $TimeTracker::VERSION, Perl $], $^X" );
+diag( "Testing App::TimeTracker $App::TimeTracker::VERSION, Perl $], $^X" );

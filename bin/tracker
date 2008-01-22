@@ -2,8 +2,8 @@
 use 5.010;
 use strict;
 use warnings;
-use TimeTracker;
-TimeTracker->run;
+use App::TimeTracker;
+App::TimeTracker->run;
 __END__
 
 =pod
@@ -20,13 +20,13 @@ start
 
 =head1 DESCRIPTION
 
-C<start> tells C<TimeTracker> to start tracking time spend on a project.
+C<start> tells C<App::TimeTracker> to start tracking time spend on a project.
 
 =head1 SEE ALSO
 
 perldoc stop.pl
 
-perldoc TimeTracker
+perldoc App::TimeTracker
 
 =head1 AUTHOR
 

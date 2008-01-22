@@ -1,14 +1,14 @@
-package TimeTracker::Command::start;
+package App::TimeTracker::Command::start;
 use 5.010;
 use strict;
 use warnings;
-use base qw(App::Cmd::Command TimeTracker);
+use base qw(App::Cmd::Command App::TimeTracker);
 
 sub usage_desc { "%c start %o task [tags]" }
 
-sub opt_spec { return TimeTracker::global_opts(@_) }
+sub opt_spec { return App::TimeTracker::global_opts(@_) }
 
-sub validate_args { return TimeTracker::global_validate(@_) }
+sub validate_args { return App::TimeTracker::global_validate(@_) }
 
 sub run {
     my ($self, $opt, $args) = @_;
@@ -64,11 +64,11 @@ __END__
 
 =head1 NAME
 
-TimeTracker::Command::start
+App::TimeTracker::Command::start
 
 =head1 DESCRIPTION
 
-Implements the 'start' command, which tells TimeTracker that you're 
+Implements the 'start' command, which tells App::TimeTracker that you're 
 starting to work on something.
 
   ~$ tracker start task tag, another tag

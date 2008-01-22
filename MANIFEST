@@ -1,7 +1,7 @@
 bin/tracker
 Build.PL
 Changes
-lib/TimeTracker.pm
+lib/App::TimeTracker.pm
 MANIFEST
 META.yml			# Will be created by "make dist"
 README

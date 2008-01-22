@@ -1,5 +1,5 @@
 ---
-name: TimeTracker
+name: App::TimeTracker
 version: 0.01
 author:
   - 'Thomas Klausner <domm@cpan.org>'
@@ -18,8 +18,8 @@ meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html
   version: 1.2
 provides:
-  TimeTracker:
-    file: lib/TimeTracker.pm
+  App::TimeTracker:
+    file: lib/App::TimeTracker.pm
     version: 0.01
 resources:
   license: http://dev.perl.org/licenses/

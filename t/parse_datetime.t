@@ -1,9 +1,9 @@
 
 use Test::More tests => 14;
 use Test::NoWarnings;
-use TimeTracker;
+use App::TimeTracker;
 
-my $t=TimeTracker->new;
+my $t=App::TimeTracker->new;
 
 {
     my $d=$t->parse_datetime("1005");

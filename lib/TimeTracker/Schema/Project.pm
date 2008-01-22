@@ -1,4 +1,4 @@
-package TimeTracker::Schema::Project;
+package App::TimeTracker::Schema::Project;
 
 use strict;
 use warnings;
@@ -22,7 +22,7 @@ __PACKAGE__->set_primary_key("id");
 
 # You can replace this text with custom content, and it will be preserved on regeneration
 
-__PACKAGE__->has_many('tasks','TimeTracker::Schema::Task','project');
+__PACKAGE__->has_many('tasks','App::TimeTracker::Schema::Task','project');
 __PACKAGE__->add_unique_constraint(name=>['name']);
 
 1;

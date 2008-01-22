@@ -1,4 +1,4 @@
-package TimeTracker::Schema::Task;
+package App::TimeTracker::Schema::Task;
 
 use strict;
 use warnings;
@@ -29,9 +29,9 @@ __PACKAGE__->set_primary_key("id");
 # You can replace this text with custom content, and it will be preserved on regeneration
 
 __PACKAGE__->add_unique_constraint(active=>['active']);
-__PACKAGE__->belongs_to(project=>'TimeTracker::Schema::Project');
+__PACKAGE__->belongs_to(project=>'App::TimeTracker::Schema::Project');
 
-__PACKAGE__->has_many('task_tags' => 'TimeTracker::Schema::TaskTag', 'task');
+__PACKAGE__->has_many('task_tags' => 'App::TimeTracker::Schema::TaskTag', 'task');
 __PACKAGE__->many_to_many('tags' => 'task_tags', 'tag');
 
 
