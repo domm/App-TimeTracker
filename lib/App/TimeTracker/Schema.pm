@@ -14,3 +14,18 @@ __PACKAGE__->load_classes;
 
 # You can replace this text with custom content, and it will be preserved on regeneration
 1;
+
+__END__
+
+=pod
+
+=head1 NAME
+
+App::TimeTracker::Schema
+
+=head1 DESCRIPTION
+
+DBIx::Class Schema
+
+=cut
+

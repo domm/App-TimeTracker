@@ -27,3 +27,18 @@ __PACKAGE__->many_to_many('tasks' => 'task_tags', 'task');
 
 
 1;
+
+__END__
+
+=pod
+
+=head1 NAME
+
+App::TimeTracker::Schema::Tag
+
+=head1 DESCRIPTION
+
+DBIx::Class 
+
+=cut
+

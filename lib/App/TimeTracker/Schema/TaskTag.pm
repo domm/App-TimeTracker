@@ -29,3 +29,19 @@ __PACKAGE__->belongs_to('tag' => 'App::TimeTracker::Schema::Tag');
 
 
 1;
+
+__END__
+
+=pod
+
+=head1 NAME
+
+App::TimeTracker::Schema::TaskTag
+
+=head1 DESCRIPTION
+
+DBIx::Class Many2Many
+
+=cut
+
+

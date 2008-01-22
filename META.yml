@@ -1,12 +1,15 @@
 ---
-name: App::TimeTracker
-version: 0.01
+name: App-TimeTracker
+version: 0.06
 author:
   - 'Thomas Klausner <domm@cpan.org>'
 abstract: Track time spend on projects from the commandline
 license: perl
 requires:
+  App::Cmd: 0.012
   Class::Accessor: 0.31
+  DBD::SQLite: 1.14
+  DBIx::Class: 0.08008
   DateTime: 0.41
   Exception::Class: 1.23
   File::HomeDir: 0.67
@@ -19,7 +22,25 @@ meta-spec:
   version: 1.2
 provides:
   App::TimeTracker:
-    file: lib/App::TimeTracker.pm
-    version: 0.01
+    file: lib/App/TimeTracker.pm
+    version: 0.06
+  App::TimeTracker::Command::current:
+    file: lib/App/TimeTracker/Command/current.pm
+  App::TimeTracker::Command::start:
+    file: lib/App/TimeTracker/Command/start.pm
+  App::TimeTracker::Command::stop:
+    file: lib/App/TimeTracker/Command/stop.pm
+  App::TimeTracker::Command::worked:
+    file: lib/App/TimeTracker/Command/worked.pm
+  App::TimeTracker::Schema:
+    file: lib/App/TimeTracker/Schema.pm
+  App::TimeTracker::Schema::Project:
+    file: lib/App/TimeTracker/Schema/Project.pm
+  App::TimeTracker::Schema::Tag:
+    file: lib/App/TimeTracker/Schema/Tag.pm
+  App::TimeTracker::Schema::Task:
+    file: lib/App/TimeTracker/Schema/Task.pm
+  App::TimeTracker::Schema::TaskTag:
+    file: lib/App/TimeTracker/Schema/TaskTag.pm
 resources:
   license: http://dev.perl.org/licenses/

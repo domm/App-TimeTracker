@@ -26,7 +26,8 @@ __PACKAGE__->set_primary_key("id");
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:MOy38CnmqVCkh+yiSXSYww
 
 
-# You can replace this text with custom content, and it will be preserved on regeneration
+# You can replace this text with custom content, and it will be 
+# preserved on regeneration
 
 __PACKAGE__->add_unique_constraint(active=>['active']);
 __PACKAGE__->belongs_to(project=>'App::TimeTracker::Schema::Project');
@@ -50,3 +51,18 @@ __PACKAGE__->inflate_column('stop',
 );
 
 1;
+
+__END__
+
+=pod
+
+=head1 NAME
+
+App::TimeTracker::Schema::Task
+
+=head1 DESCRIPTION
+
+DBIx::Class 
+
+=cut
+

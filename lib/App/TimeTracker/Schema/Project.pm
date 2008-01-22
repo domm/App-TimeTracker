@@ -26,3 +26,18 @@ __PACKAGE__->has_many('tasks','App::TimeTracker::Schema::Task','project');
 __PACKAGE__->add_unique_constraint(name=>['name']);
 
 1;
+__END__
+
+=pod
+
+=head1 NAME
+
+App::TimeTracker::Schema::Project
+
+=head1 DESCRIPTION
+
+DBIx::Class 
+
+=cut
+
+

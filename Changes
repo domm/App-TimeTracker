@@ -1,5 +1,11 @@
 Revision history for App::TimeTracker
 
+
+0.06    2006-01-22
+    - renamed to App::TimeTracker
+    - first release to CPAN
+
+
 0.05    2008-01-21
     - switched to SQLite for storage
     - added DBIx::Class

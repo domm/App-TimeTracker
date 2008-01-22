@@ -3,7 +3,7 @@ package App::TimeTracker;
 use 5.010;
 use warnings;
 use strict;
-use version; our $VERSION = version->new('0.05');
+use version; our $VERSION = version->new('0.06');
 
 =head1 NAME
 
@@ -196,6 +196,15 @@ sub beautify_duration {
     my $m=$delta->delta_minutes;
     return $self->beautify_seconds($s + ($m*60));
 }
+
+
+=head3 beautify_seconds
+
+    my $nice_message = $self->beautify_seconds($seconds);
+
+Turns an amount of seconds into a nicer representation ("4 minutes, 31 seconds")
+
+=cut
 
 sub beautify_seconds {
     my ( $self, $s ) = @_;
