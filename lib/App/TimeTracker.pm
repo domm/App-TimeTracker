@@ -54,7 +54,7 @@ sub global_opts {
         [ "start=s",  "start time"],
         [ "stop=s",   "stop time"],
         [ 'file|f=s' => "data file", 
-            {default=>catfile( File::HomeDir->my_home, '.App::TimeTracker', 'timetracker.db' ),} ],
+            {default=>catfile( File::HomeDir->my_home, '.TimeTracker', 'timetracker.db' ),} ],
     );
 }
 

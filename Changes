@@ -1,6 +1,10 @@
 Revision history for App::TimeTracker
 
 
+0.07-tobe
+    - fixed bad default filepath
+
+
 0.06    2006-01-22
     - renamed to App::TimeTracker
     - first release to CPAN
