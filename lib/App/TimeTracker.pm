@@ -11,7 +11,9 @@ App::TimeTracker - Track time spend on projects from the commandline
 
 =head1 SYNOPSIS
 
-App::TimeTracker tracks time spend on various projects in simple flat file.
+App::TimeTracker tracks time spend on various projects in a SQLite DB.
+
+see C<perldoc tracker> for a convenient frontend.
 
 =cut
 

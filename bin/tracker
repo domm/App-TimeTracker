@@ -10,21 +10,78 @@ __END__
 
 =head1 NAME
 
-start
+tracker
 
 =head1 SYNOPSIS
 
-    start something
-    start something detail
-    start somethingelse
+    tracker start something
+    tracker start something detail
+    tracker start somethingelse
+    tracker current
+    tracker stop
+    tracker worked something
 
 =head1 DESCRIPTION
 
-C<start> tells C<App::TimeTracker> to start tracking time spend on a project.
+C<tracker> is a commandline frontend for C<App::TimeTracker>.
+
+=head2 Subcommands
+
+=head3 start
+
+start a new task
+
+  ~$ tracker start task
+  ~$ tracker start task tag1, another tag
+
+C<start> automatically stops the current task before starting the new one.
+
+If C<tracker> does not know about C<task>, you will be asked if you want to add it to the DB. This is to avoid typos...
+
+Use C<--start date|time> to specifiy a different starting time than now().
+
+  ~$ tracker start --start 10:00 task
+  ~$ tracker start --start 0226_15:10 task
+
+=head3 stop
+
+Stop the current task and print how long you worked on it
+
+  ~$ tracker stop
+
+Use C<--stop date|time> to specifiy a different stop time than now().
+
+  ~$ tracker stop --stop 10:00 task
+  ~$ tracker stop --stop 0226_15:10 task
+
+=head3 current
+
+Tell how long you're working on the current task
+
+  ~$ tracker current
+
+=head3 worked
+
+Calculate how long you've worked on a given task in total
+
+  ~$ tracker worked task
+
+B<Note: --begin and --end not implemented yet!>
+
+  ~$ tracker worked task --begin 0120   # since 20th Jan this year
+  ~$ tracker worked task --end 0120   # until 20th Jan this year
+  ~$ tracker worked task --begin 0120 --end 0226
+            # between 20th Jan and 26th Feb this year
+
+=head2 Options
+
+=head3 file
+
+  ~$ tracker --file path/to/tracker.db
+
+The default location for the SQLite DB file is C<~/.TimeTracker/timetracker.db>. You can override this using C<--file>
 
 =head1 SEE ALSO
-
-perldoc stop.pl
 
 perldoc App::TimeTracker
 
