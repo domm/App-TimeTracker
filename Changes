@@ -1,6 +1,10 @@
 Revision history for App::TimeTracker
 
 
+0.08-tobe
+    - added missing dependency on DateTime::Format::Strptime
+
+
 0.07    2006-01-23
     - added docs
     - fixed bad default filepath
