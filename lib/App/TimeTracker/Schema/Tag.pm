@@ -21,7 +21,6 @@ __PACKAGE__->set_primary_key("id");
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration
-
 __PACKAGE__->has_many('task_tags' => 'App::TimeTracker::Schema::TaskTag', 'tag');
 __PACKAGE__->many_to_many('tasks' => 'task_tags', 'task');
 

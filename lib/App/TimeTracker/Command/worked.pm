@@ -15,20 +15,17 @@ sub run {
 
     my $project_name=shift(@$args);
     my $project=$self->schema->resultset('Project')->find($project_name,{key=>'name'});
+    my $dbh=$self->schema->storage->dbh;
 
+    my $sum;
+    if (my $tag_name=shift(@$args)) {
+        $tag_name='%'.$tag_name.'%';
+        $sum=$dbh->selectrow_array("select sum(strftime('%s',stop) - strftime('%s',start)) from task,project,tag,task_tag where task.project=project.id AND task_tag.task=task.id AND task_tag.tag=tag.id AND task.active=0 AND project.id=? AND tag.tag like ?",undef,$project->id,$tag_name);
+    }
+    else {
+        $sum=$dbh->selectrow_array("select sum(strftime('%s',stop) - strftime('%s',start)) from task,project where task.project=project.id AND task.active=0 AND project.id=?",undef,$project->id);
 
-    my $col=$self->schema->resultset('Task')->search(
-        {
-            'project.name'=>$project_name,
-            'active'=>0,
-        },
-        {
-            join=>['project'],
-            select=>[{sum=>"strftime('%s',stop) - strftime('%s',start)"}],
-            as=>['duration'],
-        }
-    );
-    my $sum=$col->first->get_column('duration');
+    }
 
     if (my $active=$self->schema->resultset('Task')->search(
         {
