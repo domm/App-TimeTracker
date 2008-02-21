@@ -62,7 +62,7 @@ __END__
 
 =head1 NAME
 
-App::TimeTracker::Command::worked
+App::TimeTracker::Command::worked - calculate total worked time per task
 
 =head1 DESCRIPTION
 

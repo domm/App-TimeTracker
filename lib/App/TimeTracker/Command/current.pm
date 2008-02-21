@@ -31,7 +31,7 @@ __END__
 
 =head1 NAME
 
-App::TimeTracker::Command::current
+App::TimeTracker::Command::current - what I am doing right now
 
 =head1 DESCRIPTION
 

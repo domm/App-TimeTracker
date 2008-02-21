@@ -6,9 +6,13 @@ use base qw(App::Cmd::Command App::TimeTracker);
 
 sub usage_desc { "%c stop %o" }
 
-sub opt_spec { return App::TimeTracker::global_opts(@_) }
+sub opt_spec { 
+    my @args=App::TimeTracker::global_opts(@_);
+    push(@args,['svn'=>'enable svn autocommit after stop']);
+    return @args;
+}
 
-sub validate_args { return App::TimeTracker::global_validate(@_) }
+sub validate_args { App::TimeTracker::global_validate(@_) }
 
 sub run {
     my ($self, $opt, $args) = @_;
@@ -24,7 +28,7 @@ __END__
 
 =head1 NAME
 
-App::TimeTracker::Command::stop
+App::TimeTracker::Command::stop - stop a task
 
 =head1 DESCRIPTION
 

@@ -3,7 +3,7 @@ package App::TimeTracker;
 use 5.010;
 use warnings;
 use strict;
-use version; our $VERSION = version->new('0.07');
+use version; our $VERSION = version->new('0.08');
 
 =head1 NAME
 
@@ -115,7 +115,7 @@ sub stop {
 
     my $schema=$self->schema;
     $time ||= $self->opts->{stop};
-
+    
     my $active=$schema->resultset('Task')->find(1,{key=>'active'});
     if ($active) {
         $active->active(0);
@@ -123,6 +123,10 @@ sub stop {
         $active->update;
         my $interval=$self->get_printable_interval($active);
         say "worked $interval";
+
+        if ($self->opts->{svn}) {
+            system('svn','ci',$self->opts->{file},'-m "autocommit via TimeTracker"');
+        }
     }
     else {
         #say "not working on anything at the moment.";
@@ -198,7 +202,6 @@ sub beautify_duration {
     my $m=$delta->delta_minutes;
     return $self->beautify_seconds($s + ($m*60));
 }
-
 
 =head3 beautify_seconds
 

@@ -1,5 +1,8 @@
 Revision history for App::TimeTracker
 
+0.08-tobe
+    - added --svn to stop
+    - added some docs
 
 0.08-tobe
     - added missing dependency on DateTime::Format::Strptime

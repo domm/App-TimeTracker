@@ -64,7 +64,7 @@ __END__
 
 =head1 NAME
 
-App::TimeTracker::Command::start
+App::TimeTracker::Command::start - start a new task
 
 =head1 DESCRIPTION
 
