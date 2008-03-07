@@ -1,6 +1,7 @@
 Revision history for App::TimeTracker
 
 0.08-tobe
+    - added --from and --to to worked
     - added --svn to stop
     - added some docs
 

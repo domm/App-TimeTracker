@@ -6,7 +6,14 @@ use base qw(App::Cmd::Command App::TimeTracker);
 
 sub usage_desc { "worked %o task" }
 
-sub opt_spec { return App::TimeTracker::global_opts(@_) }
+sub opt_spec {
+    my @args=App::TimeTracker::global_opts(@_);
+    push(@args,
+        ['from=s'=>'report start date/time'],
+        ['to=s'=>'report stop date/time']
+    );
+    return @args;
+}
 
 sub validate_args { return App::TimeTracker::global_validate(@_) }
 
@@ -17,13 +24,22 @@ sub run {
     my $project=$self->schema->resultset('Project')->find($project_name,{key=>'name'});
     my $dbh=$self->schema->storage->dbh;
 
+
+    my ($sql_from, $sql_to)=('','');
+    if (my $from=$opt->{from}) {
+        $sql_from="AND task.start > '$from' ";
+    }
+    if (my $to=$opt->{to}) {
+        $sql_to="AND task.start < '$to' ";
+    }
+
     my $sum;
     if (my $tag_name=shift(@$args)) {
         $tag_name='%'.$tag_name.'%';
-        $sum=$dbh->selectrow_array("select sum(strftime('%s',stop) - strftime('%s',start)) from task,project,tag,task_tag where task.project=project.id AND task_tag.task=task.id AND task_tag.tag=tag.id AND task.active=0 AND project.id=? AND tag.tag like ?",undef,$project->id,$tag_name);
+        $sum=$dbh->selectrow_array("select sum(strftime('%s',stop) - strftime('%s',start)) from task,project,tag,task_tag where task.project=project.id AND task_tag.task=task.id AND task_tag.tag=tag.id AND task.active=0 AND project.id=? AND tag.tag like ? $sql_from $sql_to",undef,$project->id,$tag_name);
     }
     else {
-        $sum=$dbh->selectrow_array("select sum(strftime('%s',stop) - strftime('%s',start)) from task,project where task.project=project.id AND task.active=0 AND project.id=?",undef,$project->id);
+        $sum=$dbh->selectrow_array("select sum(strftime('%s',stop) - strftime('%s',start)) from task,project where task.project=project.id AND task.active=0 AND project.id=? $sql_from $sql_to",undef,$project->id);
 
     }
 
