@@ -151,7 +151,9 @@ sub get_printable_interval {
     $stop ||= $task->stop;
     
     my $worked = $stop - $start;
-    return $self->beautify_duration($worked) . " on " . $task->project->name;
+    my @tags=$task->tags;
+    my $tag=@tags? ' ('.join(', ',map {$_->tag} @tags).')':'';
+    return $self->beautify_duration($worked) . " on " . $task->project->name . $tag;
 }
 
 =head3 init_tracker_db

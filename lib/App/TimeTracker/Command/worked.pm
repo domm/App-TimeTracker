@@ -21,9 +21,9 @@ sub run {
     my ($self, $opt, $args) = @_;
 
     my $project_name=shift(@$args);
+    my $tag_name=shift(@$args);
     my $project=$self->schema->resultset('Project')->find($project_name,{key=>'name'});
     my $dbh=$self->schema->storage->dbh;
-
 
     my ($sql_from, $sql_to)=('','');
     if (my $from=$opt->{from}) {
@@ -33,36 +33,26 @@ sub run {
         $sql_to="AND task.start < '$to' ";
     }
 
-    my $sum;
-    if (my $tag_name=shift(@$args)) {
+    my $sum; my $current_sum;
+    if ($tag_name) {
         $tag_name='%'.$tag_name.'%';
         $sum=$dbh->selectrow_array("select sum(strftime('%s',stop) - strftime('%s',start)) from task,project,tag,task_tag where task.project=project.id AND task_tag.task=task.id AND task_tag.tag=tag.id AND task.active=0 AND project.id=? AND tag.tag like ? $sql_from $sql_to",undef,$project->id,$tag_name);
+        $current_sum=$dbh->selectrow_array("select sum(strftime('%s','now') - strftime('%s',start)) from task,project,tag,task_tag where task.project=project.id AND task_tag.task=task.id AND task_tag.tag=tag.id AND task.active=1 AND project.id=? AND tag.tag like ? $sql_from $sql_to",undef,$project->id,$tag_name);
+
+        
     }
     else {
         $sum=$dbh->selectrow_array("select sum(strftime('%s',stop) - strftime('%s',start)) from task,project where task.project=project.id AND task.active=0 AND project.id=? $sql_from $sql_to",undef,$project->id);
-
+        my $current_sum=$dbh->selectrow_array("select sum(strftime('%s','now') - strftime('%s',start)) from task,project where task.project=project.id AND task.active=1 AND project.id=? $sql_from $sql_to",undef,$project->id);
     }
 
-    if (my $active=$self->schema->resultset('Task')->search(
-        {
-            'project.name'=>$project_name,
-            'active'=>1,
-        }, {
-            join=>['project'],
-            select=>[\"strftime('%s',start)"],
-            as=>['start_epoch'],
-            }
-    )->first) {
-        my $start=$active->get_column('start_epoch'); 
-        my $stop=$self->now->epoch;
-        my $diff=$stop-$start;
-        $sum+=$diff;
-        say "You're still working on $project_name at the moment!";
+    if ($current_sum) {
+        say "You're still working on $project_name $tag_name at the moment!";
+        $sum+=$current_sum;
     }
-
 
     if ($sum) {
-        say "worked ".$self->beautify_seconds($sum)." on $project_name"; 
+        say "worked ".$self->beautify_seconds($sum)." on $project_name $tag_name"; 
     }
     else {
         say "didn't work on $project_name at all!";

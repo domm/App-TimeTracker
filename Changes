@@ -1,6 +1,7 @@
 Revision history for App::TimeTracker
 
 0.08-tobe
+    - worked now works with tags
     - added --from and --to to worked
     - added --svn to stop
     - added some docs
