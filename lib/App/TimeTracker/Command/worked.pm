@@ -13,6 +13,7 @@ sub opt_spec {
         ['from=s'   => 'report start date/time'],
         ['to=s'     => 'report stop date/time'],
         ['this=s'   => 'report in this week/month/year'],
+        ['last=s'   => 'report in last week/month/year'],
     );
     return @args;
 }
@@ -32,6 +33,12 @@ sub run {
     if (my $this = $opt->{this}) {
         my $from=DateTime->now->truncate(to=>$this);        
         my $to=$from->clone->add($this.'s'=>1);
+        $sql_from   = $from->ymd('-');
+        $sql_to     = $to->ymd('-');
+    }
+    elsif (my $last = $opt->{last}) {
+        my $from=DateTime->now->truncate(to=>$last)->subtract($last.'s'=>1);        
+        my $to=$from->clone->add($last.'s'=>1);
         $sql_from   = $from->ymd('-');
         $sql_to     = $to->ymd('-');
     }
