@@ -29,7 +29,7 @@ sub run {
     X::BadData->throw("No such project: $project_name") unless $project;
     my $dbh=$self->schema->storage->dbh;
 
-    my ($sql_from, $sql_to)=($opt->{from},$opt->{to});
+    my ($sql_from, $sql_to)=($opt->{from}||'',$opt->{to}||'');
     if (my $this = $opt->{this}) {
         my $from=DateTime->now->truncate(to=>$this);        
         my $to=$from->clone->add($this.'s'=>1);
@@ -91,10 +91,13 @@ Implements the 'worked' command, which you can use to query how long you worked 
   worked 12 hours, 37 minutes, 34 seconds on task
 
   ~$ tracker worked task --from 0101
-  not implemented yet
 
   ~$ tracker worked task --from 0101 --to 0131
-  not implemented yet
+  
+  ~$ tracker worked task --this week
+  
+  ~$ tracker worked task --last month
+
 
 =head1 METHODS
 
