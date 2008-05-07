@@ -1,21 +1,21 @@
 Revision history for App::TimeTracker
 
-0.08-tobe
-    - worked now works with tags
-    - added --from and --to to worked
-    - added --svn to stop
+0.08	2008-04-04
+    - added cmd "report"
+    - added --this and --last to "worked"
+    - "worked" now works with tags
+    - added --from and --to to "worked"
+    - added --svn to "stop"
     - added some docs
-
-0.08-tobe
     - added missing dependency on DateTime::Format::Strptime
 
 
-0.07    2006-01-23
+0.07    2008-01-23
     - added docs
     - fixed bad default filepath
 
 
-0.06    2006-01-22
+0.06    2008-01-22
     - renamed to App::TimeTracker
     - first release to CPAN
 

@@ -3,6 +3,7 @@ Build.PL
 Changes
 lib/App/TimeTracker.pm
 lib/App/TimeTracker/Command/current.pm
+lib/App/TimeTracker/Command/report.pm
 lib/App/TimeTracker/Command/start.pm
 lib/App/TimeTracker/Command/stop.pm
 lib/App/TimeTracker/Command/worked.pm
