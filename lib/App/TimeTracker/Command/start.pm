@@ -33,7 +33,7 @@ sub run {
     }
 
     # stop last active task
-    $self->stop($self->now);
+    $self->stop($opt->{start} || $self->now);
 
     my $start=$opt->{start};
 

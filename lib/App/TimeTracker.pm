@@ -128,9 +128,6 @@ sub stop {
             system('svn','ci',$self->opts->{file},'-m "autocommit via TimeTracker"');
         }
     }
-    else {
-        #say "not working on anything at the moment.";
-    }
 }
 
 =head2 Helper Methods
