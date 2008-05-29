@@ -5,7 +5,7 @@ use warnings;
 
 use base 'DBIx::Class';
 
-__PACKAGE__->load_components("Core");
+__PACKAGE__->load_components(qw(ResultSetManager Core));
 __PACKAGE__->table("project");
 __PACKAGE__->add_columns(
   "id",
@@ -24,6 +24,22 @@ __PACKAGE__->set_primary_key("id");
 
 __PACKAGE__->has_many('tasks','App::TimeTracker::Schema::Task','project');
 __PACKAGE__->add_unique_constraint(name=>['name']);
+
+sub rest_list : ResultSet {
+    my $self = shift;
+    my $cond = shift;
+    my $attrs = shift || {};
+
+    my $list = $self->search( {}, { order_by => 'name' } );
+    my @list;
+    while ( my $li = $list->next ) {
+        push(@list,{
+            name      => $li->name,
+            _resource => '/rest/project/'.$li->id,
+        });
+    }
+    return \@list;
+}
 
 1;
 __END__
