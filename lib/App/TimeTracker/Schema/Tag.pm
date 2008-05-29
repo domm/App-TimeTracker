@@ -5,7 +5,7 @@ use warnings;
 
 use base 'DBIx::Class';
 
-__PACKAGE__->load_components("Core");
+__PACKAGE__->load_components(qw(ResultSetManager Core));
 __PACKAGE__->table("tag");
 __PACKAGE__->add_columns(
   "id",
@@ -24,6 +24,21 @@ __PACKAGE__->set_primary_key("id");
 __PACKAGE__->has_many('task_tags' => 'App::TimeTracker::Schema::TaskTag', 'tag');
 __PACKAGE__->many_to_many('tasks' => 'task_tags', 'task');
 
+sub rest_list : ResultSet {
+    my $self = shift;
+    my $cond = shift;
+    my $attrs = shift || {};
+
+    my $list = $self->search( {}, { order_by => 'tag' } );
+    my @list;
+    while ( my $li = $list->next ) {
+        push(@list,{
+            tag      => $li->tag,
+            _resource => '/rest/tag/'.$li->id,
+        });
+    }
+    return \@list;
+}
 
 1;
 
