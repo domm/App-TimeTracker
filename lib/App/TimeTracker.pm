@@ -3,7 +3,7 @@ package App::TimeTracker;
 use 5.010;
 use warnings;
 use strict;
-use version; our $VERSION = version->new('0.08_01');
+use version; our $VERSION = version->new('0.20');
 
 =head1 NAME
 
@@ -91,14 +91,9 @@ sub global_validate {
 
 Initiate a new tracker object.
 
+Providev by Class::Accessor
+
 =cut
-
-sub new {
-    my $class = shift;
-
-    my $self = bless {}, $class;
-    return $self;
-}
 
 =head3 stop
 
@@ -353,6 +348,7 @@ sub schema {
     $self->_schema($schema);
     return $schema;
 }
+
 
 # 1 is boring
 q{ listeing to:
