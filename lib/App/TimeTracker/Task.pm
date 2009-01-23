@@ -26,12 +26,15 @@ App::TimeTracker::Task - interface to one task
 
 =cut
 
+use base qw(Class::Accessor);
 use DateTime;
 use DateTime::Format::Strptime;
 use File::Spec::Functions qw(splitpath catfile catdir);
 use File::HomeDir;
 use File::Path;
 use App::TimeTracker::Exceptions;
+use File::Spec::Functions qw(catfile catdir);
+
 
 __PACKAGE__->mk_accessors(qw(start stop project tags active _path));
 
@@ -43,9 +46,23 @@ __PACKAGE__->mk_accessors(qw(start stop project tags active _path));
 
     my $task = App::TimeTracker::App->new( $data );
 
-Initiate a new task object. Provided by Class::Accessor
+Initiate a new task object.
 
 =cut
+
+sub new {
+    my ($class, $data) = @_;
+    my $self = bless $data, $class;
+    
+    $self->start(
+        DateTime->from_epoch( epoch => $self->start, time_zone => 'local' ) )
+        if $self->start;
+    $self->stop(
+        DateTime->from_epoch( epoch => $self->stop, time_zone => 'local' ) )
+        if $self->stop;
+    $self->project('unknown') unless $self->project;
+    return $self;
+}
 
 =head3 stop_it
 
@@ -70,21 +87,23 @@ Reads the specified file, parses it, generates a new object and returns the obje
 
 =cut
 
-sub read { 
-    my ($class, $path)=@_;
+sub read {
+    my ( $class, $path ) = @_;
 
-    ATTX::File->throw("Cannot find file $file") unless -r $path;
-    
-    open(my $fh,"<",$path) || ATTX::File->throw("Cannot read file $file: $!");
+    ATTX::File->throw("Cannot find file $path") unless -r $path;
+
+    open( my $fh, "<", $path )
+        || ATTX::File->throw("Cannot read file $path: $!");
     my %data;
-    while (my $line = <$fh>) {
+    while ( my $line = <$fh> ) {
         chomp($line);
-        $line=~/^(\w+): (.*?)/;
-        $data{$1}=$2;
+        next unless $line =~ /^(\w+): (.*)/;
+        $data{$1} = $2;
     }
 
     my $task = App::TimeTracker::Task->new( \%data );
     $task->_path($path);
+
     return $task;
 
 }
@@ -96,11 +115,53 @@ sub read {
 
 Serialises the data and writes it to disk.
 
-If you got the object via L<read>, you don't need to specifiy the C<$basedir>. If this is the first time you want to C<write> the object, the C<$basedir> is neccesary.
+If you got the object via L<read>, you don't need to specifiy the 
+C<$basedir>. If this is the first time you want to C<write> the 
+object, the C<$basedir> is neccesary.
 
 =cut
 
-sub write { die "not implemented yet" }
+sub write {
+    my ( $self, $basedir ) = @_;
+
+    ATTX::BadParams->throw("basedir missing and _path not set")
+        unless ( $basedir || $self->_path );
+
+    unless ( $self->_path ) {
+        my $dir = catdir($basedir,$self->_calc_dir);
+        unless (-d $dir) {
+            mkpath($dir) || ATTX::File->throw("Cannot make dir $dir");
+        }
+        $self->_path( catfile($dir, $self->_calc_filename ));
+    }
+    my $file = $self->_path;
+    open(my $fh,">",$file) || ATTX::File->throw("Cannot write to $file: $!");
+    foreach my $fld (qw(project tags)) {
+        say $fh "$fld: ".($self->$fld || '') ;
+    }
+    foreach my $fld (qw(start stop)) {
+        say $fh "$fld: ".($self->$fld->epoch || '');
+    }
+    
+    close $fh;
+}
+
+sub _calc_filename {
+    my $self = shift;
+
+    return
+          $self->start->strftime("%d-%H%M%S") . '-'
+        . $self->project . '.'
+        . ( $self->stop ? 'done' : 'current' );
+
+}
+
+sub _calc_dir {
+    my $self=shift;
+    my $start = $self->start;
+    my @dir = (split(/-/,$start->strftime("%Y-%m")));
+    wantarray ? @dir : catfile(@dir);
+}
 
 # 1; is boring
 q{ listeing to:

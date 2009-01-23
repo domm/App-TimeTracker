@@ -18,26 +18,13 @@ see C<perldoc tracker> for a convenient frontend.
 =cut
 
 use base qw(Class::Accessor App::Cmd);
-use App::TimeTracker::Schema;
+use App::TimeTracker::Task;
+use App::TimeTracker::Exceptions;
 use DateTime;
 use DateTime::Format::Strptime;
 use File::Spec::Functions qw(splitpath catfile catdir);
 use File::HomeDir;
-use File::Path;
 use Getopt::Long;
-
-
-use Exception::Class(
-    'X',
-    'X::BadParams' => { isa => 'X' },
-    'X::BadData'   => { isa => 'X' },
-    'X::BadDate'    => {isa=>'X'},
-    'X::File'      => {
-        isa    => 'X',
-        fields => [qw(file)],
-    },
-    'X::DB' => {isa=>'X'},
-);
 
 __PACKAGE__->mk_accessors(qw(opts _old_data _schema));
 
@@ -55,8 +42,6 @@ sub global_opts {
     return (
         [ "start=s",  "start time"],
         [ "stop=s",   "stop time"],
-        [ 'file|f=s' => "data file", 
-            {default=>catfile( File::HomeDir->my_home, '.TimeTracker', 'timetracker.db' ),} ],
     );
 }
 
@@ -68,10 +53,8 @@ Global input validation
 
 sub global_validate {
     my ($self, $opt, $args) = @_;
-    
-    if (!-e $opt->{file}) {
-        $self->init_tracker_db($opt->{file});
-    }
+   
+    $self->init_storage($opt->{storage});
 
     foreach (qw(start stop)) {
         if (my $manual=$opt->{$_}) {
@@ -91,7 +74,7 @@ sub global_validate {
 
 Initiate a new tracker object.
 
-Providev by Class::Accessor
+Provided by Class::Accessor
 
 =cut
 
@@ -148,37 +131,37 @@ sub get_printable_interval {
     return $self->beautify_duration($worked) . " on " . $task->project->name . $tag;
 }
 
-=head3 init_tracker_db
+=head3 storage_location
 
-    $self->init_tracker_db( $path_to_file );
+    my $dir = $self->storage_location
 
-Initiates a new pseudo DB file.
+Returns the path to the dir containing the stored tasks. Currently hardcoded to File::HomeDir plus F<.TimeTracker>.
 
 =cut
 
-sub init_tracker_db {
-    my ( $self, $file ) = @_;
-    $file or X::BadParams->throw("No file path passed to init_tracker_db");
-    if ( -e $file ) {
-        X::File->throw("$file exists. Will not re-init...");
-    }
+sub storage_location {
+    my $self = shift;
 
-    # do we have the dir?
-    my ( $vol, $dir, $filename ) = splitpath($file);
-    unless ( -d $dir ) {
-        eval { mkpath($dir) };
-        X::File->throw( file => $dir, message => "Cannot make dir: $@" ) if $@;
+    if ($INC{'Test/More.pm'}) {
+        return catdir('t/data');
     }
-    eval {require DBI};
-    my $dbh=DBI->connect("dbi:SQLite:dbname=".$file);
-    my $schema=$self->sql_schema;
-    foreach my $statement (split /;/, $schema) {
-        next unless $statement=~/\w/;
-        say $statement;
-        $dbh->do($statement) || X::DB->throw("DB error in $statement: $DBI::errstr");
+    else {
+        return catdir( File::HomeDir->my_home, '.TimeTracker' );
     }
-    $dbh->disconnect;
-    
+}
+
+=head3 file
+
+    my $path = $self->file( 'path/to/some/file' );
+    my $path = $self->file( qw( path to some file) );
+
+Prepends L<storage_location> to the passed file path.
+
+=cut
+
+sub file {
+    my $self  = shift;
+    return catfile($self->storage_location,@_);
 }
 
 =head3 beautify_duration
@@ -297,58 +280,6 @@ sub now {
     $dt->set_time_zone('local');
     return $dt;
 }
-
-=head3 sql_schema
-
-Return the SQLite Schema
-
-=cut
-
-sub sql_schema {
-    return <<EOSQL;
-create table project (
-	id INTEGER PRIMARY KEY AUTOINCREMENT,
-	name text
-);
-create unique index project_name on project (name);
-
-create table task (
-	id INTEGER PRIMARY KEY AUTOINCREMENT,
-	project INTEGER not null default 0,
-	active INTEGER not null default 1,
-    start date,
-	stop date
-);
-
-create table tag (
-	id INTEGER PRIMARY KEY AUTOINCREMENT,
-    tag text
-);
-create unique index tag_tag on tag (tag);
-
-create table task_tag (
-	id INTEGER PRIMARY KEY AUTOINCREMENT,
-    task integer not null default 0,
-    tag integer not null default 0
-);
-
-EOSQL
-}
-
-=head3 schema
-
-Returns the DBIx::Class schema object
-
-=cut
-
-sub schema {
-    my $self=shift;
-    return $self->_schema if $self->_schema;
-    my $schema=App::TimeTracker::Schema->connect('dbi:SQLite:dbname='.$self->opts->{file}) || X::DB->throw("Cannot connect to SQLite DB ".$self->opts->{file});
-    $self->_schema($schema);
-    return $schema;
-}
-
 
 # 1 is boring
 q{ listeing to:
