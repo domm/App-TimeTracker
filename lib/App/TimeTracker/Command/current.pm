@@ -14,8 +14,7 @@ sub run {
     my $current = App::TimeTracker::Task->get_current($self->app->storage_location);
 
     if ($current) {
-        #my $interval=$self->get_printable_interval($active,undef,$self->now);
-        say "working $current";
+        say "working ".$current->get_printable_interval(undef,$self->now);
     }
     else {
         say "Currently not working on anything...";

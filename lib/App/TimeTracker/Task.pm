@@ -53,6 +53,7 @@ Initiate a new task object.
 
 sub new {
     my ($class, $data) = @_;
+    $data ||={};
     my $self = bless $data, $class;
     
     $self->start(
@@ -207,6 +208,81 @@ sub stop_current {
     return unless $current;
     return $current->stop_it($stop);
 }
+
+
+=head3 get_printable_interval
+
+    my $string = $self->get_printable_interval([$start, stop]);
+
+Returns a string like "worked 30 minutes, 23 seconds on Task (foo bar)"
+
+=cut
+
+sub get_printable_interval {
+    my ($self,$start,$stop)=@_;
+    $start ||= $self->start;
+    $stop ||= $self->stop;
+    
+    my $worked = $stop - $start;
+    return $self->beautify_duration($worked) . " on " . $self->project . $self->nice_tags;
+}
+
+=head3 beautify_duration
+
+    my $nice_message = $self->beautify_duration($duration);
+
+Turns an DateTime::Duration object into a nicer representation ("4 minutes, 31 seconds")
+
+=cut
+
+sub beautify_duration {
+    my ( $self, $delta ) = @_;
+
+    my $s=$delta->delta_seconds;
+    my $m=$delta->delta_minutes;
+    return $self->beautify_seconds($s + ($m*60));
+}
+
+=head3 beautify_seconds
+
+    my $nice_message = $self->beautify_seconds($seconds);
+
+Turns an amount of seconds into a nicer representation ("4 minutes, 31 seconds")
+
+=cut
+
+sub beautify_seconds {
+    my ( $self, $s ) = @_;
+
+    my ($m,$h);
+
+    if ($s>=60) {
+        $m=int($s / 60);
+        $s=$s - ( $m * 60);
+    }
+    if ($m && $m>=60) {
+        $h = int( $m / 60 );
+        $m = $m - ( $h * 60 );
+    }
+    
+    my $result;
+    if ($h) {
+        $result="$h hour". ( $h == 1 ? '' : 's' ).", ";
+    }
+    if ($m) {
+        $result.="$m minute". ( $m == 1 ? '' : 's' ).", ";
+    }
+    $result.="$s second". ( $s == 1 ? '' : 's' );
+    return $result;
+}
+
+sub nice_tags {
+    my $self = shift;
+    my $t = $self->tags;
+    return '' unless $t;
+    return ' ('.$t.')';
+}
+
 
 sub _calc_filename {
     my $self = shift;

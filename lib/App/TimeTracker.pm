@@ -113,23 +113,18 @@ sub stop {
 
 =cut
 
-=head3 get_printable_interval
+=head3 now
 
-    my $string = $self->get_printable_interval($task, [$start, stop]);
+    my $now = $self->now;
 
-Returns a string like "worked 30 minutes, 23 seconds on Task (foo bar)"
+Wrapper around DateTime->now that also sets the timezone to local
 
 =cut
 
-sub get_printable_interval {
-    my ($self,$task,$start,$stop)=@_;
-    $start ||= $task->start;
-    $stop ||= $task->stop;
-    
-    my $worked = $stop - $start;
-    my @tags=$task->tags;
-    my $tag=@tags? ' ('.join(', ',map {$_->tag} @tags).')':'';
-    return $self->beautify_duration($worked) . " on " . $task->project->name . $tag;
+sub now {
+    my $dt=DateTime->now();
+    $dt->set_time_zone('local');
+    return $dt;
 }
 
 =head3 storage_location
@@ -165,54 +160,6 @@ sub file {
     return catfile($self->storage_location,@_);
 }
 
-=head3 beautify_duration
-
-    my $nice_message = $self->beautify_duration($duration);
-
-Turns an DateTime::Duration object into a nicer representation ("4 minutes, 31 seconds")
-
-=cut
-
-sub beautify_duration {
-    my ( $self, $delta ) = @_;
-
-    my $s=$delta->delta_seconds;
-    my $m=$delta->delta_minutes;
-    return $self->beautify_seconds($s + ($m*60));
-}
-
-=head3 beautify_seconds
-
-    my $nice_message = $self->beautify_seconds($seconds);
-
-Turns an amount of seconds into a nicer representation ("4 minutes, 31 seconds")
-
-=cut
-
-sub beautify_seconds {
-    my ( $self, $s ) = @_;
-
-    my ($m,$h);
-
-    if ($s>=60) {
-        $m=int($s / 60);
-        $s=$s - ( $m * 60);
-    }
-    if ($m && $m>=60) {
-        $h = int( $m / 60 );
-        $m = $m - ( $h * 60 );
-    }
-    
-    my $result;
-    if ($h) {
-        $result="$h hour". ( $h == 1 ? '' : 's' ).", ";
-    }
-    if ($m) {
-        $result.="$m minute". ( $m == 1 ? '' : 's' ).", ";
-    }
-    $result.="$s second". ( $s == 1 ? '' : 's' );
-    return $result;
-}
 
 =head3 parse_datetime 
 
@@ -266,20 +213,6 @@ sub parse_datetime {
         X::BadDate->throw("Cannot parse $datetime into a date: $@");
     }
     return $date;
-}
-
-=head3 now
-
-    my $now = $self->now;
-
-Wrapper around DateTime->now that also sets the timezone to local
-
-=cut
-
-sub now {
-    my $dt=DateTime->now();
-    $dt->set_time_zone('local');
-    return $dt;
 }
 
 # 1 is boring
