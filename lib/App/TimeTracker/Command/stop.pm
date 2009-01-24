@@ -15,7 +15,7 @@ sub run {
         say "worked ".$stopped->get_printable_interval($stopped->start,$stopped->stop);
     }
     else {
-
+        say "Not working on anything..."
     }
 
 
