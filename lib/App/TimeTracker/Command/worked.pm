@@ -6,6 +6,8 @@ use App::TimeTracker -command;
 use base qw(App::TimeTracker);
 use DateTime;
 use DateTime::Format::ISO8601;
+use File::Find::Rule;
+
 sub usage_desc { "worked %o task" }
 
 sub opt_spec {
@@ -44,10 +46,37 @@ sub run {
         $from=$self->app->now->truncate(to=>'year');
         $to = DateTime::Format::ISO8601->parse_datetime($opt->{to});
     }
-    
-    say $from .' - '. $to;
+    else {
+        say "You need to specify some date limits!";
+        exit;
+    }
+    our $from_cmp=$from->ymd('').$from->hms('');
+    our $to_cmp=$to->ymd('').$to->hms('');
 
+
+    my @files = File::Find::Rule->file()->name(qr/\.(done|current)$/)->exec(
+        sub {
+            my ($file) = @_;
+            $file=~/(\d{8})-(\d{6})/;
+            my $time = $1.$2;
+            return 1 if $time >= $from_cmp;
+        }
+    )->exec(
+        sub {
+            my ($file) = @_;
+            $file=~/(\d{8})-(\d{6})/;
+            my $time = $1.$2;
+            return 1 if $time <= $to_cmp;
+        }
+    )->in($self->app->storage_location.'/');
     
+    my $total;
+    foreach my $file (sort @files) {
+        my $task = App::TimeTracker::Task->read($file);
+        $total += ($task->stop?$task->stop->epoch:$self->app->now->epoch) - $task->start->epoch;
+    }
+    say App::TimeTracker::Task->beautify_seconds($total);
+
 
 =pod
     if ($current_sum) {
