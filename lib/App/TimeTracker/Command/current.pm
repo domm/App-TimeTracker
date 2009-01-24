@@ -2,11 +2,10 @@ package App::TimeTracker::Command::current;
 use 5.010;
 use strict;
 use warnings;
-use base qw(App::Cmd::Command App::TimeTracker);
+use App::TimeTracker -command;
+use base qw(App::TimeTracker);
 
 sub usage_desc { "%c current %o" }
-
-sub validate_args { return App::TimeTracker::global_validate(@_) }
 
 sub run {
     my ($self, $opt, $args) = @_;

@@ -79,14 +79,19 @@ Returns C<$self> for method chaining.
 
 sub stop_it {
     my ($self, $stop) = @_;
+    
     $stop ||= time();
-
     $self->stop($stop);
+    
     my $path=$self->_path;
     unlink($path);
+    
     $path=~s/current$/done/;
     $self->_path($path);
     $self->write;
+    
+    $self->remove_current($self->basedir);
+    
     return $self;
 
 }
@@ -188,9 +193,17 @@ sub get_current {
         || ATTX::File->throw("Cannot read file $current: $!");
     my $path = <$fh>;
     chomp($path);
-    return $class->read($path);
+    my $self=$class->read($path);
+    $self->basedir($basedir);
+    return $self;
 }
 
+sub remove_current {
+    my ($self ) = @_;
+    my $current = $self->_current;
+    unlink($current) if -e $current;
+    return $self;
+}
 
 sub remove_suspended {
     my ($self ) = @_;

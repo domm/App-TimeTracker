@@ -17,7 +17,8 @@ see C<perldoc tracker> for a convenient frontend.
 
 =cut
 
-use base qw(Class::Accessor App::Cmd);
+use App::Cmd::Setup -app;
+use base qw(Class::Accessor);
 use App::TimeTracker::Task;
 use App::TimeTracker::Projects;
 use App::TimeTracker::Exceptions;
@@ -33,42 +34,6 @@ __PACKAGE__->mk_accessors(qw(opts projects _old_data _schema));
 
 =cut
 
-=head3 global_opts
-
-Defines the global option definition
-
-=cut
-
-sub global_opts {
-    return (
-        [ "start=s",  "start time"],
-        [ "stop=s",   "stop time"],
-    );
-}
-
-=head3 global_validate
-
-Global input validation
-
-=cut
-
-sub global_validate {
-    my ($self, $opt, $args) = @_;
-   
-    $self->app->projects(App::TimeTracker::Projects->read($self->storage_location));
-    foreach (qw(start stop)) {
-        if (my $manual=$opt->{$_}) {
-            $opt->{$_}=$self->parse_datetime($manual);
-        }
-        else {
-            $opt->{$_}=$self->now;
-        }
-    }
-    say $opt->{start};
-    $self->opts($opt);
-
-}
-
 =head3 new
 
     my $tracker = App::TimeTracker->new;
@@ -78,36 +43,6 @@ Initiate a new tracker object.
 Provided by Class::Accessor
 
 =cut
-
-=head3 stop
-
-    $self->stop($datetime);
-
-Find the last active task and sets the current time as the stop time
-
-$datetime is optional and defaults to DateTime->now
-
-=cut
-
-sub stop {
-    my ( $self, $time ) = @_;
-
-    my $schema=$self->schema;
-    $time ||= $self->opts->{stop};
-    
-    my $active=$schema->resultset('Task')->find(1,{key=>'active'});
-    if ($active) {
-        $active->active(0);
-        $active->stop($time);
-        $active->update;
-        my $interval=$self->get_printable_interval($active);
-        say "worked $interval";
-
-        if ($self->opts->{svn}) {
-            system('svn','ci',$self->opts->{file},'-m "autocommit via TimeTracker"');
-        }
-    }
-}
 
 =head2 Helper Methods
 
@@ -159,7 +94,6 @@ sub file {
     my $self  = shift;
     return catfile($self->storage_location,@_);
 }
-
 
 =head3 parse_datetime 
 

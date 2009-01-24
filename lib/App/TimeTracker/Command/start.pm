@@ -2,17 +2,18 @@ package App::TimeTracker::Command::start;
 use 5.010;
 use strict;
 use warnings;
-use base qw(App::Cmd::Command App::TimeTracker);
+use App::TimeTracker -command;
+use base qw(App::TimeTracker);
 
 sub usage_desc { "%c start %o task [tags]" }
 
-sub validate_args { return App::TimeTracker::global_validate(@_) }
+#sub validate_args { return App::TimeTracker::global_validate(@_) }
 
 sub run {
     my ($self, $opt, $args) = @_;
 
     my $project=shift(@$args);
-    X::BadParams->throw("No project specified") unless $project;
+    ATTX::BadParams->throw("No project specified") unless $project;
 
     # check if we already know this task
     unless ($self->app->projects->list->{$project}) {
@@ -28,7 +29,11 @@ sub run {
     }
     
     # stop last active task
-    App::TimeTracker::Task->stop_current($self->app->storage_location,$opt->{start} || $self->now);
+    my $stopped=App::TimeTracker::Task->stop_current($self->app->storage_location,$opt->{start} || $self->now);
+    if ($stopped) {
+        say "worked ".$stopped->get_printable_interval($stopped->start,$stopped->stop);
+
+    }
 
     # start new task
     my $task = App::TimeTracker::Task->new({
