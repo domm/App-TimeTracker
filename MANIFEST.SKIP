@@ -1,0 +1,34 @@
+\B.git$
+\B.git\b
+
+\bMakefile$
+\bblib
+\bMakeMaker-\d
+\bpm_to_blib$
+\bblibdirs$
+^MANIFEST\.SKIP$
+\bBuild$
+\bBuild.bat$
+\b_build
+\bcover_db
+
+# Avoid temp and backup files.
+~$
+\.tmp$
+\.old$
+\.bak$
+\#$
+\.#
+\.rej$
+
+\B\.includepath
+\B\.project
+\B\.settings
+
+# Avoid OS-specific files/dirs
+#   Mac OSX metadata
+\B\.DS_Store
+#   Mac OSX SMB mount metadata files
+\B\._
+# Avoid archives of this distribution
+\bApp-TimeTracker[\d\.\_]+
