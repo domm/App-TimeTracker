@@ -6,9 +6,9 @@ use base qw(App::Cmd::Command App::TimeTracker);
 
 sub usage_desc { "%c start %o task [tags]" }
 
-sub opt_spec { return App::TimeTracker::global_opts(@_) }
+#sub opt_spec { return App::TimeTracker::global_opts(@_) }
 
-sub validate_args { return App::TimeTracker::global_validate(@_) }
+#sub validate_args { return App::TimeTracker::global_validate(@_) }
 
 sub run {
     my ($self, $opt, $args) = @_;

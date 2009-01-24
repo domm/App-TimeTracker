@@ -19,6 +19,7 @@ see C<perldoc tracker> for a convenient frontend.
 
 use base qw(Class::Accessor App::Cmd);
 use App::TimeTracker::Task;
+use App::TimeTracker::Projects;
 use App::TimeTracker::Exceptions;
 use DateTime;
 use DateTime::Format::Strptime;
