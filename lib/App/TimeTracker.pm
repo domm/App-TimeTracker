@@ -27,7 +27,7 @@ use File::Spec::Functions qw(splitpath catfile catdir);
 use File::HomeDir;
 use Getopt::Long;
 
-__PACKAGE__->mk_accessors(qw(opts _old_data _schema));
+__PACKAGE__->mk_accessors(qw(opts projects _old_data _schema));
 
 =head1 METHODS
 
@@ -55,8 +55,7 @@ Global input validation
 sub global_validate {
     my ($self, $opt, $args) = @_;
    
-    $self->init_storage($opt->{storage});
-
+    $self->app->projects(App::TimeTracker::Projects->read($self->storage_location));
     foreach (qw(start stop)) {
         if (my $manual=$opt->{$_}) {
             $opt->{$_}=$self->parse_datetime($manual);
@@ -65,6 +64,7 @@ sub global_validate {
             $opt->{$_}=$self->now;
         }
     }
+    say $opt->{start};
     $self->opts($opt);
 
 }

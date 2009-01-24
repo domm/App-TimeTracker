@@ -14,9 +14,10 @@ App::TimeTracker::Task - interface to one task
         start   => '1232010055',
         project => 'TimeTracker',
         tags    => \@tags,
+        basedir =>'/path/to/basedir',
     });
     $task->stop_it;
-    $task->write( '/path/to/basedir' );  
+    $task->write(  );  
 
 
     my $task = App::TimeTracker::Task->read('/path/to/file');
@@ -36,7 +37,7 @@ use App::TimeTracker::Exceptions;
 use File::Spec::Functions qw(catfile catdir);
 
 
-__PACKAGE__->mk_accessors(qw(start stop project tags active _path));
+__PACKAGE__->mk_accessors(qw(start stop project tags active _path basedir));
 
 =head1 METHODS
 
@@ -67,7 +68,7 @@ sub new {
 =head3 stop_it
 
     $self->stop_it;
-    $self->stop_it( $epoche );
+    $self->stop_it( $dt );
 
 Stop this task, either at the specified C<$epoche>, or C<now()>. Throws an exception if the task is already stopped.
 
@@ -76,7 +77,17 @@ Returns C<$self> for method chaining.
 =cut
 
 sub stop_it {
-    die "not implemented yet";
+    my ($self, $stop) = @_;
+    $stop ||= time();
+
+    $self->stop($stop);
+    my $path=$self->_path;
+    unlink($path);
+    $path=~s/current$/done/;
+    $self->_path($path);
+    $self->write;
+    return $self;
+
 }
 
 =head3 read
@@ -122,13 +133,13 @@ object, the C<$basedir> is neccesary.
 =cut
 
 sub write {
-    my ( $self, $basedir ) = @_;
+    my ( $self ) = @_;
 
     ATTX::BadParams->throw("basedir missing and _path not set")
-        unless ( $basedir || $self->_path );
+        unless ( $self->basedir || $self->_path );
 
     unless ( $self->_path ) {
-        my $dir = catdir($basedir,$self->_calc_dir);
+        my $dir = catdir($self->basedir,$self->_calc_dir);
         unless (-d $dir) {
             mkpath($dir) || ATTX::File->throw("Cannot make dir $dir");
         }
@@ -140,10 +151,61 @@ sub write {
         say $fh "$fld: ".($self->$fld || '') ;
     }
     foreach my $fld (qw(start stop)) {
-        say $fh "$fld: ".($self->$fld->epoch || '');
+        say $fh "$fld: ".($self->$fld ? $self->$fld->epoch : '');
     }
     
     close $fh;
+}
+
+=head set_current
+
+    $task->set_current;
+
+Makes $task the current task
+
+=cut
+
+sub set_current {
+    my ($self ) = @_;
+    my $current = $self->_current;
+
+    $self->remove_suspended;
+
+    open( my $fh, ">", $current )
+        || ATTX::File->throw("Cannot write file $current: $!");
+    say $fh $self->_calc_path;
+    close $fh;
+    return $self;
+}
+
+sub get_current {
+    my ($class, $basedir ) = @_;
+    my $current = $class->_current($basedir);
+    return unless -e $current;
+
+    open( my $fh, "<", $current )
+        || ATTX::File->throw("Cannot read file $current: $!");
+    my $path = <$fh>;
+    chomp($path);
+    return $class->read($path);
+}
+
+
+sub remove_suspended {
+    my ($self ) = @_;
+    my $suspended = $self->_suspended;
+
+    unlink($suspended) if -e $suspended;
+    return $self;
+}
+
+
+sub stop_current {
+    my ($class, $basedir, $stop) = @_;
+
+    my $current = $class->get_current($basedir);
+    return unless $current;
+    return $current->stop_it($stop);
 }
 
 sub _calc_filename {
@@ -161,6 +223,21 @@ sub _calc_dir {
     my $start = $self->start;
     my @dir = (split(/-/,$start->strftime("%Y-%m")));
     wantarray ? @dir : catfile(@dir);
+}
+
+sub _calc_path {
+    my $self=shift;
+    return catfile($self->basedir,$self->_calc_dir,$self->_calc_filename)
+}
+
+sub _current {
+    my ($self, $basedir)=@_;
+    return catfile ($basedir || $self->basedir,'current');
+}
+
+sub _suspended {
+    my ($self)=@_;
+    return catfile ($self->basedir,'suspended');
 }
 
 # 1; is boring

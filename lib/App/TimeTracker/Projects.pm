@@ -21,7 +21,7 @@ use File::Spec::Functions qw(splitpath catfile catdir);
 use File::HomeDir;
 use App::TimeTracker::Exceptions;
 
-__PACKAGE__->mk_accessors(qw(projects));
+__PACKAGE__->mk_accessors(qw(list));
 
 =head1 METHODS
 
@@ -50,7 +50,7 @@ sub read {
             $projects{$line} = 1;
         }
     }
-    my $self = App::TimeTracker::Projects->new( {projects=>\%projects} );
+    my $self = App::TimeTracker::Projects->new( {list=>\%projects} );
 
     return $self;
 
@@ -69,7 +69,7 @@ sub add {
 
     ATTX::BadParams->throw('project must not contain spaces or fancy chars') unless $project =~ /^\w+$/;
 
-    $self->projects->{$project}=1;
+    $self->list->{$project}=1;
     return $self;
 
 }
@@ -92,7 +92,7 @@ sub write {
     
     open(my $fh,">",$path) || ATTX::File->throw("Cannot write to $path: $!");
 
-    foreach my $project (keys %{$self->projects}) {
+    foreach my $project (keys %{$self->list}) {
         say $fh $project ;
     }
     

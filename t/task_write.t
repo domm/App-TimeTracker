@@ -12,8 +12,9 @@ my $tt = App::TimeTracker->new;
         project=>'timetracker',
         start=>'1232749792',
         stop=>'1232759792',
+        basedir=> $tt->storage_location,
     });
-    lives_ok { $task->write( $tt->storage_location ) };
+    lives_ok { $task->write( ) };
 }
 
 # and now read it back

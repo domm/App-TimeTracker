@@ -6,17 +6,16 @@ use base qw(App::Cmd::Command App::TimeTracker);
 
 sub usage_desc { "%c current %o" }
 
-sub opt_spec { return App::TimeTracker::global_opts(@_) }
-
 sub validate_args { return App::TimeTracker::global_validate(@_) }
 
 sub run {
     my ($self, $opt, $args) = @_;
 
-    my $active=$self->schema->resultset('Task')->find(1,{key=>'active'});
-    if ($active) {
-        my $interval=$self->get_printable_interval($active,undef,$self->now);
-        say "working $interval";
+    my $current = App::TimeTracker::Task->get_current($self->app->storage_location);
+
+    if ($current) {
+        #my $interval=$self->get_printable_interval($active,undef,$self->now);
+        say "working $current";
     }
     else {
         say "Currently not working on anything...";
