@@ -18,12 +18,12 @@ my $tt = App::TimeTracker->new;
 }
 
 # and now read it back
-my $task = App::TimeTracker::Task->read( $tt->file( qw(2009 01 23-232952-timetracker.done)) );
+my $task = App::TimeTracker::Task->read( $tt->file( qw(2009 01 20090123-232952-timetracker.done)) );
 
-is($task->_path,'t/data/2009/01/23-232952-timetracker.done','path');
+is($task->_path,'t/data/2009/01/20090123-232952-timetracker.done','path');
 is($task->project,'timetracker','project');
 isa_ok($task->start,'DateTime','class of start');
 is($task->start->epoch,'1232749792','start as epoch');
 is($task->start->iso8601,'2009-01-23T23:29:52','start as iso8601');
 
-unlink 't/data/2009/01/23-232952-timetracker.done';
+unlink 't/data/2009/01/20090123-232952-timetracker.done';

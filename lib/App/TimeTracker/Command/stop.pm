@@ -17,8 +17,6 @@ sub run {
     else {
         say "Not working on anything..."
     }
-
-
 }
 
 q{Listening to:

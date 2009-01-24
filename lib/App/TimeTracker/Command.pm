@@ -20,7 +20,7 @@ sub opt_spec {
     );
 }
 
-=head3 global_validate
+=head3 validate_arg
 
 Global input validation
 

@@ -6,9 +6,9 @@ use Test::NoWarnings;
 use App::TimeTracker;
 
 my $tt = App::TimeTracker->new;
-my $task = App::TimeTracker::Task->read( $tt->file( qw(2009 01 15-100055-TimeTracker.current)) );
+my $task = App::TimeTracker::Task->read( $tt->file( qw(2009 01 20090115-100055-TimeTracker.current)) );
 
-is($task->_path,'t/data/2009/01/15-100055-TimeTracker.current','path');
+is($task->_path,'t/data/2009/01/20090115-100055-TimeTracker.current','path');
 is($task->project,'TimeTracker','project');
 isa_ok($task->start,'DateTime','class of start');
 is($task->start->epoch,'1232010055','start as epoch');

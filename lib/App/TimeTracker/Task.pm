@@ -301,7 +301,7 @@ sub _calc_filename {
     my $self = shift;
 
     return
-          $self->start->strftime("%d-%H%M%S") . '-'
+          $self->start->strftime("%Y%m%d-%H%M%S") . '-'
         . $self->project . '.'
         . ( $self->stop ? 'done' : 'current' );
 

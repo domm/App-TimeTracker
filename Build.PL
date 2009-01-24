@@ -14,12 +14,12 @@ my $builder = Module::Build->new(
         'Class::Accessor'   => 0.31,
         'Exception::Class'  => 1.23,
         'App::Cmd'          => 0.012,
-        'DBIx::Class'       => 0.08008,
-        'DBD::SQLite'       => 1.14,
+        'DateTime::Format::ISO8601'=>'0.06',
     },
     build_requires      => {
         'Test::More'        => 0,
         'Test::NoWarnings'  => 0.084,
+        'Test::Most'      => 0,
     },
     add_to_cleanup      => [ 'App::TimeTracker-*' ],
 );
