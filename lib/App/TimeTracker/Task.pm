@@ -37,7 +37,7 @@ use App::TimeTracker::Exceptions;
 use File::Spec::Functions qw(catfile catdir);
 
 
-__PACKAGE__->mk_accessors(qw(start stop project tags active _path basedir));
+__PACKAGE__->mk_accessors(qw(start stop project tags _path basedir));
 
 =head1 METHODS
 
@@ -296,6 +296,10 @@ sub nice_tags {
     return ' ('.$t.')';
 }
 
+sub is_active {
+    my $self=shift;
+    return $self->stop ? 0 : 1;
+}
 
 sub _calc_filename {
     my $self = shift;

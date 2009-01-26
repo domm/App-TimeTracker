@@ -16,14 +16,16 @@ sub opt_spec {
         ['to=s'     => 'report stop date/time'],
         ['this=s'   => 'report in this week/month/year'],
         ['last=s'   => 'report in last week/month/year'],
+        ['project=s' => 'only report for project'],
+        ['tag=s'    => 'only report for tag'],
     );
 }
 
 sub run {
     my ($self, $opt, $args) = @_;
 
-    my $project=shift(@$args);
-    my $tag_name=shift(@$args);
+    my $project=$opt->{project};
+    my $tag=$opt->{tag};
 
     my ($from, $to);
     if (my $this = $opt->{this}) {
@@ -70,13 +72,29 @@ sub run {
         }
     )->in($self->app->storage_location.'/');
     
+    if ($project) {
+        @files = grep {/$project/} @files;
+    }   
+
     my $total;
+    my $still_active=0;
     foreach my $file (sort @files) {
         my $task = App::TimeTracker::Task->read($file);
-        $total += ($task->stop?$task->stop->epoch:$self->app->now->epoch) - $task->start->epoch;
+        
+        if ($tag) {
+            next unless $task->tags =~ /$tag/;
+        }
+        $still_active = $task->is_active;
+        $total += ($still_active ? $self->app->now->epoch : $task->stop->epoch) - $task->start->epoch;
     }
-    say App::TimeTracker::Task->beautify_seconds($total);
 
+    my $project_out=$project . ($tag? " ($tag)":'');
+    if ($total) {
+        say "You're still working on $project_out at the moment!" if $still_active;
+        say "worked ". App::TimeTracker::Task->beautify_seconds($total)." on $project_out"    }
+    else {
+        say "Did not work on $project_out";
+    }
 
 =pod
     if ($current_sum) {
