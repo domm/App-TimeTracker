@@ -40,7 +40,7 @@ sub opt_spec_reports {
 
 }
 
-=head3 validate_arg
+=head3 validate_args
 
 Global input validation
 

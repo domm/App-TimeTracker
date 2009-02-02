@@ -125,7 +125,7 @@ sub read {
 
 }
 
-=head4 write
+=head3 write
 
    $task->write;
    $task->write( $basedir );
@@ -163,7 +163,7 @@ sub write {
     close $fh;
 }
 
-=head set_current
+=head3 set_current
 
     $task->set_current;
 
@@ -184,6 +184,15 @@ sub set_current {
     return $self;
 }
 
+=head3 get_current
+
+    my $current = App::TimeTracker::Task->get_current( $basedir );
+
+Loads the current task (i.e. the one you're working on ATM). Returns 
+undef if there is no current task.
+
+=cut
+
 sub get_current {
     my ($class, $basedir ) = @_;
     my $current = $class->_current($basedir);
@@ -198,12 +207,26 @@ sub get_current {
     return $self;
 }
 
+=head3 remove_current
+
+    $self->remove_current;
+
+Removes the current task file (because it's no longer current, but done).
+
+=cut
+
 sub remove_current {
     my ($self ) = @_;
     my $current = $self->_current;
     unlink($current) if -e $current;
     return $self;
 }
+
+=head3 remove_suspended
+
+remove the suspendend file. NOT IMPLEMENTED YET
+
+=cut
 
 sub remove_suspended {
     my ($self ) = @_;
@@ -213,6 +236,11 @@ sub remove_suspended {
     return $self;
 }
 
+=head3 stop_current
+
+Stops the current task
+
+=cut
 
 sub stop_current {
     my ($class, $basedir, $stop) = @_;
@@ -289,12 +317,26 @@ sub beautify_seconds {
     return $result;
 }
 
+=head3 nice_tags
+
+    say $task->nice_tags;
+
+Pretty-print the tag list
+
+=cut
+
 sub nice_tags {
     my $self = shift;
     my $t = $self->tags;
     return '' unless $t;
     return ' ('.$t.')';
 }
+
+=head3 is_active
+
+Returns true if the task is active, undef if it isn't
+
+=cut
 
 sub is_active {
     my $self=shift;

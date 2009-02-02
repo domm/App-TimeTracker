@@ -186,6 +186,12 @@ sub get_from_to {
     return ($from->ymd('').$from->hms(''),$to->ymd('').$to->hms(''));
 }
 
+=head3 find_tasks
+
+returns a list of filesnames (=tasks) that match the criteria specified on the commandline.
+
+=cut
+
 sub find_tasks {
     my ($self,$opt)=@_;
     
