@@ -16,8 +16,28 @@ sub opt_spec {
     return (
         [ "start=s",  "start time"],
         [ "stop=s",   "stop time"],
+        [ "verbose",   "verbose output"],
         shift->_command_opts,
     );
+}
+
+=head3 opt_spec_reports
+
+different opt sepc used by report and worked
+
+=cut
+
+sub opt_spec_reports {
+    return (
+        ['from=s'   => 'report start date/time'],
+        ['to=s'     => 'report stop date/time'],
+        ['this=s'   => 'report in this week/month/year'],
+        ['last=s'   => 'report in last week/month/year'],
+        ['project=s' => 'only report for project'],
+        ['tag=s'    => 'only report for tag'],
+        [ "verbose",   "verbose output"],
+    );
+
 }
 
 =head3 validate_arg

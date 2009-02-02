@@ -149,6 +149,72 @@ sub parse_datetime {
     return $date;
 }
 
+=head3 get_from_to 
+
+parse --from and --to, returns strings suitable for L<find_tasks>
+
+=cut
+
+sub get_from_to {
+    my ($self, $opt) = @_; 
+    
+    my ($from, $to);
+    if (my $this = $opt->{this}) {
+        $from=DateTime->now->truncate(to=>$this);        
+        $to=$from->clone->add($this.'s'=>1);
+    }
+    elsif (my $last = $opt->{last}) {
+        $from=DateTime->now->truncate(to=>$last)->subtract($last.'s'=>1);
+        $to=$from->clone->add($last.'s'=>1);
+    }
+    elsif ($opt->{from} && $opt->{to}) {
+        $from = DateTime::Format::ISO8601->parse_datetime($opt->{from});
+        $to = DateTime::Format::ISO8601->parse_datetime($opt->{to});
+    }
+    elsif ($opt->{from}) {
+        $from = DateTime::Format::ISO8601->parse_datetime($opt->{from});
+        $to = $self->app->now;
+    }
+    elsif ($opt->{to}) {
+        $from=$self->app->now->truncate(to=>'year');
+        $to = DateTime::Format::ISO8601->parse_datetime($opt->{to});
+    }
+    else {
+        say "You need to specify some date limits!";
+        exit;
+    }
+    return ($from->ymd('').$from->hms(''),$to->ymd('').$to->hms(''));
+}
+
+sub find_tasks {
+    my ($self,$opt)=@_;
+    
+    my $project=$opt->{project};
+    our ($from_cmp,$to_cmp)=$self->get_from_to($opt);
+    
+    my @files = File::Find::Rule->file()->name(qr/\.(done|current)$/)->exec(
+        sub {
+            my ($file) = @_;
+            $file=~/(\d{8})-(\d{6})/;
+            my $time = $1.$2;
+            return 1 if $time >= $from_cmp;
+        }
+    )->exec(
+        sub {
+            my ($file) = @_;
+            $file=~/(\d{8})-(\d{6})/;
+            my $time = $1.$2;
+            return 1 if $time <= $to_cmp;
+        }
+    )->in($self->app->storage_location.'/');
+    
+    if ($project) {
+        @files = grep {/$project/} @files;
+    }   
+
+    return \@files;
+}
+
 # 1 is boring
 q{ listeing to:
     Fat Freddys Drop: Based on a true story

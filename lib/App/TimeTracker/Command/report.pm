@@ -2,53 +2,68 @@ package App::TimeTracker::Command::report;
 use 5.010;
 use strict;
 use warnings;
-use base qw(App::Cmd::Command App::TimeTracker);
+use App::TimeTracker -command;
+use base qw(App::TimeTracker);
 use DateTime;
 
 sub usage_desc { "report %o task" }
 
 sub opt_spec {
-    my @args=App::TimeTracker::global_opts(@_);
-    push(@args,
-        ['from=s'   => 'report start date/time'],
-        ['to=s'     => 'report stop date/time'],
-        ['this=s'   => 'report in this week/month/year'],
-        ['last=s'   => 'report in last week/month/year'],
-    );
-    return @args;
+    return (shift->opt_spec_reports,
+    ['detail'  => 'detailed report including tags']
+    )
 }
-
-sub validate_args { return App::TimeTracker::global_validate(@_) }
 
 sub run {
     my ($self, $opt, $args) = @_;
 
-    my $dbh=$self->schema->storage->dbh;
-    my ($sql_from, $sql_to)=($opt->{from}||'',$opt->{to}||'');
-    if (my $this = $opt->{this}) {
-        my $from=DateTime->now->truncate(to=>$this);        
-        my $to=$from->clone->add($this.'s'=>1);
-        $sql_from   = $from->ymd('-');
-        $sql_to     = $to->ymd('-');
-    }
-    elsif (my $last = $opt->{last}) {
-        my $from=DateTime->now->truncate(to=>$last)->subtract($last.'s'=>1);        
-        my $to=$from->clone->add($last.'s'=>1);
-        $sql_from   = $from->ymd('-');
-        $sql_to     = $to->ymd('-');
-    }
-    $sql_from="AND task.start > '$sql_from' " if $sql_from;
-    $sql_to="AND task.stop < '$sql_to' " if $sql_to;
+    my $project=$opt->{project};
+    my $tag=$opt->{tag};
+    my $tasks = $self->find_tasks($opt);
 
-    my $sth=$dbh->prepare("select project.name,sum(strftime('%s',task.stop) - strftime('%s',task.start)) as cnt from task,project where task.project=project.id $sql_from $sql_to group by project.name order by cnt desc");
-    $sth->execute;
-    while (my @r=$sth->fetchrow_array) {
-        printf("%- 20s %s\n",$r[0],$self->beautify_seconds($r[1]));
+    my %report;
+    foreach my $file (sort @$tasks) {
+        my $task = App::TimeTracker::Task->read($file);
+        
+        if ($tag) {
+            next unless $task->tags =~ /$tag/;
+        }
+       
+        my $time = ($task->is_active ? $self->app->now->epoch : $task->stop->epoch) - $task->start->epoch;
+        if ($opt->{detail}) {
+            $report{$task->project}->[0] += $time;
+            foreach my $tag (split(/\s+/,$task->tags)) {
+                $report{$task->project}->[1]{$tag}+=$time;
+            }
+        } 
+        else {
+            $report{$task->project} += $time;
+        }
+
+        say join (" ",$task->project,$task->start,$task->stop, $time) if $opt->{verbose};
     }
+use Data::Dumper;
+    say Dumper \%report;
+
+    if ($opt->{detail}) {
+        while (my ($project,$data)=each %report) {
+            printf("%- 20s %s\n",$project,App::TimeTracker::Task->beautify_seconds($data->[0]));
+            while (my ($tag,$time)=each %{$data->[1]}) {
+            printf("   %- 20s %s\n",$tag,App::TimeTracker::Task->beautify_seconds($time));
+            }
+        }
+    }
+    else {
+        while (my ($project,$time)=each %report) {
+            printf("%- 20s %s\n",$project,App::TimeTracker::Task->beautify_seconds($time));
+        }
+    }
+
+
 }
 
 q{Listening to:
-    Zahnarztwartezimmergeraeusche
+    howling wind on Feuerkogel
 };
 
 __END__
