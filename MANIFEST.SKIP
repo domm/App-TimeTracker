@@ -1,5 +1,6 @@
 \B.git$
 \B.git\b
+\B.gitignore$
 
 \bMakefile$
 \bblib

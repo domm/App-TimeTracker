@@ -1,4 +1,3 @@
-.gitignore
 bin/tracker
 Build.PL
 Changes
@@ -11,17 +10,12 @@ lib/App/TimeTracker/Command/stop.pm
 lib/App/TimeTracker/Command/worked.pm
 lib/App/TimeTracker/Exceptions.pm
 lib/App/TimeTracker/Projects.pm
-lib/App/TimeTracker/Schema.pm
-lib/App/TimeTracker/Schema/Project.pm
-lib/App/TimeTracker/Schema/Tag.pm
-lib/App/TimeTracker/Schema/Task.pm
-lib/App/TimeTracker/Schema/TaskTag.pm
 lib/App/TimeTracker/Task.pm
 MANIFEST			This list of files
 README
 t/00-load.t
 t/beautify_seconds.t
-t/data/2009/01/15-100055-TimeTracker.current
+t/data/2009/01/20090115-100055-TimeTracker.current
 t/parse_datetime.t
 t/project.t
 t/storage_location.t
