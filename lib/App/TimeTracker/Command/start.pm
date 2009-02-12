@@ -39,7 +39,7 @@ sub run {
     my $task = App::TimeTracker::Task->new({
         start=>$opt->{start}->epoch,
         project=>$project,
-        tags=>join(' ',@$args),
+        tags=>join(' | ',@$args),
         basedir=>$self->app->storage_location,
     })->set_current->write;
 }
