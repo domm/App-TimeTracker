@@ -5,15 +5,17 @@ use warnings;
 use App::TimeTracker -command;
 use base qw(App::TimeTracker);
 
-sub usage_desc { "%c current %o" }
+sub usage_desc {"%c current %o"}
 
 sub run {
-    my ($self, $opt, $args) = @_;
+    my ( $self, $opt, $args ) = @_;
 
-    my $current = App::TimeTracker::Task->get_current($self->app->storage_location);
+    my $current
+        = App::TimeTracker::Task->get_current( $self->app->storage_location );
 
     if ($current) {
-        say "working ".$current->get_printable_interval(undef,$self->now);
+        say "working "
+            . $current->get_printable_interval( undef, $self->now );
     }
     else {
         say "Currently not working on anything...";

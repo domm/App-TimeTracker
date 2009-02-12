@@ -5,17 +5,21 @@ use warnings;
 use App::TimeTracker -command;
 use base qw(App::TimeTracker);
 
-sub usage_desc { "%c stop %o" }
+sub usage_desc {"%c stop %o"}
 
 sub run {
-    my ($self, $opt, $args) = @_;
-   
-    my $stopped = App::TimeTracker::Task->stop_current($self->app->storage_location,$opt->{stop} || $self->now);
+    my ( $self, $opt, $args ) = @_;
+
+    my $stopped
+        = App::TimeTracker::Task->stop_current( $self->app->storage_location,
+        $opt->{stop} || $self->now );
     if ($stopped) {
-        say "worked ".$stopped->get_printable_interval($stopped->start,$stopped->stop);
+        say "worked "
+            . $stopped->get_printable_interval( $stopped->start,
+            $stopped->stop );
     }
     else {
-        say "Not working on anything..."
+        say "Not working on anything...";
     }
 }
 

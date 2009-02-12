@@ -8,37 +8,46 @@ use DateTime;
 use DateTime::Format::ISO8601;
 use File::Find::Rule;
 
-sub usage_desc { "worked %o task" }
+sub usage_desc {"worked %o task"}
 
 sub opt_spec {
-    return shift->opt_spec_reports
+    return shift->opt_spec_reports;
 }
 
 sub run {
-    my ($self, $opt, $args) = @_;
+    my ( $self, $opt, $args ) = @_;
 
-    my $project=$opt->{project};
-    my $tag=$opt->{tag};
-    my $tasks = $self->find_tasks($opt);
+    my $project = $opt->{project};
+    my $tag     = $opt->{tag};
+    my $tasks   = $self->find_tasks($opt);
 
     my $total;
-    my $still_active=0;
-    foreach my $file (sort @$tasks) {
+    my $still_active = 0;
+    foreach my $file ( sort @$tasks ) {
         my $task = App::TimeTracker::Task->read($file);
-        
+
         if ($tag) {
             next unless $task->tags =~ /$tag/;
         }
         $still_active = $task->is_active;
-        
-        $total += ($task->is_active ? $self->app->now->epoch : $task->stop->epoch) - $task->start->epoch;
-        say join (" ",$task->project,$task->start,$task->stop, $total) if $opt->{verbose};
+
+        $total
+            += (
+            $task->is_active ? $self->app->now->epoch : $task->stop->epoch )
+            - $task->start->epoch;
+        say join( " ", $task->project, $task->start, $task->stop, $total )
+            if $opt->{verbose};
     }
 
-    my $project_out=($project ? $project : 'all projects'). ( $tag? " ($tag)":'');
+    my $project_out = ( $project ? $project : 'all projects' )
+        . ( $tag ? " ($tag)" : '' );
     if ($total) {
-        say "You're still working on $project_out at the moment!" if $still_active;
-        say "worked ". App::TimeTracker::Task->beautify_seconds($total)." on $project_out"    }
+        say "You're still working on $project_out at the moment!"
+            if $still_active;
+        say "worked "
+            . App::TimeTracker::Task->beautify_seconds($total)
+            . " on $project_out";
+    }
     else {
         say "Did not work on $project_out";
     }

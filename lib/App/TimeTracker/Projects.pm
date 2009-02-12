@@ -41,7 +41,7 @@ sub read {
     my $path = $class->_file($basedir);
 
     my %projects;
-    if (-r $path) {
+    if ( -r $path ) {
         open( my $fh, "<", $path )
             || ATTX::File->throw("Cannot read file $path: $!");
         while ( my $line = <$fh> ) {
@@ -50,7 +50,7 @@ sub read {
             $projects{$line} = 1;
         }
     }
-    my $self = App::TimeTracker::Projects->new( {list=>\%projects} );
+    my $self = App::TimeTracker::Projects->new( { list => \%projects } );
 
     return $self;
 
@@ -65,11 +65,12 @@ Add a new project.
 =cut
 
 sub add {
-    my ($self, $project) = @_;
+    my ( $self, $project ) = @_;
 
-    ATTX::BadParams->throw('project must not contain spaces or fancy chars') unless $project =~ /^[\w\.-]+$/;
+    ATTX::BadParams->throw('project must not contain spaces or fancy chars')
+        unless $project =~ /^[\w\.-]+$/;
 
-    $self->list->{$project}=1;
+    $self->list->{$project} = 1;
     return $self;
 
 }
@@ -86,22 +87,23 @@ sub write {
     my ( $self, $basedir ) = @_;
 
     ATTX::BadParams->throw("basedir missing")
-        unless ( $basedir );
+        unless ($basedir);
 
     my $path = $self->_file($basedir);
-    
-    open(my $fh,">",$path) || ATTX::File->throw("Cannot write to $path: $!");
 
-    foreach my $project (sort keys %{$self->list}) {
-        say $fh $project ;
+    open( my $fh, ">", $path )
+        || ATTX::File->throw("Cannot write to $path: $!");
+
+    foreach my $project ( sort keys %{ $self->list } ) {
+        say $fh $project;
     }
-    
+
     close $fh;
 }
 
 sub _file {
-    my ($self, $basedir) = @_;
-    return catfile($basedir,'projects');
+    my ( $self, $basedir ) = @_;
+    return catfile( $basedir, 'projects' );
 }
 
 # 1; is boring

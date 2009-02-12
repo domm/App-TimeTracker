@@ -57,7 +57,7 @@ Wrapper around DateTime->now that also sets the timezone to local
 =cut
 
 sub now {
-    my $dt=DateTime->now();
+    my $dt = DateTime->now();
     $dt->set_time_zone('local');
     return $dt;
 }
@@ -73,7 +73,7 @@ Returns the path to the dir containing the stored tasks. Currently hardcoded to 
 sub storage_location {
     my $self = shift;
 
-    if ($INC{'Test/More.pm'}) {
+    if ( $INC{'Test/More.pm'} ) {
         return catdir('t/data');
     }
     else {
@@ -91,8 +91,8 @@ Prepends L<storage_location> to the passed file path.
 =cut
 
 sub file {
-    my $self  = shift;
-    return catfile($self->storage_location,@_);
+    my $self = shift;
+    return catfile( $self->storage_location, @_ );
 }
 
 =head3 parse_datetime 
@@ -111,35 +111,39 @@ Minute (seperated by _ or -)
 sub parse_datetime {
     my ( $self, $datetime ) = @_;
     return $self->now unless $datetime;
-    
-    my $n=$self->now;
+
+    my $n = $self->now;
 
     my $date;
     eval {
-        if ( $datetime =~ /^(?<hour>\d\d):?(?<minute>\d\d)$/ ) {
+        if ( $datetime =~ /^(?<hour>\d\d):?(?<minute>\d\d)$/ )
+        {
             $date = DateTime->new(
-                year=>$n->year,
-                month=>$n->month,
-                day=>$n->day,
-                hour=>$+{hour},
-                minute=>$+{minute},
-                second=>0,
-                time_zone=>'local',
+                year      => $n->year,
+                month     => $n->month,
+                day       => $n->day,
+                hour      => $+{hour},
+                minute    => $+{minute},
+                second    => 0,
+                time_zone => 'local',
             );
         }
-        elsif ($datetime =~ /
+        elsif (
+            $datetime =~ /
             (?<month>\d\d)\.?(?<day>\d\d)
             [-_]
             (?<hour>\d\d):?(?<minute>\d\d)
-            /x ) {
+            /x
+            )
+        {
             $date = DateTime->new(
-                year=>$n->year,
-                month=>$+{month},
-                day=>$+{day},
-                hour=>$+{hour},
-                minute=>$+{minute},
-                second=>0,
-                time_zone=>'local',
+                year      => $n->year,
+                month     => $+{month},
+                day       => $+{day},
+                hour      => $+{hour},
+                minute    => $+{minute},
+                second    => 0,
+                time_zone => 'local',
             );
         }
     };
@@ -156,34 +160,35 @@ parse --from and --to, returns strings suitable for L<find_tasks>
 =cut
 
 sub get_from_to {
-    my ($self, $opt) = @_; 
-    
-    my ($from, $to);
-    if (my $this = $opt->{this}) {
-        $from=DateTime->now->truncate(to=>$this);        
-        $to=$from->clone->add($this.'s'=>1);
+    my ( $self, $opt ) = @_;
+
+    my ( $from, $to );
+    if ( my $this = $opt->{this} ) {
+        $from = DateTime->now->truncate( to => $this );
+        $to = $from->clone->add( $this . 's' => 1 );
     }
-    elsif (my $last = $opt->{last}) {
-        $from=DateTime->now->truncate(to=>$last)->subtract($last.'s'=>1);
-        $to=$from->clone->add($last.'s'=>1);
+    elsif ( my $last = $opt->{last} ) {
+        $from = DateTime->now->truncate( to => $last )
+            ->subtract( $last . 's' => 1 );
+        $to = $from->clone->add( $last . 's' => 1 );
     }
-    elsif ($opt->{from} && $opt->{to}) {
-        $from = DateTime::Format::ISO8601->parse_datetime($opt->{from});
-        $to = DateTime::Format::ISO8601->parse_datetime($opt->{to});
+    elsif ( $opt->{from} && $opt->{to} ) {
+        $from = DateTime::Format::ISO8601->parse_datetime( $opt->{from} );
+        $to   = DateTime::Format::ISO8601->parse_datetime( $opt->{to} );
     }
-    elsif ($opt->{from}) {
-        $from = DateTime::Format::ISO8601->parse_datetime($opt->{from});
-        $to = $self->app->now;
+    elsif ( $opt->{from} ) {
+        $from = DateTime::Format::ISO8601->parse_datetime( $opt->{from} );
+        $to   = $self->app->now;
     }
-    elsif ($opt->{to}) {
-        $from=$self->app->now->truncate(to=>'year');
-        $to = DateTime::Format::ISO8601->parse_datetime($opt->{to});
+    elsif ( $opt->{to} ) {
+        $from = $self->app->now->truncate( to => 'year' );
+        $to = DateTime::Format::ISO8601->parse_datetime( $opt->{to} );
     }
     else {
         say "You need to specify some date limits!";
         exit;
     }
-    return ($from->ymd('').$from->hms(''),$to->ymd('').$to->hms(''));
+    return ( $from->ymd('') . $from->hms(''), $to->ymd('') . $to->hms('') );
 }
 
 =head3 find_tasks
@@ -193,30 +198,30 @@ returns a list of filesnames (=tasks) that match the criteria specified on the c
 =cut
 
 sub find_tasks {
-    my ($self,$opt)=@_;
-    
-    my $project=$opt->{project};
-    our ($from_cmp,$to_cmp)=$self->get_from_to($opt);
-    
+    my ( $self, $opt ) = @_;
+
+    my $project = $opt->{project};
+    our ( $from_cmp, $to_cmp ) = $self->get_from_to($opt);
+
     my @files = File::Find::Rule->file()->name(qr/\.(done|current)$/)->exec(
         sub {
             my ($file) = @_;
-            $file=~/(\d{8})-(\d{6})/;
-            my $time = $1.$2;
+            $file =~ /(\d{8})-(\d{6})/;
+            my $time = $1 . $2;
             return 1 if $time >= $from_cmp;
         }
-    )->exec(
+        )->exec(
         sub {
             my ($file) = @_;
-            $file=~/(\d{8})-(\d{6})/;
-            my $time = $1.$2;
+            $file =~ /(\d{8})-(\d{6})/;
+            my $time = $1 . $2;
             return 1 if $time <= $to_cmp;
         }
-    )->in($self->app->storage_location.'/');
-    
+        )->in( $self->app->storage_location . '/' );
+
     if ($project) {
         @files = grep {/$project/} @files;
-    }   
+    }
 
     return \@files;
 }

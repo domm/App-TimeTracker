@@ -18,12 +18,12 @@ use Exception::Class(
     'ATTX',
     'ATTX::BadParams' => { isa => 'ATTX' },
     'ATTX::BadData'   => { isa => 'ATTX' },
-    'ATTX::BadDate'    => {isa=>'ATTX'},
+    'ATTX::BadDate'   => { isa => 'ATTX' },
     'ATTX::File'      => {
         isa    => 'ATTX',
         fields => [qw(file)],
     },
-    'ATTX::DB' => {isa=>'ATTX'},
+    'ATTX::DB' => { isa => 'ATTX' },
 );
 
 # 1; is boring

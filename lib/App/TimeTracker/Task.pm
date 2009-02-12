@@ -36,7 +36,6 @@ use File::Path;
 use App::TimeTracker::Exceptions;
 use File::Spec::Functions qw(catfile catdir);
 
-
 __PACKAGE__->mk_accessors(qw(start stop project tags _path basedir));
 
 =head1 METHODS
@@ -52,10 +51,10 @@ Initiate a new task object.
 =cut
 
 sub new {
-    my ($class, $data) = @_;
-    $data ||={};
+    my ( $class, $data ) = @_;
+    $data ||= {};
     my $self = bless $data, $class;
-    
+
     $self->start(
         DateTime->from_epoch( epoch => $self->start, time_zone => 'local' ) )
         if $self->start;
@@ -78,20 +77,20 @@ Returns C<$self> for method chaining.
 =cut
 
 sub stop_it {
-    my ($self, $stop) = @_;
-    
+    my ( $self, $stop ) = @_;
+
     $stop ||= time();
     $self->stop($stop);
-    
-    my $path=$self->_path;
+
+    my $path = $self->_path;
     unlink($path);
-    
-    $path=~s/current$/done/;
+
+    $path =~ s/current$/done/;
     $self->_path($path);
     $self->write;
-    
-    $self->remove_current($self->basedir);
-    
+
+    $self->remove_current( $self->basedir );
+
     return $self;
 
 }
@@ -139,27 +138,28 @@ object, the C<$basedir> is neccesary.
 =cut
 
 sub write {
-    my ( $self ) = @_;
+    my ($self) = @_;
 
     ATTX::BadParams->throw("basedir missing and _path not set")
         unless ( $self->basedir || $self->_path );
 
     unless ( $self->_path ) {
-        my $dir = catdir($self->basedir,$self->_calc_dir);
-        unless (-d $dir) {
+        my $dir = catdir( $self->basedir, $self->_calc_dir );
+        unless ( -d $dir ) {
             mkpath($dir) || ATTX::File->throw("Cannot make dir $dir");
         }
-        $self->_path( catfile($dir, $self->_calc_filename ));
+        $self->_path( catfile( $dir, $self->_calc_filename ) );
     }
     my $file = $self->_path;
-    open(my $fh,">",$file) || ATTX::File->throw("Cannot write to $file: $!");
+    open( my $fh, ">", $file )
+        || ATTX::File->throw("Cannot write to $file: $!");
     foreach my $fld (qw(project tags)) {
-        say $fh "$fld: ".($self->$fld || '') ;
+        say $fh "$fld: " . ( $self->$fld || '' );
     }
     foreach my $fld (qw(start stop)) {
-        say $fh "$fld: ".($self->$fld ? $self->$fld->epoch : '');
+        say $fh "$fld: " . ( $self->$fld ? $self->$fld->epoch : '' );
     }
-    
+
     close $fh;
 }
 
@@ -172,7 +172,7 @@ Makes $task the current task
 =cut
 
 sub set_current {
-    my ($self ) = @_;
+    my ($self) = @_;
     my $current = $self->_current;
 
     $self->remove_suspended;
@@ -194,7 +194,7 @@ undef if there is no current task.
 =cut
 
 sub get_current {
-    my ($class, $basedir ) = @_;
+    my ( $class, $basedir ) = @_;
     my $current = $class->_current($basedir);
     return unless -e $current;
 
@@ -202,7 +202,7 @@ sub get_current {
         || ATTX::File->throw("Cannot read file $current: $!");
     my $path = <$fh>;
     chomp($path);
-    my $self=$class->read($path);
+    my $self = $class->read($path);
     $self->basedir($basedir);
     return $self;
 }
@@ -216,7 +216,7 @@ Removes the current task file (because it's no longer current, but done).
 =cut
 
 sub remove_current {
-    my ($self ) = @_;
+    my ($self) = @_;
     my $current = $self->_current;
     unlink($current) if -e $current;
     return $self;
@@ -229,7 +229,7 @@ remove the suspendend file. NOT IMPLEMENTED YET
 =cut
 
 sub remove_suspended {
-    my ($self ) = @_;
+    my ($self) = @_;
     my $suspended = $self->_suspended;
 
     unlink($suspended) if -e $suspended;
@@ -243,13 +243,12 @@ Stops the current task
 =cut
 
 sub stop_current {
-    my ($class, $basedir, $stop) = @_;
+    my ( $class, $basedir, $stop ) = @_;
 
     my $current = $class->get_current($basedir);
     return unless $current;
     return $current->stop_it($stop);
 }
-
 
 =head3 get_printable_interval
 
@@ -260,12 +259,15 @@ Returns a string like "worked 30 minutes, 23 seconds on Task (foo bar)"
 =cut
 
 sub get_printable_interval {
-    my ($self,$start,$stop)=@_;
+    my ( $self, $start, $stop ) = @_;
     $start ||= $self->start;
-    $stop ||= $self->stop;
-    
+    $stop  ||= $self->stop;
+
     my $worked = $stop - $start;
-    return $self->beautify_duration($worked) . " on " . $self->project . $self->nice_tags;
+    return
+          $self->beautify_duration($worked) . " on "
+        . $self->project
+        . $self->nice_tags;
 }
 
 =head3 beautify_duration
@@ -279,9 +281,9 @@ Turns an DateTime::Duration object into a nicer representation ("4 minutes, 31 s
 sub beautify_duration {
     my ( $self, $delta ) = @_;
 
-    my $s=$delta->delta_seconds;
-    my $m=$delta->delta_minutes;
-    return $self->beautify_seconds($s + ($m*60));
+    my $s = $delta->delta_seconds;
+    my $m = $delta->delta_minutes;
+    return $self->beautify_seconds( $s + ( $m * 60 ) );
 }
 
 =head3 beautify_seconds
@@ -295,25 +297,25 @@ Turns an amount of seconds into a nicer representation ("4 minutes, 31 seconds")
 sub beautify_seconds {
     my ( $self, $s ) = @_;
 
-    my ($m,$h);
+    my ( $m, $h );
 
-    if ($s>=60) {
-        $m=int($s / 60);
-        $s=$s - ( $m * 60);
+    if ( $s >= 60 ) {
+        $m = int( $s / 60 );
+        $s = $s - ( $m * 60 );
     }
-    if ($m && $m>=60) {
+    if ( $m && $m >= 60 ) {
         $h = int( $m / 60 );
         $m = $m - ( $h * 60 );
     }
-    
+
     my $result;
     if ($h) {
-        $result="$h hour". ( $h == 1 ? '' : 's' ).", ";
+        $result = "$h hour" . ( $h == 1 ? '' : 's' ) . ", ";
     }
     if ($m) {
-        $result.="$m minute". ( $m == 1 ? '' : 's' ).", ";
+        $result .= "$m minute" . ( $m == 1 ? '' : 's' ) . ", ";
     }
-    $result.="$s second". ( $s == 1 ? '' : 's' );
+    $result .= "$s second" . ( $s == 1 ? '' : 's' );
     return $result;
 }
 
@@ -327,9 +329,9 @@ Pretty-print the tag list
 
 sub nice_tags {
     my $self = shift;
-    my $t = $self->tags;
+    my $t    = $self->tags;
     return '' unless $t;
-    return ' ('.$t.')';
+    return ' (' . $t . ')';
 }
 
 =head3 is_active
@@ -339,7 +341,7 @@ Returns true if the task is active, undef if it isn't
 =cut
 
 sub is_active {
-    my $self=shift;
+    my $self = shift;
     return $self->stop ? 0 : 1;
 }
 
@@ -354,25 +356,25 @@ sub _calc_filename {
 }
 
 sub _calc_dir {
-    my $self=shift;
+    my $self  = shift;
     my $start = $self->start;
-    my @dir = (split(/-/,$start->strftime("%Y-%m")));
+    my @dir   = ( split( /-/, $start->strftime("%Y-%m") ) );
     wantarray ? @dir : catfile(@dir);
 }
 
 sub _calc_path {
-    my $self=shift;
-    return catfile($self->basedir,$self->_calc_dir,$self->_calc_filename)
+    my $self = shift;
+    return catfile( $self->basedir, $self->_calc_dir, $self->_calc_filename );
 }
 
 sub _current {
-    my ($self, $basedir)=@_;
-    return catfile ($basedir || $self->basedir,'current');
+    my ( $self, $basedir ) = @_;
+    return catfile( $basedir || $self->basedir, 'current' );
 }
 
 sub _suspended {
-    my ($self)=@_;
-    return catfile ($self->basedir,'suspended');
+    my ($self) = @_;
+    return catfile( $self->basedir, 'suspended' );
 }
 
 # 1; is boring
