@@ -67,7 +67,7 @@ Add a new project.
 sub add {
     my ($self, $project) = @_;
 
-    ATTX::BadParams->throw('project must not contain spaces or fancy chars') unless $project =~ /^\w+$/;
+    ATTX::BadParams->throw('project must not contain spaces or fancy chars') unless $project =~ /^[\w\.-]+$/;
 
     $self->list->{$project}=1;
     return $self;
@@ -92,7 +92,7 @@ sub write {
     
     open(my $fh,">",$path) || ATTX::File->throw("Cannot write to $path: $!");
 
-    foreach my $project (keys %{$self->list}) {
+    foreach my $project (sort keys %{$self->list}) {
         say $fh $project ;
     }
     
