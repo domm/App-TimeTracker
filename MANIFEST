@@ -3,10 +3,12 @@ Build.PL
 Changes
 lib/App/TimeTracker.pm
 lib/App/TimeTracker/Command.pm
+lib/App/TimeTracker/Command/convert_to_0_20.pm
 lib/App/TimeTracker/Command/current.pm
 lib/App/TimeTracker/Command/report.pm
 lib/App/TimeTracker/Command/start.pm
 lib/App/TimeTracker/Command/stop.pm
+lib/App/TimeTracker/Command/sync.pm
 lib/App/TimeTracker/Command/worked.pm
 lib/App/TimeTracker/Exceptions.pm
 lib/App/TimeTracker/Projects.pm
@@ -25,3 +27,4 @@ t/task_write.t
 xt/boilerplate.t
 xt/pod-coverage.t
 xt/pod.t
+META.yml
