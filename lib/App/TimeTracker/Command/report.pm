@@ -45,8 +45,6 @@ sub run {
         say join( " ", $task->project, $task->start, $task->stop, $time )
             if $opt->{verbose};
     }
-    use Data::Dumper;
-    say Dumper \%report;
 
     if ( $opt->{detail} ) {
         while ( my ( $project, $data ) = each %report ) {
