@@ -3,7 +3,7 @@ package App::TimeTracker;
 use 5.010;
 use warnings;
 use strict;
-use version; our $VERSION = version->new('0.20');
+use version; our $VERSION = version->new('0.21');
 
 =head1 NAME
 

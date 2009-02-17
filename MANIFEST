@@ -14,6 +14,7 @@ lib/App/TimeTracker/Exceptions.pm
 lib/App/TimeTracker/Projects.pm
 lib/App/TimeTracker/Task.pm
 MANIFEST			This list of files
+META.yml
 README
 t/00-load.t
 t/beautify_seconds.t
@@ -27,4 +28,3 @@ t/task_write.t
 xt/boilerplate.t
 xt/pod-coverage.t
 xt/pod.t
-META.yml

@@ -32,4 +32,4 @@
 #   Mac OSX SMB mount metadata files
 \B\._
 # Avoid archives of this distribution
-\bApp-TimeTracker[\d\.\_]+
+\bApp-TimeTracker-[\d\.\_]+
