@@ -1,0 +1,6 @@
+dateTime statt epoche, zum ausrechnen:
+
+perl -MDateTime -E '$a = DateTime->new(year=>2009,month=>7,day=>2,hour=>8,minute=>0);$b=DateTime->new(year=>2009,month=>7,day=>2,hour=>9,minute=>30);my $c= $b->subtract_datetime_absolute($a);say $c->delta_seconds'
+
+
+
