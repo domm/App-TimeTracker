@@ -1,0 +1,5 @@
+do{ my $x = {
+       'blib' => 1,
+       'App::TimeTracker-*' => 1
+     };
+$x; }

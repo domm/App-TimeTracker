@@ -1,0 +1,19 @@
+do{ my $x = {
+       'build_requires' => {
+                             'Test::More' => 0,
+                             'Test::Most' => 0,
+                             'Test::NoWarnings' => '0.084'
+                           },
+       'conflicts' => {},
+       'requires' => {
+                       'DateTime::Format::ISO8601' => '0.06',
+                       'Exception::Class' => '1.23',
+                       'DateTime' => '0.41',
+                       'File::HomeDir' => '0.67',
+                       'App::Cmd' => '0.012',
+                       'Class::Accessor' => '0.31',
+                       'DateTime::Format::Strptime' => '1.0702'
+                     },
+       'recommends' => {}
+     };
+$x; }
