@@ -51,7 +51,8 @@ sub run {
             printf( "%- 20s %s\n",
                 $project,
                 App::TimeTracker::Task->beautify_seconds( $data->[0] ) );
-            while ( my ( $tag, $time ) = each %{ $data->[1] } ) {
+            foreach my $tag ( sort { $data->[1]{$b} <=> $data->[1]{$a} } keys %{ $data->[1] } ) {
+                my $time = $data->[1]{$tag};
                 printf( "   %- 20s %s\n",
                     $tag, App::TimeTracker::Task->beautify_seconds($time) );
             }
