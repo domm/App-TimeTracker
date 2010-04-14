@@ -1,4 +1,0 @@
-do{ my $x = {
-       'install_base' => '/home/koki/revdev/local-perl'
-     };
-$x; }
