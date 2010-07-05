@@ -10,7 +10,8 @@ sub usage_desc {"report %o task"}
 
 sub opt_spec {
     return ( shift->opt_spec_reports,
-        [ 'detail' => 'detailed report including tags' ] );
+        [ 'detail' => 'detailed report including tags' ], 
+        [ 'raw' => 'report in seconds' ] );
 }
 
 sub run {
@@ -50,18 +51,24 @@ sub run {
         while ( my ( $project, $data ) = each %report ) {
             printf( "%- 20s %s\n",
                 $project,
-                App::TimeTracker::Task->beautify_seconds( $data->[0] ) );
+                $opt->{raw} ? $data->[0] :  App::TimeTracker::Task->beautify_seconds( $data->[0] ) );
+            my $diff = $data->[0];
+
             foreach my $tag ( sort { $data->[1]{$b} <=> $data->[1]{$a} } keys %{ $data->[1] } ) {
                 my $time = $data->[1]{$tag};
+                $diff -= $time;
                 printf( "   %- 20s %s\n",
-                    $tag, App::TimeTracker::Task->beautify_seconds($time) );
+                    $tag, $opt->{raw} ? $time : App::TimeTracker::Task->beautify_seconds($time) );
             }
+            printf( "   %- 20s %s\n",'unspecified', $opt->{raw} ? $diff: App::TimeTracker::Task->beautify_seconds($diff));
+
+
         }
     }
     else {
         while ( my ( $project, $time ) = each %report ) {
             printf( "%- 20s %s\n",
-                $project, App::TimeTracker::Task->beautify_seconds($time) );
+                $project, $opt->{raw} ? $time : App::TimeTracker::Task->beautify_seconds($time) );
         }
     }
 
