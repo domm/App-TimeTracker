@@ -17,11 +17,11 @@ has 'duration' => (
     is=>'rw',
 );
 has 'status' => (
-    isa=>'String',
+    isa=>'Str',
     is=>'rw',
 );
 has 'user' => (
-    isa=>'String',
+    isa=>'Str',
     is=>'rw',
     default=>'domm' # TODO: get user from config / system
 );

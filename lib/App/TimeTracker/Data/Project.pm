@@ -4,7 +4,7 @@ use Moose;
 use namespace::autoclean;
 
 has 'name' => (
-    isa=>'String',
+    isa=>'Str',
     is=>'rw',
 );
 
