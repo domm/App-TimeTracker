@@ -35,8 +35,13 @@ sub run {
             - $task->start->epoch;
         if ( $opt->{detail} ) {
             $report{ $task->project }->[0] += $time;
-            foreach my $tag ( split( /\s+/, $task->tags ) ) {
-                $report{ $task->project }->[1]{$tag} += $time;
+            if ($task->tags) {
+                foreach my $tag ( split( /\s+/, $task->tags ) ) {
+                    $report{ $task->project }->[1]{$tag} += $time;
+                }
+            }
+            else {
+                $report{ $task->project }->[1]{'untagged'} += $time;
             }
         }
         else {
@@ -60,9 +65,6 @@ sub run {
                 printf( "   %- 20s %s\n",
                     $tag, $opt->{raw} ? $time : App::TimeTracker::Task->beautify_seconds($time) );
             }
-            printf( "   %- 20s %s\n",'unspecified', $opt->{raw} ? $diff: App::TimeTracker::Task->beautify_seconds($diff));
-
-
         }
     }
     else {
