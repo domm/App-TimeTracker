@@ -35,6 +35,7 @@ use File::HomeDir;
 use File::Path;
 use App::TimeTracker::Exceptions;
 use File::Spec::Functions qw(catfile catdir);
+use MooseX::Storage::Util;
 
 __PACKAGE__->mk_accessors(qw(start stop project tags _path basedir));
 
@@ -110,12 +111,12 @@ sub read {
 	my $task;
 	use File::Slurp;
 	my $json = File::Slurp::read_file( $path );
-	my $task_class = MooseX::Storage::Util->peek(
-			$json,
-			format => 'JSON',
-			key    => '__CLASS__',
-	);
 	$task = eval {
+        my $task_class = MooseX::Storage::Util->peek(
+                $json,
+                format => 'JSON',
+                key    => '__CLASS__',
+        );
 		eval "require $task_class; $task_class->import";
 		return $task_class->thaw($json);
 	};
