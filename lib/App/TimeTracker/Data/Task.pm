@@ -4,6 +4,15 @@ use Moose;
 use namespace::autoclean;
 use DateTime;
 
+use MooseX::Storage;
+with Storage('format' => 'JSON', 'io' => 'File');
+MooseX::Storage::Engine->add_custom_type_handler(
+    'DateTime' => (
+        expand => sub { DateTime::Format::ISO8601->parse_datetime(shift) },
+        collapse => sub { (shift)->iso8601 }
+    )
+);
+
 has 'start' => (
     isa=>'DateTime',
     is=>'rw',

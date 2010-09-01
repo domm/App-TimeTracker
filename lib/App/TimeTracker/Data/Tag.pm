@@ -3,8 +3,11 @@ use 5.010;
 use Moose;
 use namespace::autoclean;
 
+use MooseX::Storage;
+with Storage('format' => 'JSON', 'io' => 'File');
+
 has 'name' => (
-    isa=>'String',
+    isa=>'Str',
     is=>'rw',
 );
 

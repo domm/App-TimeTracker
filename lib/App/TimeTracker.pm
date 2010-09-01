@@ -8,6 +8,8 @@ use Data::Dumper;
 use Config::Any;
 
 use App::TimeTracker::Data::Project;
+use App::TimeTracker::Data::Tag;
+use App::TimeTracker::Data::Task;
 
 use Moose;
 use MooseX::Types::Path::Class;
@@ -102,6 +104,18 @@ sub run {
     my $self = shift;
 
     say $self->project->name;
+
+    my $t1 = App::TimeTracker::Data::Tag->new({name=>'test'});
+    my $t2 = App::TimeTracker::Data::Tag->new({name=>'RT1234'});
+
+    my $task = App::TimeTracker::Data::Task->new({
+        start=>DateTime->now,
+        project=>$self->project,
+        tags=>[$t1, $t2],
+    });
+    
+    say $task->freeze;
+    
 
 }
 
