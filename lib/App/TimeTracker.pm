@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use 5.010;
 
-use File::HomeDir;
+use File::HomeDir ();
 use Data::Dumper;
 use Config::Any;
 
@@ -18,7 +18,6 @@ use Moose::Util::TypeConstraints;
 MooseX::Getopt::OptionTypeMap->add_option_type_to_map(
     'App::TimeTracker::Data::Project' => '=s'
 );
-
 
 has 'home' => (
     is=>'ro',
@@ -96,13 +95,11 @@ has 'project' => (
 );
 sub _check_project {
     my ($self, $val, $old_val) = @_;
-    die "Project not in config " unless $self->projects->{$val->name};
+    die "Project >".$val->name."< not in config\n" unless $self->projects->{$val->name};
 }
 
 sub run {
     my $self = shift;
-
-    say $self->projects->{aaa}->name;
 
     say $self->project->name;
 
