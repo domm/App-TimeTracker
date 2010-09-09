@@ -115,7 +115,7 @@ sub run {
     });
     
     say $task->freeze;
-    
+    say $task->storage_location; 
 
 }
 
