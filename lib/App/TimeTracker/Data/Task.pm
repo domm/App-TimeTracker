@@ -4,6 +4,7 @@ use Moose;
 use namespace::autoclean;
 use App::TimeTracker;
 use App::TimeTracker::Data::Project;
+use DateTime::Format::ISO8601;
 
 use MooseX::Storage;
 with Storage('format' => 'JSON', 'io' => 'File');
@@ -56,8 +57,17 @@ sub _filepath {
 }
 
 sub storage_location {
-    my ($self, $base) = @_;
-    return $base->file($self->_filepath);
+    my ($self, $home) = @_;
+    my $file = $home->file($self->_filepath);
+    $file->parent->mkpath;
+    return $file;
+}
+
+sub current {
+    my ($class, $home) = @_;
+    my $current_file = $home->file('current')->slurp(chomp=>1);
+    return $class->load($current_file);
+
 }
 
 

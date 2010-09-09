@@ -116,18 +116,61 @@ sub run {
 
     say $self->project->name;
 
-    my $t1 = App::TimeTracker::Data::Tag->new({name=>'test'});
-    my $t2 = App::TimeTracker::Data::Tag->new({name=>'RT1234'});
+say join(' - ',@{$self->extra_argv});;
+
+
+    # TODO: dispatch to cmd_* according to argv
+
+#    my $t1 = App::TimeTracker::Data::Tag->new({name=>'test'});
+#    my $t2 = App::TimeTracker::Data::Tag->new({name=>'RT1234'});
+#
+#    my $task = App::TimeTracker::Data::Task->new({
+#        start=>$self->now,
+#        project=>$self->project,
+#        tags=>[$t1, $t2],
+#    });
+#    
+#    say $task->freeze;
+#    say $task->storage_location($self->home); 
+
+
+    my $task = App::TimeTracker::Data::Task->current($self->home);
+    say $task->start;
+}
+
+sub cmd_start {
+    my $self = shift;
+
+    # stop current task
+    
+    
+    
+    # start a new one
 
     my $task = App::TimeTracker::Data::Task->new({
-        start=>DateTime->now,
+        start=>$self->now,
         project=>$self->project,
-        tags=>[$t1, $t2],
     });
-    
-    say $task->freeze;
-    say $task->storage_location($self->home); 
 
+    my $task_file = $task->storage_location($self->home)->stringify;
+    $task->store($task_file);
+
+    my $fh = $self->home->file('current')->openw;
+    say $fh $task_file;
+    close $fh;
+
+}
+
+sub cmd_stop {
+    my $self = shift;
+
+    # stop current task
+}
+
+sub now {
+    my $dt = DateTime->now();
+    $dt->set_time_zone('local');
+    return $dt;
 }
 
 
