@@ -2,7 +2,7 @@ package App::TimeTracker::Data::Task;
 use 5.010;
 use Moose;
 use namespace::autoclean;
-use DateTime;
+use App::TimeTracker;
 use App::TimeTracker::Data::Project;
 
 use MooseX::Storage;
@@ -13,36 +13,11 @@ MooseX::Storage::Engine->add_custom_type_handler(
         collapse => sub { (shift)->iso8601 }
     )
 );
-use Moose::Util::TypeConstraints;
-use DateTime::Format::Strptime;
-
-
-subtype 'ATT::Project' => as 'App::TimeTracker::Data::Project';
-coerce 'ATT::Project' 
-    => from 'Str' 
-    => via {
-        App::TimeTracker::Data::Project->new({ name => @_ });
-    };
-
-subtype 'ATT::DateTime' => as 'DateTime';
-coerce 'ATT::DateTime' 
-    => from 'Str' 
-    => via {
-        my $raw = shift;
-        my $dt = DateTime->today;
-        my ($h,$m)=split(/:/,$raw);
-        $dt->set(hour=>$h, minute=>$m);
-        return $dt;
-    };
-
-
-
 
 has 'start' => (
-    isa=>'ATT::DateTime',
+    isa=>'DateTime',
     is=>'rw',
     required=>1,
-    coerce=>1,
     default=>sub { DateTime->now }
 );
 has 'stop' => (
@@ -64,10 +39,9 @@ has 'user' => (
 );
 
 has 'project' => (
-    isa=>'ATT::Project',
+    isa=>'App::TimeTracker::Data::Project',
     is=>'ro',
     required=>1,
-    coerce=>1,
 );
 has 'tags' => (
     isa=>'ArrayRef[App::TimeTracker::Data::Tag]',
@@ -75,12 +49,6 @@ has 'tags' => (
     default=>sub { [] }
 );
 
-#has 'storage_location' => (
-#    isa=>'Path::Class::File',
-#    coerce=>1,
-#    is=>'ro',
-#    lazy_build=>1,
-#);
 sub _filepath {
     my $self = shift;
     my $start = $self->start;

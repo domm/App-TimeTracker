@@ -16,6 +16,18 @@ use MooseX::Types::Path::Class;
 with 'MooseX::Getopt';
 
 use Moose::Util::TypeConstraints;
+use DateTime;
+
+#coerce 'DateTime' 
+#    => from 'Str' 
+#    => via {
+#        my $raw = shift;
+#        my $dt = DateTime->today;
+#        my ($h,$m)=split(/:/,$raw);
+#        $dt->set(hour=>$h, minute=>$m);
+#        return $dt;
+#    };
+
 
 MooseX::Getopt::OptionTypeMap->add_option_type_to_map(
     'App::TimeTracker::Data::Project' => '=s'
@@ -83,7 +95,6 @@ sub _build_projects {
     return \%projects;
 }
 
-
 coerce 'App::TimeTracker::Data::Project'
     => from 'Str'
     => via {App::TimeTracker::Data::Project->new({name=>$_})
@@ -115,7 +126,7 @@ sub run {
     });
     
     say $task->freeze;
-    say $task->storage_location; 
+    say $task->storage_location($self->home); 
 
 }
 
