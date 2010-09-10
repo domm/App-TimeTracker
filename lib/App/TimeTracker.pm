@@ -113,62 +113,19 @@ sub _check_project {
 
 sub run {
     my $self = shift;
-
-  #  say $self->project->name;
-
+    
+    my @plugins = ('Core');
+    if (my $plugins =  $self->config->{Plugins}) {
+        push(@plugins,split(/[,\s]+/,$plugins));
+    }
+    foreach my $plugin (@plugins) {
+        my $class = 'App::TimeTracker::Command::'.$plugin;
+        with $class;
+    }
+    
+    # TODO handle tags
     my $command = 'cmd_'.$self->extra_argv->[0];
     $self->$command;
-
-
-    # TODO: dispatch to cmd_* according to argv
-
-#    my $t1 = App::TimeTracker::Data::Tag->new({name=>'test'});
-#    my $t2 = App::TimeTracker::Data::Tag->new({name=>'RT1234'});
-#
-#    my $task = App::TimeTracker::Data::Task->new({
-#        start=>$self->now,
-#        project=>$self->project,
-#        tags=>[$t1, $t2],
-#    });
-#    
-#    say $task->freeze;
-#    say $task->storage_location($self->home); 
-
-#    my $task = App::TimeTracker::Data::Task->current($self->home);
-#    say $task->start;
-}
-
-sub cmd_start {
-    my $self = shift;
-
-    # stop current task
-    $self->cmd_stop;
-    
-    
-    # start a new one
-    my $task = App::TimeTracker::Data::Task->new({
-        start=>$self->now,
-        project=>$self->project,
-    });
-
-    my $saved_to = $task->save($self->home);
-
-    my $fh = $self->home->file('current')->openw;
-    say $fh $saved_to;
-    close $fh;
-}
-
-sub cmd_stop {
-    my $self = shift;
-
-    my $task = App::TimeTracker::Data::Task->current($self->home);
-    return unless $task;
-
-    $task->stop($self->now);
-    $task->save($self->home);
-    
-    unlink $self->home->file('current')->stringify;
-
 }
 
 sub now {
@@ -176,6 +133,5 @@ sub now {
     $dt->set_time_zone('local');
     return $dt;
 }
-
 
 1;
