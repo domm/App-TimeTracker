@@ -63,11 +63,19 @@ sub storage_location {
     return $file;
 }
 
+sub save {
+    my ($self, $home) = @_;
+
+    my $file = $self->storage_location($home)->stringify;
+    $self->store($file);
+    return $file;
+}
+
 sub current {
     my ($class, $home) = @_;
-    my $current_file = $home->file('current')->slurp(chomp=>1);
-    return $class->load($current_file);
-
+    my $current_file = $home->file('current');
+    return unless -e $current_file;
+    return $class->load($current_file->slurp(chomp=>1));
 }
 
 
