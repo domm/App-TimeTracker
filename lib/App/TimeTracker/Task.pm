@@ -108,18 +108,18 @@ sub read {
 
     ATTX::File->throw("Cannot find file $path") unless -r $path;
 	my $task;
-	use File::Slurp;
-	my $json = File::Slurp::read_file( $path );
-	my $task_class = MooseX::Storage::Util->peek(
-			$json,
-			format => 'JSON',
-			key    => '__CLASS__',
-	);
-	$task = eval {
-		eval "require $task_class; $task_class->import";
-		return $task_class->thaw($json);
-	};
-	if ($@) {
+#	use File::Slurp;
+#	my $json = File::Slurp::read_file( $path );
+#	my $task_class = MooseX::Storage::Util->peek(
+#			$json,
+#			format => 'JSON',
+#			key    => '__CLASS__',
+#	);
+#	$task = eval {
+#		eval "require $task_class; $task_class->import";
+#		return $task_class->thaw($json);
+#	};
+#	if ($@) {
 
 		open( my $fh, "<", $path )
 			|| ATTX::File->throw("Cannot read file $path: $!");
@@ -131,7 +131,7 @@ sub read {
 		}
 
 		$task = App::TimeTracker::Task->new( \%data );
-	}
+#	}
 
 	$task->_path($path);
     return $task;
