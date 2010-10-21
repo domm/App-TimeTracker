@@ -104,25 +104,6 @@ sub _build_config {
     }
 }
 
-has 'projects' => (
-    is => 'ro',
-    isa=>'HashRef',
-    traits => [ 'NoGetopt' ],
-    lazy_build=>1,
-);
-
-sub _build_projects {
-    my $self = shift;
-
-    my %projects;
-    while (my ($name,$conf) = each %{ $self->config->{project}}) {
-        $projects{$name} = App::TimeTracker::Data::Project->new({
-            name=>$name,    
-        });
-    }
-    return \%projects;
-}
-
 coerce 'App::TimeTracker::Data::Project'
     => from 'Str'
     => via {App::TimeTracker::Data::Project->new({name=>$_})
@@ -132,17 +113,19 @@ has 'project' => (
     isa=>'App::TimeTracker::Data::Project',
     is=>'ro',
     coerce=>1,
-    trigger=>\&_check_project,
+    lazy_build=>1,
 );
-sub _check_project {
-    my ($self, $val, $old_val) = @_;
-    die "Project >".$val->name."< not in config\n" unless $self->projects->{$val->name};
+sub _build_project {
+    my $self = shift;
+# TODO get basename
+    return $self->configfile->parent->stringify;
 }
 
 sub run {
     my $self = shift;
     my $plugins =  $self->config->{Plugins};
     warn Data::Dumper::Dumper $self->config;
+    say $self->project->name;
     foreach my $plugin (@$plugins) {
         my $class = 'App::TimeTracker::Command::'.$plugin;
         with $class;
