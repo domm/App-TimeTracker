@@ -5,7 +5,6 @@ use 5.010;
 
 use File::HomeDir ();
 use Data::Dumper;
-use Config::Any;
 
 use App::TimeTracker::Data::Project;
 use App::TimeTracker::Data::Tag;
@@ -13,10 +12,16 @@ use App::TimeTracker::Data::Task;
 
 use Moose;
 use MooseX::Types::Path::Class;
-with 'MooseX::Getopt';
+with qw(
+    MooseX::Getopt
+    App::TimeTracker::Command::Core
+);
 
 use Moose::Util::TypeConstraints;
 use DateTime;
+use Path::Class;
+use Hash::Merge qw();
+use JSON;
 
 #coerce 'DateTime' 
 #    => from 'Str' 
@@ -46,6 +51,15 @@ sub _build_home {
     $home->mkpath unless -d $home;
     return $home;
 }
+has 'global_configfile' => (
+    is=>'ro',
+    isa=>'Path::Class::File',
+    lazy_build=>1,
+);
+sub _build_global_configfile {
+    my $self = shift;
+    return $self->home->file('tracker.json');
+}
 
 has 'configfile' => (
     is=>'ro',
@@ -56,7 +70,20 @@ has 'configfile' => (
 
 sub _build_configfile {
     my $self = shift;
-    return $self->home->file('tracker.ini');
+    my $dir = Path::Class::Dir->new->absolute;
+    my $file;
+    while (!$file) {
+        if (-e $dir->file('.tracker.json')) {
+            $file = $dir->file('.tracker.json');
+        }
+        else {
+            $dir = $dir->parent;
+        }
+        
+        #die "No project config file (.tracker.json) found" 
+        return $self->global_configfile if scalar $dir->dir_list <=1;
+    }
+    return $file;
 }
 
 has 'config' => (
@@ -68,12 +95,13 @@ has 'config' => (
 
 sub _build_config {
     my $self = shift;
-    my $raw_cfany = Config::Any->load_files({
-        use_ext         => 1,
-        files           => [$self->configfile],
-        flatten_to_hash => 1,
-    } );
-    return $raw_cfany->{$self->configfile};
+    if ($self->configfile eq $self->global_configfile) {
+        return decode_json($self->global_configfile->slurp);
+    }
+    else {
+        my @data = (decode_json($self->configfile->slurp),decode_json($self->global_configfile->slurp));
+        return Hash::Merge::merge(@data);
+    }
 }
 
 has 'projects' => (
@@ -113,12 +141,9 @@ sub _check_project {
 
 sub run {
     my $self = shift;
-    
-    my @plugins = ('Core');
-    if (my $plugins =  $self->config->{Plugins}) {
-        push(@plugins,split(/[,\s]+/,$plugins));
-    }
-    foreach my $plugin (@plugins) {
+    my $plugins =  $self->config->{Plugins};
+    warn Data::Dumper::Dumper $self->config;
+    foreach my $plugin (@$plugins) {
         my $class = 'App::TimeTracker::Command::'.$plugin;
         with $class;
     }
