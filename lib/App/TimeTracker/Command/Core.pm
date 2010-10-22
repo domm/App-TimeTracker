@@ -22,11 +22,13 @@ sub cmd_start {
     my $fh = $self->home->file('current')->openw;
     say $fh $saved_to;
     close $fh;
+
+    say "Started working on ".$task->project->name." (TODO tags) at ". $task->start->hms;
 }
 
 sub cmd_stop {
     my $self = shift;
-
+    
     my $task = App::TimeTracker::Data::Task->current($self->home);
     return unless $task;
 
@@ -34,6 +36,19 @@ sub cmd_stop {
     $task->save($self->home);
     
     unlink $self->home->file('current')->stringify;
+    
+    say "Worked ".$task->duration." on ".$task->say_project_tags;
+}
+
+sub cmd_current {
+    my $self = shift;
+    
+    my $task = App::TimeTracker::Data::Task->current($self->home);
+    return unless $task;
+
+    $task->stop($self->now);
+    say "Working ".$task->duration." on ".$task->say_project_tags;
+
 
 }
 
