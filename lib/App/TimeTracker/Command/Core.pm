@@ -15,7 +15,7 @@ sub cmd_start {
     my @tags = map { App::TimeTracker::Data::Tag->new(name=>$_) } @{$self->tags};
     
     my $task = App::TimeTracker::Data::Task->new({
-        start=>$self->now,
+        start=>$self->at || $self->now,
         project=>$self->project,
         tags=>\@tags,
     });
@@ -35,7 +35,7 @@ sub cmd_stop {
     my $task = App::TimeTracker::Data::Task->current($self->home);
     return unless $task;
 
-    $task->stop($self->now);
+    $task->stop($self->at || $self->now);
     $task->save($self->home);
     
     unlink $self->home->file('current')->stringify;
