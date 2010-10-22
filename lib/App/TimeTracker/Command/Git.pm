@@ -5,13 +5,11 @@ use 5.010;
 
 use Moose::Role;
 
-around 'cmd_stop' => sub {
-    my $orig = shift;
-    my $self = shift;
-    say "git-stop";
-    $self->$orig(@_);
-    say "yay";
-};
+#around 'cmd_stop' => sub {
+#    my $orig = shift;
+#    my $self = shift;
+#    $self->$orig(@_);
+#};
 
 sub cmd_git {
     my $self = shift;
