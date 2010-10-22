@@ -81,7 +81,7 @@ sub _build_configfile {
         }
         
         #die "No project config file (.tracker.json) found" 
-        return $self->global_configfile if scalar $dir->dir_list <=1;
+        return Path::Class::file('/no/such/file') if scalar $dir->dir_list <=1;
     }
     return $file;
 }
@@ -95,13 +95,10 @@ has 'config' => (
 
 sub _build_config {
     my $self = shift;
-    if ($self->configfile eq $self->global_configfile) {
-        return decode_json($self->global_configfile->slurp);
-    }
-    else {
-        my @data = (decode_json($self->configfile->slurp),decode_json($self->global_configfile->slurp));
-        return Hash::Merge::merge(@data);
-    }
+    my @data;
+    push (@data,decode_json($self->configfile->slurp)) if -e $self->configfile;
+    push (@data,decode_json($self->global_configfile->slurp)) if -e $self->global_configfile;
+    return Hash::Merge::merge(@data);
 }
 
 coerce 'App::TimeTracker::Data::Project'
@@ -117,15 +114,14 @@ has 'project' => (
 );
 sub _build_project {
     my $self = shift;
-# TODO get basename
-    return $self->configfile->parent->stringify;
+    my @list = $self->configfile->parent->dir_list;
+    return pop(@list);
 }
 
 sub run {
     my $self = shift;
     my $plugins =  $self->config->{Plugins};
-    warn Data::Dumper::Dumper $self->config;
-    say $self->project->name;
+    
     foreach my $plugin (@$plugins) {
         my $class = 'App::TimeTracker::Command::'.$plugin;
         with $class;
