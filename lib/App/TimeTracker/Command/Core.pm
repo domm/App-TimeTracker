@@ -53,6 +53,17 @@ sub cmd_current {
     say "Working ".$task->duration." on ".$task->say_project_tags;
 }
 
+sub cmd_report {
+    my $self = shift;
+
+    # get all task that match --from, --to (or --this, --last) --project, --tag
+
+    # add their seconds
+
+    # say result (maybe with --detail)
+
+}
+
 no Moose::Role;
 1;
 
