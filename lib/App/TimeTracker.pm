@@ -23,16 +23,6 @@ use Path::Class;
 use Hash::Merge qw();
 use JSON;
 
-#coerce 'DateTime' 
-#    => from 'Str' 
-#    => via {
-#        my $raw = shift;
-#        my $dt = DateTime->today;
-#        my ($h,$m)=split(/:/,$raw);
-#        $dt->set(hour=>$h, minute=>$m);
-#        return $dt;
-#    };
-
 subtype 'TT::DateTime' => as class_type('DateTime');
 
 MooseX::Getopt::OptionTypeMap->add_option_type_to_map(
