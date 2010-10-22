@@ -12,9 +12,12 @@ sub cmd_start {
     $self->cmd_stop;
     
     # start a new one
+    my @tags = map { App::TimeTracker::Data::Tag->new(name=>$_) } @{$self->tags};
+    
     my $task = App::TimeTracker::Data::Task->new({
         start=>$self->now,
         project=>$self->project,
+        tags=>\@tags,
     });
 
     my $saved_to = $task->save($self->home);
@@ -23,7 +26,7 @@ sub cmd_start {
     say $fh $saved_to;
     close $fh;
 
-    say "Started working on ".$task->project->name." (TODO tags) at ". $task->start->hms;
+    say "Started working on ".$task->say_project_tags ." at ". $task->start->hms;
 }
 
 sub cmd_stop {
@@ -48,8 +51,6 @@ sub cmd_current {
 
     $task->stop($self->now);
     say "Working ".$task->duration." on ".$task->say_project_tags;
-
-
 }
 
 no Moose::Role;

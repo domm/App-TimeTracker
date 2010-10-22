@@ -35,7 +35,7 @@ use JSON;
 
 
 MooseX::Getopt::OptionTypeMap->add_option_type_to_map(
-    'App::TimeTracker::Data::Project' => '=s'
+    'App::TimeTracker::Data::Project' => '=s',
 );
 
 has 'home' => (
@@ -44,13 +44,13 @@ has 'home' => (
     coerce=>1,
     lazy_build=>1,
 );
-
 sub _build_home {
     my $self = shift;
     my $home = Path::Class::Dir->new(File::HomeDir->my_home,'.TimeTracker2');
     $home->mkpath unless -d $home;
     return $home;
 }
+
 has 'global_configfile' => (
     is=>'ro',
     isa=>'Path::Class::File',
@@ -67,7 +67,6 @@ has 'configfile' => (
     coerce=>1,
     lazy_build=>1,
 );
-
 sub _build_configfile {
     my $self = shift;
     my $dir = Path::Class::Dir->new->absolute;
@@ -92,7 +91,6 @@ has 'config' => (
     lazy_build=>1,
     traits => [ 'NoGetopt' ],
 );
-
 sub _build_config {
     my $self = shift;
     my @data;
@@ -105,7 +103,6 @@ coerce 'App::TimeTracker::Data::Project'
     => from 'Str'
     => via {App::TimeTracker::Data::Project->new({name=>$_})
 };
-
 has 'project' => (
     isa=>'App::TimeTracker::Data::Project',
     is=>'ro',
@@ -118,6 +115,11 @@ sub _build_project {
     return pop(@list);
 }
 
+has 'tags' => (
+    isa=>'ArrayRef',
+    is=>'ro',
+);
+
 sub run {
     my $self = shift;
     my $plugins =  $self->config->{Plugins};
@@ -127,7 +129,6 @@ sub run {
         with $class;
     }
     
-    # TODO handle tags
     my $command = 'cmd_'.$self->extra_argv->[0];
     $self->$command;
 }

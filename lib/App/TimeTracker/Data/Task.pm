@@ -94,7 +94,11 @@ sub current {
 
 sub say_project_tags {
     my $self = shift;
-    return $self->project->name . ' (TODO tags)';
+    
+    my @tags = map { $_->name } @{$self->tags};
+    my $rv = $self->project->name;
+    $rv .= ' ('.join(', ',@tags).')' if (@tags);
+    return $rv;
 }
 
 __PACKAGE__->meta->make_immutable;
