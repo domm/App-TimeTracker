@@ -109,6 +109,7 @@ sub read {
 
     ATTX::File->throw("Cannot find file $path") unless -r $path;
 	my $task;
+
 	use File::Slurp;
 	my $json = File::Slurp::read_file( $path );
 	$task = eval {
@@ -121,7 +122,6 @@ sub read {
 		return $task_class->thaw($json);
 	};
 	if ($@) {
-
 		open( my $fh, "<", $path )
 			|| ATTX::File->throw("Cannot read file $path: $!");
 		my %data;
