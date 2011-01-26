@@ -99,7 +99,10 @@ has 'at' => (
 
 sub run {
     my $self = shift;
-    my $command = 'cmd_'.$self->extra_argv->[0];
+    my $command = 'cmd_'.($self->extra_argv->[0] || 'missing');
+
+    $self->cmd_commands unless $self->can($command);
+
     $self->$command;
 }
 

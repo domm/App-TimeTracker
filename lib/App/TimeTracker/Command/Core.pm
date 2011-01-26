@@ -64,6 +64,18 @@ sub cmd_report {
 
 }
 
+sub cmd_commands {
+    my $self = shift;
+
+    say "Available commands:";
+    foreach my $method ($self->meta->get_all_method_names) {
+        next unless $method =~ /^cmd_/;
+        $method =~ s/^cmd_//;
+        say "\t$method";
+    }
+    exit;
+}
+
 no Moose::Role;
 1;
 
