@@ -16,6 +16,9 @@ sub cmd_git {
     say "git!!";
 }
 
+#after 'cmd_start' => sub {
+#};
+
 no Moose::Role;
 1;
 

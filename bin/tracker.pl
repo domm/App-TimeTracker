@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use App::TimeTracker;
+use App::TimeTracker::Proto;
 
-my $app = App::TimeTracker->new_with_options->run;
+my $app = App::TimeTracker::Proto->new->run;
 
