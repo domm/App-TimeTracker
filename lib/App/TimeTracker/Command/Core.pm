@@ -47,11 +47,16 @@ sub cmd_stop {
 sub cmd_current {
     my $self = shift;
     
-    my $task = App::TimeTracker::Data::Task->current($self->home);
-    return unless $task;
-
-    $task->stop($self->now);
-    say "Working ".$task->duration." on ".$task->say_project_tags;
+    if (my $task = App::TimeTracker::Data::Task->current($self->home)) {
+        say "Working ".$task->_calc_duration($self->now)." on ".$task->say_project_tags;
+    }
+    elsif (my $prev = App::TimeTracker::Data::Task->previous($self->home)) {
+        say "Currently not working on anything, but the last thing you worked on was:";
+        say $prev->say_project_tags;
+    }
+    else {
+        say "Currently not working on anything, and I have no idea what you worked on earlier...";
+    }
 }
 
 sub cmd_report {
