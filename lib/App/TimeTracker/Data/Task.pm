@@ -65,9 +65,10 @@ sub _filepath {
 
 sub _calc_duration {
     my ( $self, $stop ) = @_;
-    my $delta = $self->stop - $self->start;
-    $self->duration($dtf_dur->format_duration($delta));
+    $stop ||= $self->stop;
+    my $delta = $stop - $self->start;
     $self->seconds($dtf_sec->format_duration($delta));
+    $self->duration($dtf_dur->format_duration($delta));
 }
 
 sub storage_location {
