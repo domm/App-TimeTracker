@@ -50,6 +50,25 @@ sub cmd_current {
     }
 }
 
+sub cmd_continue {
+    my $self = shift;
+
+    if (my $task = App::TimeTracker::Data::Task->current($self->home)) {
+        say "Cannot 'continue', you're working on something:\n".$task->say_project_tags;
+    }
+    elsif (my $prev = App::TimeTracker::Data::Task->previous($self->home)) {
+        my $task = App::TimeTracker::Data::Task->new({
+            start=>$self->at || $self->now,
+            project=>$prev->project,
+            tags=>$prev->tags,
+        });
+        $task->do_start($self->home);
+    }
+    else {
+        say "Currently not working on anything, and I have no idea what you worked on earlier...";
+    }
+}
+
 sub cmd_report {
     my $self = shift;
 
