@@ -72,12 +72,13 @@ sub cmd_continue {
 sub cmd_report {
     my $self = shift;
 
+    die "not implemented yet"
+
     # get all task that match --from, --to (or --this, --last) --project, --tag
 
     # add their seconds
 
     # say result (maybe with --detail)
-
 }
 
 sub cmd_commands {
