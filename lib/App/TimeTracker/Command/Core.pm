@@ -4,6 +4,7 @@ use warnings;
 use 5.010;
 
 use Moose::Role;
+use File::Copy qw(move);
 
 sub cmd_start {
     my $self = shift;
@@ -38,7 +39,7 @@ sub cmd_stop {
     $task->stop($self->at || $self->now);
     $task->save($self->home);
     
-    unlink $self->home->file('current')->stringify;
+    move($self->home->file('current')->stringify,$self->home->file('previous')->stringify);
     
     say "Worked ".$task->duration." on ".$task->say_project_tags;
 }
