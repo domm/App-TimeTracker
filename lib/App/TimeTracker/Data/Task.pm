@@ -88,9 +88,19 @@ sub save {
 
 sub current {
     my ($class, $home) = @_;
-    my $current_file = $home->file('current');
-    return unless -e $current_file;
-    return $class->load($current_file->slurp(chomp=>1));
+    $class->_load_from_link($home, 'current');
+}
+
+sub previous {
+    my ($class, $home) = @_;
+    $class->_load_from_link($home, 'previous');
+}
+
+sub _load_from_link {
+    my ($class, $home, $link) = @_;
+    my $file = $home->file($link);
+    return unless -e $file;
+    return $class->load($file->slurp(chomp=>1));
 }
 
 sub say_project_tags {
