@@ -9,25 +9,16 @@ use File::Copy qw(move);
 sub cmd_start {
     my $self = shift;
 
-    # stop current task
     $self->cmd_stop;
     
-    # start a new one
     my @tags = map { App::TimeTracker::Data::Tag->new(name=>$_) } @{$self->tags};
-    
     my $task = App::TimeTracker::Data::Task->new({
         start=>$self->at || $self->now,
         project=>$self->project,
         tags=>\@tags,
     });
 
-    my $saved_to = $task->save($self->home);
-
-    my $fh = $self->home->file('current')->openw;
-    say $fh $saved_to;
-    close $fh;
-
-    say "Started working on ".$task->say_project_tags ." at ". $task->start->hms;
+    $task->do_start($self->home);
 }
 
 sub cmd_stop {

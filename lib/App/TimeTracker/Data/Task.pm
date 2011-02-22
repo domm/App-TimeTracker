@@ -112,6 +112,18 @@ sub say_project_tags {
     return $rv;
 }
 
+sub do_start {
+    my ($self, $home) = @_;
+
+    my $saved_to = $self->save($home);
+
+    my $fh = $home->file('current')->openw;
+    say $fh $saved_to;
+    close $fh;
+
+    say "Started working on ".$self->say_project_tags ." at ". $self->start->hms;
+}
+
 __PACKAGE__->meta->make_immutable;
 1;
 
