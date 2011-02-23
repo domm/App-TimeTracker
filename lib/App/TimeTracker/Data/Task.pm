@@ -60,7 +60,12 @@ has 'tags' => (
 sub _filepath {
     my $self = shift;
     my $start = $self->start;
-    return ($start->year,sprintf('%02d',$start->month),$start->strftime("%Y%m%d-%H%M%S").'_'.$self->project->name.'.json');
+    my $name = $self->project->name;
+    $name=~s/\W/_/g;
+    $name=~s/_+/_/g;
+    $name=~s/^_//;
+    $name=~s/_$//;
+    return ($start->year,sprintf('%02d',$start->month),$start->strftime("%Y%m%d-%H%M%S").'_'.$name.'.json');
 }
 
 sub _calc_duration {
