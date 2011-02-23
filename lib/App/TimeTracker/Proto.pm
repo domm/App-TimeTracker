@@ -50,7 +50,7 @@ sub _build_configfile {
             $dir = $dir->parent;
         }
 
-        return Path::Class::file('/no/such/file')
+        return Path::Class::file('/nosuchfile')
             if scalar $dir->dir_list <= 1;
     }
     return $file;
@@ -73,8 +73,14 @@ sub run {
         ],
     );
 
-    my @dir_tree        = $self->configfile->parent->dir_list;
-    my $current_project = pop(@dir_tree);
+    my $current_project;
+    if ($self->configfile =~/nosuchfile/) {
+        $current_project = 'no project';
+    }
+    else {
+        my @dir_tree        = $self->configfile->parent->dir_list;
+        $current_project = pop(@dir_tree);
+    }
 
     $class->name->new_with_options( {
             home            => $self->home,
