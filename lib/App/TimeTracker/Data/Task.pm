@@ -15,7 +15,7 @@ MooseX::Storage::Engine->add_custom_type_handler(
         collapse => sub { (shift)->iso8601 }
     )
 );
-my $dtf_dur = DateTime::Format::Duration->new(pattern => '%H:%M:%S');
+my $dtf_dur = DateTime::Format::Duration->new(pattern => '%H:%M:%S', normalise=>1);
 my $dtf_sec = DateTime::Format::Duration->new(pattern => '%s');
 
 has 'start' => (
@@ -71,7 +71,7 @@ sub _filepath {
 sub _calc_duration {
     my ( $self, $stop ) = @_;
     $stop ||= $self->stop;
-    my $delta = $stop - $self->start;
+    my $delta = $stop->subtract_datetime($self->start);
     $self->seconds($dtf_sec->format_duration($delta));
     $self->duration($dtf_dur->format_duration($delta));
 }
