@@ -3,6 +3,8 @@ use strict;
 use warnings;
 use 5.010;
 
+our $VERSION = "1.001";
+
 use App::TimeTracker::Data::Project;
 use App::TimeTracker::Data::Tag;
 use App::TimeTracker::Data::Task;
