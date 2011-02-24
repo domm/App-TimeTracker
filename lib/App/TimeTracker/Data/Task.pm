@@ -65,7 +65,7 @@ sub _filepath {
     $name=~s/_+/_/g;
     $name=~s/^_//;
     $name=~s/_$//;
-    return ($start->year,sprintf('%02d',$start->month),$start->strftime("%Y%m%d-%H%M%S").'_'.$name.'.json');
+    return ($start->year,sprintf('%02d',$start->month),$start->strftime("%Y%m%d-%H%M%S").'_'.$name.'.trc');
 }
 
 sub _calc_duration {
