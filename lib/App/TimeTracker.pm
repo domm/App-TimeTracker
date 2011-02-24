@@ -4,6 +4,7 @@ use warnings;
 use 5.010;
 
 our $VERSION = "1.001";
+# ABSTRACT: Track time spend on projects from the commandline
 
 use App::TimeTracker::Data::Project;
 use App::TimeTracker::Data::Tag;
