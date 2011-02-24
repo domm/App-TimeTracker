@@ -18,7 +18,7 @@ has 'home' => (
 sub _build_home {
     my $self = shift;
     my $home =
-        Path::Class::Dir->new( File::HomeDir->my_home, '.TimeTracker2' );
+        Path::Class::Dir->new( File::HomeDir->my_home, '.TimeTracker' );
     $home->mkpath unless -d $home;
     return $home;
 }
