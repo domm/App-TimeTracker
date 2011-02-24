@@ -111,4 +111,20 @@ sub now {
     return $dt;
 }
 
+sub beautify_seconds {
+    my ( $self, $s ) = @_;
+
+    my ( $m, $h )=0;
+
+    if ( $s >= 60 ) {
+        $m = int( $s / 60 );
+        $s = $s - ( $m * 60 );
+    }
+    if ( $m && $m >= 60 ) {
+        $h = int( $m / 60 );
+        $m = $m - ( $h * 60 );
+    }
+    return sprintf("%02d:%02d:%02d",$h,$m,$s);
+}
+
 1;

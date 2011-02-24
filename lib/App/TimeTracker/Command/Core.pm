@@ -5,6 +5,7 @@ use 5.010;
 
 use Moose::Role;
 use File::Copy qw(move);
+use File::Find::Rule;
 
 sub cmd_start {
     my $self = shift;
@@ -80,6 +81,42 @@ sub cmd_report {
 
     # say result (maybe with --detail)
 }
+
+sub cmd_worked {
+    my $self = shift;
+
+    my $from = DateTime->now->truncate(to=>'month');
+    my $to = DateTime->now->add(months=>1)->truncate(to=>'month');
+
+    my $from_cmp = $from->strftime("%Y%m%d%H%M%S");
+    my $to_cmp = $to->strftime("%Y%m%d%H%M%S");
+
+    my @files = File::Find::Rule->file()->name(qr/\.trc$/)->exec(
+        sub {
+            my ($file) = @_;
+            $file =~ /(\d{8})-(\d{6})/;
+            my $time = $1 . $2;
+            return 1 if $time >= $from_cmp;
+        }
+        )->exec(
+        sub {
+            my ($file) = @_;
+            $file =~ /(\d{8})-(\d{6})/;
+            my $time = $1 . $2;
+            return 1 if $time <= $to_cmp;
+        }
+        )->in( $self->home . '/' );
+
+    my $total;
+    foreach my $file ( @files ) {
+        my $task = App::TimeTracker::Data::Task->load($file);
+        $total+=$task->seconds;
+    }
+
+    say $total;
+    say $self->beautify_seconds($total);
+}
+
 
 sub cmd_commands {
     my $self = shift;
