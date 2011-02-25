@@ -13,6 +13,7 @@ use App::TimeTracker::Data::Task;
 use DateTime;
 use Moose;
 use Moose::Util::TypeConstraints;
+use Path::Class::Iterator;
 
 with qw(
     MooseX::Getopt
@@ -126,6 +127,43 @@ sub beautify_seconds {
         $m = $m - ( $h * 60 );
     }
     return sprintf("%02d:%02d:%02d",$h,$m,$s);
+}
+
+sub find_task_files {
+    my ($self, $args) = @_;
+
+    my ($cmp_from, $cmp_to);
+
+    if (my $from = $args->{from}) {
+        my $to = $args->{to} || $self->now;
+
+        $cmp_from = $from->strftime("%Y%m%d%H%M%S");
+        $cmp_to = $to->strftime("%Y%m%d%H%M%S");
+    }
+
+    my $project = $args->{project};
+
+    my @found;
+    my $iterator = Path::Class::Iterator->new(
+        root => $self->home,
+    );
+    until ($iterator->done) {
+        my $file = $iterator->next;
+        next unless -f $file;
+        my $name = $file->basename;
+        next unless $name =~/\.trc$/;
+        
+        next if $project && $name !~/$project/;
+
+        if ($cmp_from) {
+            $file =~ /(\d{8})-(\d{6})/;
+            my $time = $1 . $2;
+            next if $time < $cmp_from;
+            next if $time > $cmp_to;
+        }
+        push(@found,$file);
+    }
+    return @found;
 }
 
 1;

@@ -88,32 +88,17 @@ sub cmd_worked {
     my $from = DateTime->now->truncate(to=>'month');
     my $to = DateTime->now->add(months=>1)->truncate(to=>'month');
 
-    my $from_cmp = $from->strftime("%Y%m%d%H%M%S");
-    my $to_cmp = $to->strftime("%Y%m%d%H%M%S");
-
-    my @files = File::Find::Rule->file()->name(qr/\.trc$/)->exec(
-        sub {
-            my ($file) = @_;
-            $file =~ /(\d{8})-(\d{6})/;
-            my $time = $1 . $2;
-            return 1 if $time >= $from_cmp;
-        }
-        )->exec(
-        sub {
-            my ($file) = @_;
-            $file =~ /(\d{8})-(\d{6})/;
-            my $time = $1 . $2;
-            return 1 if $time <= $to_cmp;
-        }
-        )->in( $self->home . '/' );
+    my @files = $self->find_task_files({
+        from=>$from,
+        to=>$to,
+    });
 
     my $total;
     foreach my $file ( @files ) {
-        my $task = App::TimeTracker::Data::Task->load($file);
+        my $task = App::TimeTracker::Data::Task->load($file->stringify);
         $total+=$task->seconds;
     }
 
-    say $total;
     say $self->beautify_seconds($total);
 }
 
