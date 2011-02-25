@@ -1,6 +1,6 @@
 #!/opt/perl5.10.1/bin/perl
 # generated with /opt/perl5.10/bin/generate_00-load_t.pl
-use Test::More tests => 4;
+use Test::More tests => 8;
 
 
 BEGIN {
@@ -9,6 +9,10 @@ BEGIN {
 
 diag( "Testing App::TimeTracker App::TimeTracker->VERSION, Perl $], $^X" );
 
+use_ok( 'App::TimeTracker::Command::Core' );
+use_ok( 'App::TimeTracker::Command::Git' );
+use_ok( 'App::TimeTracker::Command::SyncViaGit' );
 use_ok( 'App::TimeTracker::Data::Project' );
 use_ok( 'App::TimeTracker::Data::Tag' );
 use_ok( 'App::TimeTracker::Data::Task' );
+use_ok( 'App::TimeTracker::Proto' );
