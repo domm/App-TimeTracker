@@ -40,6 +40,11 @@ coerce 'TT::DateTime'
             $dt->set(hour=>$h, minute=>$m);
             return $dt;
         }
+        when (10) { # "2010-02-26"
+            require DateTime::Format::Strptime;
+            my $dp = DateTime::Format::Strptime->new(pattern=>'%Y-%m-%d');
+            $dt = $dp->parse_datetime($raw);
+        }
         when (16) { # "2010-02-26 23:42"
             require DateTime::Format::Strptime;
             my $dp = DateTime::Format::Strptime->new(pattern=>'%Y-%m-%d %H:%M');
@@ -55,6 +60,8 @@ MooseX::Getopt::OptionTypeMap->add_option_type_to_map(
 MooseX::Getopt::OptionTypeMap->add_option_type_to_map(
     'TT::DateTime' => '=s',
 );
+
+no Moose::Util::TypeConstraints;
 
 has 'home' => (
     is=>'ro',
@@ -92,15 +99,17 @@ has 'tags' => (
     default=>sub {[]}
 );
 
-has 'at' => (
+has [qw(at from to)] => (
     isa=>'TT::DateTime',
     is=>'ro',
     coerce=>1,
-); 
+);
 
 sub run {
     my $self = shift;
     my $command = 'cmd_'.($self->extra_argv->[0] || 'missing');
+
+    $self->_endofday_to if $self->to;
 
     $self->cmd_commands unless $self->can($command);
 
@@ -116,7 +125,7 @@ sub now {
 sub beautify_seconds {
     my ( $self, $s ) = @_;
 
-    my ( $m, $h )=0;
+    my ( $m, $h )= (0, 0);
 
     if ( $s >= 60 ) {
         $m = int( $s / 60 );
@@ -140,7 +149,6 @@ sub find_task_files {
         $cmp_from = $from->strftime("%Y%m%d%H%M%S");
         $cmp_to = $to->strftime("%Y%m%d%H%M%S");
     }
-
     my $project = $args->{project};
 
     my @found;
@@ -152,8 +160,6 @@ sub find_task_files {
         next unless -f $file;
         my $name = $file->basename;
         next unless $name =~/\.trc$/;
-        
-        next if $project && $name !~/$project/;
 
         if ($cmp_from) {
             $file =~ /(\d{8})-(\d{6})/;
@@ -161,9 +167,18 @@ sub find_task_files {
             next if $time < $cmp_from;
             next if $time > $cmp_to;
         }
+
+        next if $project && $name !~/$project/;
+
         push(@found,$file);
     }
     return @found;
+}
+
+sub _endofday_to {
+    my $self = shift;
+    return if $self->to->hour;
+    $self->to->set(hour=>23,minute=>59,second=>59);
 }
 
 1;

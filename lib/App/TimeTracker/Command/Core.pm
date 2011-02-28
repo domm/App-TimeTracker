@@ -85,15 +85,13 @@ sub cmd_report {
 sub cmd_worked {
     my $self = shift;
 
-    my $from = DateTime->now->truncate(to=>'month');
-    my $to = DateTime->now->add(months=>1)->truncate(to=>'month');
-
     my @files = $self->find_task_files({
-        from=>$from,
-        to=>$to,
+        from=>$self->from,
+        to=>$self->to,
+        project=>$self->project->name,
     });
 
-    my $total;
+    my $total=0;
     foreach my $file ( @files ) {
         my $task = App::TimeTracker::Data::Task->load($file->stringify);
         $total+=$task->seconds;

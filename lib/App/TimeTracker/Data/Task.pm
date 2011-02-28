@@ -32,7 +32,13 @@ has 'stop' => (
 has 'seconds' => (
     isa=>'Int',
     is=>'rw',
+    lazy_build=>1,
 );
+sub _build_seconds {
+    my $self = shift;
+    my $delta = DateTime->now->subtract_datetime($self->start);
+    $dtf_sec->format_duration($delta);
+}
 has 'duration' => (
     isa=>'Str',
     is=>'rw',
