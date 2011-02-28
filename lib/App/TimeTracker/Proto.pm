@@ -69,9 +69,26 @@ sub run {
     my $class = Moose::Meta::Class->create_anon_class(
         superclasses => ['App::TimeTracker'],
         roles        => [
-            map { 'App::TimeTracker::Command::' . $_ } @{ $config->{Plugins} }
+            map { 'App::TimeTracker::Command::' . $_ } 'Core', @{ $config->{Plugins} }
         ],
     );
+
+    my %commands;
+    foreach my $method ($class->get_all_method_names) {
+        next unless $method =~ /^cmd_/;
+        $method =~ s/^cmd_//;
+        $commands{$method}=1;
+    }
+    my $load_attribs_for_command;
+    foreach (@ARGV) {
+        if ($commands{$_}) {
+            $load_attribs_for_command='_load_attribs_'.$_;
+            last;
+        }
+    }
+    if ($load_attribs_for_command && $class->has_method($load_attribs_for_command)) {
+        $class->name->$load_attribs_for_command($class);
+    }
 
     my $current_project;
     if ($self->configfile =~/nosuchfile/) {

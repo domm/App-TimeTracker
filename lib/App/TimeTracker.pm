@@ -17,7 +17,6 @@ use Path::Class::Iterator;
 
 with qw(
     MooseX::Getopt
-    App::TimeTracker::Command::Core
 );
 
 subtype 'TT::DateTime' => as class_type('DateTime');
@@ -81,17 +80,6 @@ has '_currentproject' => (
     traits => [ 'NoGetopt' ],
 );
 
-has 'project' => (
-    isa=>'App::TimeTracker::Data::Project',
-    is=>'ro',
-    coerce=>1,
-    lazy_build=>1,
-);
-sub _build_project {
-    my $self = shift;
-    return $self->_currentproject;
-}
-
 has 'tags' => (
     isa=>'ArrayRef',
     is=>'ro',
@@ -99,17 +87,14 @@ has 'tags' => (
     default=>sub {[]}
 );
 
-has [qw(at from to)] => (
-    isa=>'TT::DateTime',
-    is=>'ro',
-    coerce=>1,
-);
+sub _build_project {
+    my $self = shift;
+    return $self->_currentproject;
+}
 
 sub run {
     my $self = shift;
     my $command = 'cmd_'.($self->extra_argv->[0] || 'missing');
-
-    $self->_endofday_to if $self->to;
 
     $self->cmd_commands unless $self->can($command);
 
@@ -124,7 +109,7 @@ sub now {
 
 sub beautify_seconds {
     my ( $self, $s ) = @_;
-
+    return '0' unless $s;
     my ( $m, $h )= (0, 0);
 
     if ( $s >= 60 ) {
@@ -145,11 +130,14 @@ sub find_task_files {
 
     if (my $from = $args->{from}) {
         my $to = $args->{to} || $self->now;
-
+        $to->set(hour=>23,minute=>59,second=>59) unless $to->hour;
         $cmp_from = $from->strftime("%Y%m%d%H%M%S");
         $cmp_to = $to->strftime("%Y%m%d%H%M%S");
     }
-    my $project = $args->{project};
+    my $projects;
+    if ($args->{projects}) {
+        $projects = join('|',@{$args->{projects}});
+    }
 
     my @found;
     my $iterator = Path::Class::Iterator->new(
@@ -168,7 +156,7 @@ sub find_task_files {
             next if $time > $cmp_to;
         }
 
-        next if $project && $name !~/$project/;
+        next if $projects && ! ($name ~~ /$projects/);
 
         push(@found,$file);
     }
