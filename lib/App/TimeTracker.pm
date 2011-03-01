@@ -14,6 +14,7 @@ use DateTime;
 use Moose;
 use Moose::Util::TypeConstraints;
 use Path::Class::Iterator;
+use MooseX::Storage::Format::JSONpm;
 
 with qw(
     MooseX::Getopt

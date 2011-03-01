@@ -9,7 +9,11 @@ use DateTime::Format::Duration;
 use User::pwent;
 
 use MooseX::Storage;
-with Storage('format' => 'JSON', 'io' => 'File');
+with Storage(
+    format => [ JSONpm => { json_opts => { pretty => 1 } } ],
+    io => "File",
+    );
+
 MooseX::Storage::Engine->add_custom_type_handler(
     'DateTime' => (
         expand => sub { DateTime::Format::ISO8601->parse_datetime(shift) },
