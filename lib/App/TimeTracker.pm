@@ -85,7 +85,11 @@ has 'tags' => (
     isa=>'ArrayRef',
     is=>'ro',
     traits  => ['Array'],
-    default=>sub {[]}
+    default=>sub {[]},
+    handles => {
+        insert_tag  => 'unshift',
+        add_tag  => 'push',
+    }
 );
 
 sub _build_project {
