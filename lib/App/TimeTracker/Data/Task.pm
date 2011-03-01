@@ -6,6 +6,7 @@ use App::TimeTracker;
 use App::TimeTracker::Data::Project;
 use DateTime::Format::ISO8601;
 use DateTime::Format::Duration;
+use User::pwent;
 
 use MooseX::Storage;
 with Storage('format' => 'JSON', 'io' => 'File');
@@ -47,10 +48,14 @@ has 'status' => (
     isa=>'Str',
     is=>'rw',
 );
+sub _build_user {
+    return  @{getpw( $< )}[0];
+}
 has 'user' => (
     isa=>'Str',
     is=>'ro',
-    default=>'domm' # TODO: get user from config / system
+    required => 1,
+    lazy_build => 1,
 );
 has 'project' => (
     isa=>'App::TimeTracker::Data::Project',
