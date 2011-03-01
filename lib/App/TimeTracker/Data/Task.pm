@@ -67,9 +67,10 @@ has 'project' => (
     required=>1,
 );
 has 'tags' => (
-    isa=>'ArrayRef[App::TimeTracker::Data::Tag]',
+    isa=>'ArrayRef',
     is=>'ro',
-    default=>sub { [] }
+    default=>sub { [] },
+    traits  => ['Array'],
 );
 
 sub _filepath {
