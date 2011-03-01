@@ -6,7 +6,7 @@ use 5.010;
 use Moose::Role;
 use Git::Repository;
 
-has 'branch' => (is=>'ro',isa=>'Str');
+has 'branch' => (is=>'rw',isa=>'Str');
 has 'merge' => (is=>'ro',isa=>'Bool');
 
 after 'cmd_start' => sub {
