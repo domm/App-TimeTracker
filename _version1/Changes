@@ -1,0 +1,61 @@
+Revision history for App::TimeTracker
+
+0.21   2009-02-17 20:50:30
+    - remove debug output
+    - fix 00-load.t (thanks to cpan-testers for spotting this)
+
+
+0.20    2009-02-12
+    - switched to new storage system (filesystem base, not sqlite, to 
+      make syncing via git et.al. easier
+
+
+0.08	2008-04-04
+    - added cmd "report"
+    - added --this and --last to "worked"
+    - "worked" now works with tags
+    - added --from and --to to "worked"
+    - added --svn to "stop"
+    - added some docs
+    - added missing dependency on DateTime::Format::Strptime
+
+
+0.07    2008-01-23
+    - added docs
+    - fixed bad default filepath
+
+
+0.06    2008-01-22
+    - renamed to App::TimeTracker
+    - first release to CPAN
+
+
+0.05    2008-01-21
+    - switched to SQLite for storage
+    - added DBIx::Class
+    - rewrote a lot of stuff to work with DBIx::Class
+
+
+0.04    2008-01-18
+    - added docs
+    - added command 'worked'
+    - added command 'current'
+    - now using App::Cmd
+
+
+0.03    2008-01-07
+    - override start/stop time from commandline
+
+
+0.02    2008-01-04
+    - ask before adding a new project (to catch typos etc)
+    - added beautify_seconds and some nicer output to stop/start
+
+
+0.01    2008-01-03
+    - basic functionality working (start/stop)
+
+
+0.00    2008-01-02
+    - first draft
+
