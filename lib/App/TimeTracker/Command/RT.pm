@@ -9,6 +9,7 @@ has 'rt' => (is=>'ro',isa=>'Int');
 
 before 'cmd_start' => sub {
     my $self = shift;
+    return unless $self->rt;
 
     $self->insert_tag('RT'.$self->rt);
 
