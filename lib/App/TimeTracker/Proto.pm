@@ -90,15 +90,16 @@ sub run {
         $class->name->$load_attribs_for_command($class);
     }
 
-    my $current_project;
-    if ($self->configfile =~/nosuchfile/) {
-        $current_project = 'no project';
+    my $current_project = $config->{project};
+    unless ($current_project) {
+        if ($self->configfile =~/nosuchfile/) {
+            $current_project = 'no project';
+        }
+        else {
+            my @dir_tree        = $self->configfile->parent->dir_list;
+            $current_project = pop(@dir_tree);
+        }
     }
-    else {
-        my @dir_tree        = $self->configfile->parent->dir_list;
-        $current_project = pop(@dir_tree);
-    }
-
     $class->name->new_with_options( {
             home            => $self->home,
             config          => $config,
