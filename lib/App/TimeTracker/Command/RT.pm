@@ -5,11 +5,12 @@ use 5.010;
 
 use Moose::Role;
 
-has 'rt' => (is=>'ro',isa=>'Int');
+has 'rt' => (is=>'ro',isa=>'Str');
 
 before 'cmd_start' => sub {
     my $self = shift;
-    return unless $self->rt;
+    return unless my $rt = $self->rt;
+    $rt=~s/\D//g;
 
     $self->insert_tag('RT'.$self->rt);
 
