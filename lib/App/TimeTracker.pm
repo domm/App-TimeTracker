@@ -21,11 +21,20 @@ with qw(
 );
 
 subtype 'TT::DateTime' => as class_type('DateTime');
+subtype 'TT::RT' => as 'Int';
 
 coerce 'App::TimeTracker::Data::Project'
     => from 'Str'
     => via {App::TimeTracker::Data::Project->new({name=>$_})
 };
+coerce 'TT::RT'
+    => from 'Str'
+    => via {
+    my $raw = $_;
+    $raw=~s/\D//g;
+    return $raw;
+}
+
 coerce 'TT::DateTime'
     => from 'Str'
     => via {
@@ -59,6 +68,9 @@ MooseX::Getopt::OptionTypeMap->add_option_type_to_map(
 );
 MooseX::Getopt::OptionTypeMap->add_option_type_to_map(
     'TT::DateTime' => '=s',
+);
+MooseX::Getopt::OptionTypeMap->add_option_type_to_map(
+    'TT::RT' => '=i',
 );
 
 no Moose::Util::TypeConstraints;

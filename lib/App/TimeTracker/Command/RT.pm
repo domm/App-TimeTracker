@@ -6,7 +6,7 @@ use 5.010;
 use Moose::Role;
 use RT::Client::REST;
 
-has 'rt' => (is=>'ro',isa=>'Str');
+has 'rt' => (is=>'ro',isa=>'TT::RT',coerce=>1,);
 has 'rt_client' => (is=>'ro',isa=>'RT::Client::REST',lazy_build=>1);
 sub _build_rt_client {
     my $self = shift;
@@ -27,14 +27,13 @@ sub _build_rt_client {
 
 before 'cmd_start' => sub {
     my $self = shift;
-    return unless my $rt_id = $self->rt;
-    $rt_id=~s/\D//g;
-    my $ticketname='RT'.$rt_id;
+    return unless my $rt = $self->rt;
+    my $ticketname='RT'.$rt;
 
     $self->insert_tag($ticketname);
 
     if ($self->meta->does_role('App::TimeTracker::Command::Git')) {
-        my $ticket=$self->rt_client->show(type => 'ticket', id => $rt_id);
+        my $ticket=$self->rt_client->show(type => 'ticket', id => $rt);
         my $subject = $ticket->{Subject};
         $subject=~s/\W/_/g;
         $subject=~s/_+/_/g;
