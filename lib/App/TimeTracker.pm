@@ -33,7 +33,7 @@ coerce 'TT::RT'
     my $raw = $_;
     $raw=~s/\D//g;
     return $raw;
-}
+};
 
 coerce 'TT::DateTime'
     => from 'Str'
