@@ -104,6 +104,12 @@ has 'tags' => (
     }
 );
 
+has '_current_command' => (
+    isa=>'Str',
+    is=>'rw',
+    traits => [ 'NoGetopt' ],
+);
+
 sub _build_project {
     my $self = shift;
     return $self->_currentproject;
@@ -114,7 +120,7 @@ sub run {
     my $command = 'cmd_'.($self->extra_argv->[0] || 'missing');
 
     $self->cmd_commands unless $self->can($command);
-
+    $self->_current_command($command);
     $self->$command;
 }
 
