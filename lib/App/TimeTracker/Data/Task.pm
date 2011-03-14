@@ -1,5 +1,8 @@
 package App::TimeTracker::Data::Task;
 use 5.010;
+
+# ABSTRACT: TimeTracker Task storage
+
 use Moose;
 use namespace::autoclean;
 use App::TimeTracker;

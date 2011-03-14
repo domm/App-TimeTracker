@@ -1,5 +1,8 @@
 package App::TimeTracker::Data::Tag;
 use 5.010;
+
+# ABSTRACT: TimeTracker Tag storage
+
 use Moose;
 use namespace::autoclean;
 

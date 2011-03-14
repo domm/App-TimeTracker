@@ -1,5 +1,8 @@
 package App::TimeTracker::Data::Project;
 use 5.010;
+
+# ABSTRACT: TimeTracker Project storage
+
 use Moose;
 use namespace::autoclean;
 

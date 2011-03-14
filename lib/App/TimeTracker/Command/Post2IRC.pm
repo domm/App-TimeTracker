@@ -1,7 +1,9 @@
-package App::TimeTracker::Command::HTTP2IRC;
+package App::TimeTracker::Command::Post2IRC;
 use strict;
 use warnings;
 use 5.010;
+
+# ABSTRACT: TimeTracker post to irc plugin
 
 use Moose::Role;
 use LWP::UserAgent;
@@ -22,7 +24,7 @@ after 'cmd_stop' => sub {
 
 sub _post_to_irc {
     my ($self, $status, $task) = @_;
-    my $cfg = $self->config->{http2irc};
+    my $cfg = $self->config->{post2irc};
     return unless $cfg;
 
     my $ua = LWP::UserAgent->new;

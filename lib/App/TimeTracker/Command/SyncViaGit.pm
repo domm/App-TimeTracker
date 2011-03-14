@@ -3,6 +3,8 @@ use strict;
 use warnings;
 use 5.010;
 
+# ABSTRACT: TimeTracker SyncViaGit plugin
+
 use Moose::Role;
 use Git::Repository;
 

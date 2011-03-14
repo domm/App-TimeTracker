@@ -6,3 +6,5 @@ use App::TimeTracker::Proto;
 
 my $app = App::TimeTracker::Proto->new->run;
 
+# ABSTRACT: run TimeTracker
+# PODNAME: tracker

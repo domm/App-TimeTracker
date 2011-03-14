@@ -3,6 +3,8 @@ use strict;
 use warnings;
 use 5.010;
 
+# ABSTRACT: TimeTracker Proto Class
+
 use Moose;
 use MooseX::Types::Path::Class;
 use File::HomeDir ();

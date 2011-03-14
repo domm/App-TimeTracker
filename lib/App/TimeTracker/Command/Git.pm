@@ -3,6 +3,8 @@ use strict;
 use warnings;
 use 5.010;
 
+# ABSTRACT: TimeTracker Git plugin
+
 use Moose::Role;
 use Git::Repository;
 
@@ -46,6 +48,23 @@ after cmd_stop => sub {
     $r->command('checkout','master');
     $r->command("merge",$branch,"--no-ff",'-m',"implemented $branch $tags");
 };
+
+sub cmd_merge {
+    my $self = shift;
+    
+    my $r = Git::Repository->new( work_tree => '.' );
+    my $branch = $self->branch;
+    my %branches = map { s/^\s+//; $_=>1 } $r->run('branch');
+
+    unless ($branches{'* '.$branch}) {
+        say "Not in branch $branch, won't merge.";
+        return;
+    }
+    my $tags = join(', ',map { $_->name } @{$self->tags}) || '';
+    $r->command('checkout','master');
+    $r->command("merge",$branch,"--no-ff",'-m',"implemented $branch $tags");
+
+}
 
 no Moose::Role;
 1;

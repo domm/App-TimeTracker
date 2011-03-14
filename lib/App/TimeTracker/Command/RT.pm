@@ -3,6 +3,8 @@ use strict;
 use warnings;
 use 5.010;
 
+# ABSTRACT: TimeTracker RT plugin
+
 use Moose::Role;
 use RT::Client::REST;
 
