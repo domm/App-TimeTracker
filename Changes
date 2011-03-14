@@ -1,5 +1,10 @@
 Revision history for App::TimeTracker
 
+
+2.002   2011-03-14 09:16:00
+    - added Post2IRC
+
+
 2.001
     - COMPLETE, NOT BACKWARD COMPATIBLE REWRITE
 
