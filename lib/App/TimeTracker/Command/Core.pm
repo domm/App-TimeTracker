@@ -102,39 +102,63 @@ sub cmd_report {
     my $total = 0;
     my $report={};
     my $format="%- 20s % 12s\n";
-    my $subformat="   ".$format;
+
+    my %job_map;
+    if (my $map = $self->config->{jobs}) {
+        while (my ($job,$list) = each %$map) {
+            foreach my $project (@$list) {
+                $job_map{$project}=$job;
+            }
+        }
+    }
 
     foreach my $file ( @files ) {
         my $task = App::TimeTracker::Data::Task->load($file->stringify);
         my $time = $task->seconds;
         my $project = $task->project->name;
+        my $job = $job_map{$project} || '_nojob';
 
         $total+=$time;
-        $report->{$project}{'_total'} += $time;
+
+        $report->{$job}{'_total'} += $time;
+        $report->{$job}{$project}{'_total'} += $time;
+
         if ( $self->detail ) {
             my $tags = $task->tags;
             if (@$tags) {
                 foreach my $tag ( @$tags ) {
-                    $report->{$project}->{$tag->name} += $time;
+                    $report->{$job}{$project}{$tag->name} += $time;
                 }
             }
             else {
-                $report->{$project}->{'_untagged'} += $time;
+                $report->{$job}{$project}{'_untagged'} += $time;
             }
         }
     }
 
-    while ( my ( $project, $data ) = each %$report ) {
-        printf( $format, $project, $self->beautify_seconds( delete $data->{'_total'} ) );
-        printf( $subformat, 'untagged', $self->beautify_seconds( delete $data->{'_untagged'} ) ) if $data->{'_untagged'};
+    my $padding='';
+    my $tagpadding='   ';
+    foreach my $job (sort keys %$report) {
+        my $job_total = delete $report->{$job}{'_total'};
+        unless ($job eq '_nojob') {
+            printf ($format, $job, $self->beautify_seconds( $job_total ) );
+            $padding = "   ";
+        }
 
-        if ( $self->detail ) {
-            foreach my $tag ( sort { $data->{$b} <=> $data->{$a} } keys %{ $data } ) {
-                my $time = $data->{$tag};
-                printf( $subformat, $tag, $self->beautify_seconds($time) );
+        foreach my $project (sort keys %{$report->{$job}}) {
+            my $data = $report->{$job}{$project};
+            printf( $padding.$format, $project, $self->beautify_seconds( delete $data->{'_total'} ) );
+            printf( $padding.$tagpadding.$format, 'untagged', $self->beautify_seconds( delete $data->{'_untagged'} ) ) if $data->{'_untagged'};
+
+            if ( $self->detail ) {
+                foreach my $tag ( sort { $data->{$b} <=> $data->{$a} } keys %{ $data } ) {
+                    my $time = $data->{$tag};
+                    printf( $padding.$tagpadding.$format, $tag, $self->beautify_seconds($time) );
+                }
             }
         }
     }
+    #say '=' x 35;
     printf( $format, 'total', $self->beautify_seconds($total) );
 }
 
