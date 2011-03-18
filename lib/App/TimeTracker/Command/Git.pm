@@ -10,11 +10,13 @@ use Git::Repository;
 
 has 'branch' => (is=>'rw',isa=>'Str');
 has 'merge' => (is=>'ro',isa=>'Bool');
+has 'nobranch' => (is=>'ro',isa=>'Bool');
 
 after 'cmd_start' => sub {
     my $self = shift;
 
     return unless $self->branch;
+    return if $self->nobranch;
 
     my $r = Git::Repository->new( work_tree => '.' );
     my $branch = $self->branch;
