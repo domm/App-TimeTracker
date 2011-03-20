@@ -180,11 +180,21 @@ sub _load_attribs_worked {
         isa=>'TT::DateTime',
         is=>'ro',
         coerce=>1,
+        lazy_build=>1,
     });
     $meta->add_attribute('to'=>{
         isa=>'TT::DateTime',
         is=>'ro',
         coerce=>1,
+        lazy_build=>1,
+    });
+    $meta->add_attribute('this'=>{
+        isa=>'Str',
+        is=>'ro',
+    });
+    $meta->add_attribute('last'=>{
+        isa=>'Str',
+        is=>'ro',
     });
     $meta->add_attribute('projects'=>{
         isa=>'ArrayRef[Str]',
@@ -213,6 +223,22 @@ sub _load_attribs_start {
 }
 *_load_attribs_stop = \&_load_attribs_start;
 *_load_attribs_continue = \&_load_attribs_start;
+
+sub _build_from {
+    my $self = shift;
+    if (my $last = $self->last) {
+        return $self->now->truncate( to => $last)->subtract( $last.'s' => 1 );
+    }
+    elsif (my $this = $self->this) {
+        return $self->now->truncate( to => $this);
+    }
+}
+
+sub _build_to {
+    my $self = shift;
+    my $dur = $self->this || $self->last;
+    return $self->from->clone->add( $dur.'s' => 1 );
+}
 
 no Moose::Role;
 1;
