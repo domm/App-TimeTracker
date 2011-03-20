@@ -1,6 +1,11 @@
 Revision history for App::TimeTracker
 
 
+2.003   2011-03-20 18:07:16
+    - crude job hack
+    - added --this & --last to report & worked
+
+
 2.002   2011-03-14 09:16:00
     - added Post2IRC
 
