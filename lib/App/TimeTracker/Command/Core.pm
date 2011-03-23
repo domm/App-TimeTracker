@@ -84,7 +84,7 @@ sub cmd_worked {
     my $total=0;
     foreach my $file ( @files ) {
         my $task = App::TimeTracker::Data::Task->load($file->stringify);
-        $total+=$task->seconds;
+        $total+=$task->seconds || $task->_build_seconds;
     }
 
     say $self->beautify_seconds($total);
@@ -114,7 +114,7 @@ sub cmd_report {
 
     foreach my $file ( @files ) {
         my $task = App::TimeTracker::Data::Task->load($file->stringify);
-        my $time = $task->seconds;
+        my $time = $task->seconds || $task->_build_seconds;
         my $project = $task->project->name;
         my $job = $job_map{$project} || '_nojob';
 

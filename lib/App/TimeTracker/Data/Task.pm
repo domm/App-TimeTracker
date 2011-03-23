@@ -30,7 +30,7 @@ has 'start' => (
     isa=>'DateTime',
     is=>'ro',
     required=>1,
-    default=>sub { DateTime->now }
+    default=>sub { DateTime->now(time_zone=>'local') }
 );
 has 'stop' => (
     isa=>'DateTime',
@@ -44,7 +44,7 @@ has 'seconds' => (
 );
 sub _build_seconds {
     my $self = shift;
-    my $delta = DateTime->now->subtract_datetime($self->start);
+    my $delta = DateTime->now(time_zone=>'local')->subtract_datetime($self->start);
     $dtf_sec->format_duration($delta);
 }
 has 'duration' => (
