@@ -35,14 +35,14 @@ foreach my $old (@files) {
         my @tags;
         if ($data{tags}) {
             foreach (split(/\s+/,$data{tags})) {
-                push(@tags,App::TimeTracker::Data::Tag->new({name=>$_}));
+                push(@tags,$_);
             }
         }
 
         my $task = App::TimeTracker::Data::Task->new({
                 start=>DateTime->from_epoch(epoch=>$data{start}, time_zone=>'local'),
                 stop=>DateTime->from_epoch(epoch=>$data{stop}, time_zone=>'local'),
-                project=>App::TimeTracker::Data::Project->new({name=>$data{project}}),
+                project=>$data{project},
                 tags=>\@tags,
         });
 

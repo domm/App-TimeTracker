@@ -14,11 +14,10 @@ sub cmd_start {
 
     $self->cmd_stop;
     
-    my @tags = map { App::TimeTracker::Data::Tag->new(name=>$_) } @{$self->tags};
     my $task = App::TimeTracker::Data::Task->new({
         start=>$self->at || $self->now,
         project=>$self->project,
-        tags=>\@tags,
+        tags=>$self->tags,
     });
 
     $task->do_start($self->home);
@@ -115,7 +114,7 @@ sub cmd_report {
     foreach my $file ( @files ) {
         my $task = App::TimeTracker::Data::Task->load($file->stringify);
         my $time = $task->seconds || $task->_build_seconds;
-        my $project = $task->project->name;
+        my $project = $task->project;
         my $job = $job_map{$project} || '_nojob';
 
         $total+=$time;
@@ -127,7 +126,7 @@ sub cmd_report {
             my $tags = $task->tags;
             if (@$tags) {
                 foreach my $tag ( @$tags ) {
-                    $report->{$job}{$project}{$tag->name} += $time;
+                    $report->{$job}{$project}{$tag} += $time;
                 }
             }
             else {
@@ -215,9 +214,8 @@ sub _load_attribs_start {
         coerce=>1,
     });
     $meta->add_attribute('project'=>{
-        isa=>'App::TimeTracker::Data::Project',
+        isa=>'Str',
         is=>'ro',
-        coerce=>1,
         lazy_build=>1,
     });
 }

@@ -6,8 +6,6 @@ use 5.010;
 our $VERSION = "2.003";
 # ABSTRACT: Track time spend on projects from the commandline
 
-use App::TimeTracker::Data::Project;
-use App::TimeTracker::Data::Tag;
 use App::TimeTracker::Data::Task;
 
 use DateTime;
@@ -23,10 +21,6 @@ with qw(
 subtype 'TT::DateTime' => as class_type('DateTime');
 subtype 'TT::RT' => as 'Int';
 
-coerce 'App::TimeTracker::Data::Project'
-    => from 'Str'
-    => via {App::TimeTracker::Data::Project->new({name=>$_})
-};
 coerce 'TT::RT'
     => from 'Str'
     => via {
@@ -63,9 +57,6 @@ coerce 'TT::DateTime'
     return $dt;
 };
 
-MooseX::Getopt::OptionTypeMap->add_option_type_to_map(
-    'App::TimeTracker::Data::Project' => '=s',
-);
 MooseX::Getopt::OptionTypeMap->add_option_type_to_map(
     'TT::DateTime' => '=s',
 );

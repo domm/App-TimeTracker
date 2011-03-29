@@ -6,7 +6,6 @@ use 5.010;
 use Moose;
 use namespace::autoclean;
 use App::TimeTracker;
-use App::TimeTracker::Data::Project;
 use DateTime::Format::ISO8601;
 use DateTime::Format::Duration;
 use User::pwent;
@@ -65,7 +64,7 @@ has 'user' => (
     lazy_build => 1,
 );
 has 'project' => (
-    isa=>'App::TimeTracker::Data::Project',
+    isa=>'Str',
     is=>'ro',
     required=>1,
 );
@@ -79,7 +78,7 @@ has 'tags' => (
 sub _filepath {
     my $self = shift;
     my $start = $self->start;
-    my $name = $self->project->name;
+    my $name = $self->project;
     $name=~s/\W/_/g;
     $name=~s/_+/_/g;
     $name=~s/^_//;
@@ -130,9 +129,9 @@ sub _load_from_link {
 sub say_project_tags {
     my $self = shift;
     
-    my @tags = map { $_->name } @{$self->tags};
-    my $rv = $self->project->name;
-    $rv .= ' ('.join(', ',@tags).')' if (@tags);
+    my $tags = $self->tags;
+    my $rv = $self->project;
+    $rv .= ' ('.join(', ',@$tags).')' if @$tags;
     return $rv;
 }
 
