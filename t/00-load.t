@@ -1,6 +1,6 @@
 #!/opt/perl5.10.1/bin/perl
 # generated with /opt/perl5.10/bin/generate_00-load_t.pl
-use Test::More tests => 10;
+use Test::More tests => 8;
 
 
 BEGIN {
@@ -14,7 +14,5 @@ use_ok( 'App::TimeTracker::Command::Git' );
 use_ok( 'App::TimeTracker::Command::Post2IRC' );
 use_ok( 'App::TimeTracker::Command::RT' );
 use_ok( 'App::TimeTracker::Command::SyncViaGit' );
-use_ok( 'App::TimeTracker::Data::Project' );
-use_ok( 'App::TimeTracker::Data::Tag' );
 use_ok( 'App::TimeTracker::Data::Task' );
 use_ok( 'App::TimeTracker::Proto' );

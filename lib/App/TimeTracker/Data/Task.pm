@@ -37,14 +37,16 @@ has 'stop' => (
     trigger=>\&_calc_duration,
 );
 has 'seconds' => (
-    isa=>'Int',
+    isa=>'Maybe[Int]',
     is=>'rw',
     lazy_build=>1,
 );
 sub _build_seconds {
     my $self = shift;
     my $delta = DateTime->now(time_zone=>'local')->subtract_datetime($self->start);
-    $dtf_sec->format_duration($delta);
+    my $s =$dtf_sec->format_duration($delta);
+    return undef unless $s > 1;
+    return $s;
 }
 has 'duration' => (
     isa=>'Str',
