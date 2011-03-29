@@ -52,6 +52,28 @@ sub cmd_current {
     }
 }
 
+sub cmd_append {
+    my $self = shift;
+
+    if (my $task = App::TimeTracker::Data::Task->current($self->home)) {
+        say "Cannot 'append', you're actually already working on :"
+            . $task->say_project_tags . "\n";
+    }
+    elsif (my $prev = App::TimeTracker::Data::Task->previous($self->home)) {
+
+        my @tags = map { App::TimeTracker::Data::Tag->new(name=>$_) } @{$self->tags};
+        my $task = App::TimeTracker::Data::Task->new({
+            start=>$prev->stop,
+            project => $self->project,
+            tags=>\@tags,
+        });
+        $task->do_start($self->home);
+    }
+    else {
+        say "Currently not working on anything and I have no idea what you've been doing.";
+    }
+}
+
 sub cmd_continue {
     my $self = shift;
 
@@ -219,8 +241,9 @@ sub _load_attribs_start {
         lazy_build=>1,
     });
 }
-*_load_attribs_stop = \&_load_attribs_start;
+*_load_attribs_append = \&_load_attribs_start;
 *_load_attribs_continue = \&_load_attribs_start;
+*_load_attribs_stop = \&_load_attribs_start;
 
 sub _build_from {
     my $self = shift;
