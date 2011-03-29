@@ -61,11 +61,10 @@ sub cmd_append {
     }
     elsif (my $prev = App::TimeTracker::Data::Task->previous($self->home)) {
 
-        my @tags = map { App::TimeTracker::Data::Tag->new(name=>$_) } @{$self->tags};
         my $task = App::TimeTracker::Data::Task->new({
             start=>$prev->stop,
             project => $self->project,
-            tags=>\@tags,
+            tags=>$self->tags,
         });
         $task->do_start($self->home);
     }
