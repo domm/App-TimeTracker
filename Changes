@@ -1,5 +1,9 @@
 Revision history for App::TimeTracker
 
+2.004   2011-03-29 11:49:49
+    - replaced Project/Tag classes with plain strings
+    - fixed bug when duration is 0
+
 
 2.003   2011-03-20 18:07:16
     - crude job hack
