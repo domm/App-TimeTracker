@@ -138,6 +138,11 @@ sub cmd_report {
         my $project = $task->project;
         my $job = $job_map{$project} || '_nojob';
 
+        if ($time >= 60*60*8) {
+            say "Found dubious trackfile: ".$file->basename;
+            say "  Are you sure you worked ".$self->beautify_seconds($time)." on one task?";
+        }
+
         $total+=$time;
 
         $report->{$job}{'_total'} += $time;
@@ -153,6 +158,9 @@ sub cmd_report {
             else {
                 $report->{$job}{$project}{'_untagged'} += $time;
             }
+        }
+        if ($self->verbose) {
+            printf("%- 40s -> % 8s\n",$file->basename, $self->beautify_seconds($time));
         }
     }
 
@@ -221,6 +229,10 @@ sub _load_attribs_worked {
         is=>'ro',
     });
     $meta->add_attribute('detail'=>{
+        isa=>'Bool',
+        is=>'ro',
+    });
+    $meta->add_attribute('verbose'=>{
         isa=>'Bool',
         is=>'ro',
     });
