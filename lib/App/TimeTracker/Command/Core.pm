@@ -228,6 +228,10 @@ sub _load_attribs_worked {
         isa=>'ArrayRef[Str]',
         is=>'ro',
     });
+}
+sub _load_attribs_report {
+    my ($class, $meta) = @_;
+    $class->_load_attribs_worked($meta);
     $meta->add_attribute('detail'=>{
         isa=>'Bool',
         is=>'ro',
@@ -237,7 +241,6 @@ sub _load_attribs_worked {
         is=>'ro',
     });
 }
-*_load_attribs_report = \&_load_attribs_worked;
 
 sub _load_attribs_start {
     my ($class, $meta) = @_;
