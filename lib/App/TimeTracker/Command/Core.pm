@@ -190,6 +190,25 @@ sub cmd_report {
     printf( $format, 'total', $self->beautify_seconds($total) );
 }
 
+sub cmd_recalc_trackfile {
+    my $self = shift;
+    my $file = $self->trackfile;
+    unless (-e $file) {
+        $file =~ /(?<year>\d\d\d\d)(?<month>\d\d)\d\d-\d{6}_\w+\.trc/;
+        if ($+{year} && $+{month}) {
+            $file = $self->home->file($+{year},$+{month},$file)->stringify;
+            unless (-e $file) {
+                say "Cannot find file ".$self->trackfile;
+                exit;
+            }
+        }
+    }
+
+    my $task = App::TimeTracker::Data::Task->load($file);
+    $task->save($self->home);
+    say "recalced $file";
+}
+
 sub cmd_commands {
     my $self = shift;
 
@@ -258,6 +277,15 @@ sub _load_attribs_start {
 *_load_attribs_append = \&_load_attribs_start;
 *_load_attribs_continue = \&_load_attribs_start;
 *_load_attribs_stop = \&_load_attribs_start;
+
+sub _load_attribs_recalc_trackfile {
+    my ($class, $meta) = @_;
+    $meta->add_attribute('trackfile'=>{
+        isa=>'Str',
+        is=>'ro',
+        required=>1,
+    });
+}
 
 sub _build_from {
     my $self = shift;
