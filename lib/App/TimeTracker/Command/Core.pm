@@ -19,6 +19,7 @@ sub cmd_start {
         project=>$self->project,
         tags=>$self->tags,
     });
+    $self->_current_task($task);
 
     $task->do_start($self->home);
 }
@@ -28,6 +29,7 @@ sub cmd_stop {
     
     my $task = App::TimeTracker::Data::Task->current($self->home);
     return unless $task;
+    $self->_current_task($task);
 
     $task->stop($self->at || $self->now);
     $task->save($self->home);
