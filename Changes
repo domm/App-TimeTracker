@@ -1,5 +1,14 @@
 Revision history for App::TimeTracker
 
+2.005   2011-04-13 08:55:32
+    - update RT->TimeWorked after stop
+    - added --irc_quiet
+    - added _current_task
+    - added command recacl_trackfile
+    - split up worked/report options
+    - added --verbose to report
+
+
 2.004   2011-03-29 11:49:49
     - replaced Project/Tag classes with plain strings
     - fixed bug when duration is 0
