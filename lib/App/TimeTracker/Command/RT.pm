@@ -46,6 +46,38 @@ before 'cmd_start' => sub {
     }
 };
 
+after 'cmd_stop' => sub {
+    my $self = shift;
+
+    return unless $self->config->{rt}{update_time_worked};
+
+    my $task = $self->_current_task;
+    my $ticket_id;
+    foreach my $tag (@{$task->tags}) {
+        next unless $tag =~ /^RT(\d+)/;
+        $ticket_id = $1;
+        last;
+    }
+
+    unless ($ticket_id) {
+        say "No RT ticket id found, cannot update TimeWorked";
+        return;
+    }
+
+    my $old = $self->rt_client->show(type => 'ticket', id => $ticket_id);
+    unless ($old) {
+        say "Cannot find ticket $ticket_id in RT";
+        return;
+    }
+
+    my $worked = $old->{TimeWorked} || 0;
+    $worked =~s/\D//g;
+
+    $self->rt_client->edit( type => 'ticket', id => $ticket_id, set=>{
+        TimeWorked=> $worked + $task->rounded_minutes
+    });
+};
+
 no Moose::Role;
 1;
 
