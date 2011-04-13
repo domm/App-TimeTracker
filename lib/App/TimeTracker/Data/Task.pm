@@ -149,6 +149,14 @@ sub do_start {
     say "Started working on ".$self->say_project_tags ." at ". $self->start->hms;
 }
 
+sub rounded_minutes {
+    my $self = shift;
+    my $sec = $self->seconds;
+    my $rest = 60 - $sec % 60;
+    my $min = ( $sec + $rest ) /60;
+    return $min;
+}
+
 __PACKAGE__->meta->make_immutable;
 1;
 
