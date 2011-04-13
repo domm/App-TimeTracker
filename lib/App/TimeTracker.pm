@@ -101,6 +101,12 @@ has '_current_command' => (
     traits => [ 'NoGetopt' ],
 );
 
+has '_current_task' => (
+    isa=>'App::TimeTracker::Data::Task',
+    is=>'rw',
+    traits => [ 'NoGetopt' ],
+);
+
 sub _build_project {
     my $self = shift;
     return $self->_currentproject;
