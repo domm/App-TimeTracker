@@ -9,14 +9,18 @@ use Moose::Role;
 use LWP::UserAgent;
 use Digest::SHA1 qw(sha1_hex);
 
+has 'irc_quiet' => (is=>'ro',isa=>'Bool');
+
 after 'cmd_start' => sub {
     my $self = shift;
-    my $task = App::TimeTracker::Data::Task->current($self->home);
+    return if $self->irc_quiet;
+    my $task = $self->_current_task;
     $self->_post_to_irc(start => $task);
 };
 
 after 'cmd_stop' => sub {
     my $self = shift;
+    return if $self->irc_quiet;
     return unless $self->_current_command eq 'cmd_stop';
     my $task = App::TimeTracker::Data::Task->previous($self->home);
     $self->_post_to_irc(stop => $task);
