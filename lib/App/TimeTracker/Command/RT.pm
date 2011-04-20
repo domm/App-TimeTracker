@@ -51,7 +51,9 @@ after 'cmd_stop' => sub {
 
     return unless $self->config->{rt}{update_time_worked};
 
-    my $task = $self->_current_task;
+    my $task = $self->_previous_task;
+    return unless $task;
+
     my $ticket_id;
     foreach my $tag (@{$task->tags}) {
         next unless $tag =~ /^RT(\d+)/;

@@ -106,6 +106,11 @@ has '_current_task' => (
     is=>'rw',
     traits => [ 'NoGetopt' ],
 );
+has '_previous_task' => (
+    isa=>'App::TimeTracker::Data::Task',
+    is=>'rw',
+    traits => [ 'NoGetopt' ],
+);
 
 sub _build_project {
     my $self = shift;
