@@ -46,19 +46,32 @@ before 'cmd_start' => sub {
     }
 };
 
+after 'cmd_start' => sub {
+    my $self = shift;
+    return unless $self->config->{rt}{set_owner_to};
+
+    my $task = $self->_current_task;
+    return unless $task;
+    my $ticket_id = $task->rt_id;
+    unless ($ticket_id) {
+        say "No RT ticket id found, cannot take ticket";
+        return;
+    }
+
+    $self->rt_client->edit( type => 'ticket', id => $ticket_id, set=>{
+        Status=>'open',
+        Owner=>$self->config->{rt}{set_owner_to},
+    });
+};
+
 after 'cmd_stop' => sub {
     my $self = shift;
 
     return unless $self->config->{rt}{update_time_worked};
 
     my $task = $self->_current_task;
-    my $ticket_id;
-    foreach my $tag (@{$task->tags}) {
-        next unless $tag =~ /^RT(\d+)/;
-        $ticket_id = $1;
-        last;
-    }
-
+    return unless $task;
+    my $ticket_id = $task->rt_id;
     unless ($ticket_id) {
         say "No RT ticket id found, cannot update TimeWorked";
         return;
@@ -77,6 +90,14 @@ after 'cmd_stop' => sub {
         TimeWorked=> $worked + $task->rounded_minutes
     });
 };
+
+sub App::TimeTracker::Data::Task::rt_id {
+    my $self = shift;
+    foreach my $tag (@{$self->tags}) {
+        next unless $tag =~ /^RT(\d+)/;
+        return $1;
+    }
+}
 
 no Moose::Role;
 1;
