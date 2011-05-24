@@ -7,6 +7,7 @@ use 5.010;
 
 use Moose::Role;
 use RT::Client::REST;
+use Try::Tiny;
 
 has 'rt' => (is=>'ro',isa=>'TT::RT',coerce=>1,);
 has 'rt_client' => (is=>'ro',isa=>'RT::Client::REST',lazy_build=>1);
@@ -58,10 +59,15 @@ after 'cmd_start' => sub {
         return;
     }
 
-    $self->rt_client->edit( type => 'ticket', id => $ticket_id, set=>{
-        Status=>'open',
-        Owner=>$self->config->{rt}{set_owner_to},
-    });
+    try {
+        $self->rt_client->edit( type => 'ticket', id => $ticket_id, set=>{
+            Status=>'open',
+            Owner=>$self->config->{rt}{set_owner_to},
+        });
+    }
+    catch {
+        say $_;    
+    };
 };
 
 after 'cmd_stop' => sub {
