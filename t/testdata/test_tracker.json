@@ -1,0 +1,46 @@
+{
+   "jobs" : {
+      "perl" : {
+         "projects" : {
+            "App-TimeTracker" : {
+                "plugins" : [
+                    "Git",
+		            "SyncViaGit",
+                    "RT",
+                    "Post2IRC"
+                 ],
+                 "rt" : {
+                    "update_time_worked" : "1"
+                 }
+              }
+         },
+         "job" : {}
+      },
+      "vienna.pm" : {
+         "job" : {
+            "plugins" : [
+                "RT"
+             ]
+         },
+         "projects" : {
+            "CPANTS" : {
+                "rt" : {
+                    "set_owner_to" : null
+                }
+            }
+         }
+      }
+   },
+   "global" : {
+      "post2irc" : {
+         "secret" : "12345",
+         "host" : "http://irc.example.com/"
+      },
+      "plugins" : [
+         "SyncViaGit"
+      ],
+      "rt" : {
+         "set_owner_to" : "domm"
+      }
+   }
+}
