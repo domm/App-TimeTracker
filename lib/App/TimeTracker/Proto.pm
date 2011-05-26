@@ -73,7 +73,6 @@ sub run {
         } )->run;
 }
 
-
 sub load_config {
     my $self = shift;
 
@@ -115,6 +114,7 @@ sub load_config {
     # merge project <- job <- global config
     my $config = Hash::Merge::merge($all_config->{'jobs'}{$job}{'projects'}{$project},$all_config->{'jobs'}{$job}{'job'});
     $config = Hash::Merge::merge($config,$all_config->{'global'});
+    $config->{project2job}=\%projects;
     return $config;
 }
 
