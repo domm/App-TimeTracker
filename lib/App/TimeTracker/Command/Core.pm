@@ -127,20 +127,13 @@ sub cmd_report {
     my $report={};
     my $format="%- 20s % 12s\n";
 
-    my %job_map;
-    if (my $map = $self->config->{jobs}) {
-        while (my ($job,$list) = each %$map) {
-            foreach my $project (@$list) {
-                $job_map{$project}=$job;
-            }
-        }
-    }
+    my $job_map = $self->config->{project2job};
 
     foreach my $file ( @files ) {
         my $task = App::TimeTracker::Data::Task->load($file->stringify);
         my $time = $task->seconds // $task->_build_seconds;
         my $project = $task->project;
-        my $job = $job_map{$project} || '_nojob';
+        my $job = $job_map->{$project} || '_nojob';
 
         if ($time >= 60*60*8) {
             say "Found dubious trackfile: ".$file->basename;

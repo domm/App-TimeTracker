@@ -25,16 +25,6 @@ sub _build_home {
     return $home;
 }
 
-has 'global_configfile' => (
-    is         => 'ro',
-    isa        => 'Path::Class::File',
-    lazy_build => 1,
-);
-sub _build_global_configfile {
-    my $self = shift;
-    return $self->home->file('tracker.json');
-}
-
 has 'configfile' => (
     is         => 'ro',
     isa        => 'Path::Class::File',
@@ -42,36 +32,20 @@ has 'configfile' => (
 );
 sub _build_configfile {
     my $self = shift;
-    my $dir  = Path::Class::Dir->new->absolute;
-    my $file;
-    while ( !$file ) {
-        if ( -e $dir->file('.tracker.json') ) {
-            $file = $dir->file('.tracker.json');
-        }
-        else {
-            $dir = $dir->parent;
-        }
-
-        return Path::Class::file('/nosuchfile')
-            if scalar $dir->dir_list <= 1;
-    }
-    return $file;
+    return $self->home->file('tracker.json');
 }
+
+has 'project' => (is=>'rw',isa=>'Str');
 
 sub run {
     my $self = shift;
 
-    my @configs;
-    push( @configs, decode_json( $self->configfile->slurp ) )
-        if -e $self->configfile;
-    push( @configs, decode_json( $self->global_configfile->slurp ) )
-        if -e $self->global_configfile;
-    my $config = Hash::Merge::merge(@configs);
+    my $config = $self->load_config;
 
     my $class = Moose::Meta::Class->create_anon_class(
         superclasses => ['App::TimeTracker'],
         roles        => [
-            map { 'App::TimeTracker::Command::' . $_ } 'Core', @{ $config->{Plugins} }
+            map { 'App::TimeTracker::Command::' . $_ } 'Core', @{ $config->{plugins} }
         ],
     );
 
@@ -92,21 +66,56 @@ sub run {
         $class->name->$load_attribs_for_command($class);
     }
 
-    my $current_project = $config->{project};
-    unless ($current_project) {
-        if ($self->configfile =~/nosuchfile/) {
-            $current_project = 'no project';
-        }
-        else {
-            my @dir_tree        = $self->configfile->parent->dir_list;
-            $current_project = pop(@dir_tree);
-        }
-    }
     $class->name->new_with_options( {
             home            => $self->home,
             config          => $config,
-            _currentproject => $current_project,
+            _currentproject => $self->project,
         } )->run;
+}
+
+sub load_config {
+    my $self = shift;
+
+    my $all_config = decode_json( $self->configfile->slurp );
+    my %projects;
+    foreach my $job (keys %{$all_config->{jobs}}) {
+        foreach my $project (keys %{$all_config->{jobs}{$job}{projects}}) {
+            $projects{$project} = $job;
+        }
+    }
+
+    my $project;
+    my @argv = @ARGV;
+    while (@argv) { # check if project is specified via commandline
+        my $arg = shift(@argv);
+        if ($arg eq '--project') {
+            my $p = shift(@argv);
+            $project = $p if $projects{$p};
+            unless ($project) {
+                say "Cannot find project $p in config.";
+                exit;
+            }
+        }
+    }
+    unless ($project) { # try to figure out project via current dir
+        my $cwd = Path::Class::Dir->new->absolute;
+        my $regex = join('|',keys %projects);
+        if ($cwd =~m{/($regex)}) {
+            $project = $1 if $projects{$1};
+        }
+    }
+    unless ($project) { # damit, no project...
+        say "Cannot figure out project. Please check config and/or --project";
+        exit;
+    }
+    $self->project($project);
+    my $job = $projects{$project};
+
+    # merge project <- job <- global config
+    my $config = Hash::Merge::merge($all_config->{'jobs'}{$job}{'projects'}{$project},$all_config->{'jobs'}{$job}{'job'});
+    $config = Hash::Merge::merge($config,$all_config->{'global'});
+    $config->{project2job}=\%projects;
+    return $config;
 }
 
 1;
