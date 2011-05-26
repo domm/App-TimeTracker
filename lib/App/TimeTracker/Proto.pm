@@ -93,7 +93,6 @@ sub load_config {
             $project = $p if $projects{$p};
             unless ($project) {
                 say "Cannot find project $p in config.";
-                exit;
             }
         }
     }
@@ -104,16 +103,21 @@ sub load_config {
             $project = $1 if $projects{$1};
         }
     }
-    unless ($project) { # damit, no project...
-        say "Cannot figure out project. Please check config and/or --project";
-        exit;
-    }
-    $self->project($project);
-    my $job = $projects{$project};
 
-    # merge project <- job <- global config
-    my $config = Hash::Merge::merge($all_config->{'jobs'}{$job}{'projects'}{$project},$all_config->{'jobs'}{$job}{'job'});
-    $config = Hash::Merge::merge($config,$all_config->{'global'});
+    my $config;
+    if ($project) {
+        $self->project($project);
+        my $job = $projects{$project};
+        # merge project <- job <- global config
+        $config = Hash::Merge::merge($all_config->{'jobs'}{$job}{'projects'}{$project},$all_config->{'jobs'}{$job}{'job'});
+        $config = Hash::Merge::merge($config,$all_config->{'global'});
+    }
+    else {
+        say "Cannot figure out project. Please check config and/or --project";
+        $self->project('_no_project');
+        $config = $all_config->{'global'};
+    }
+
     $config->{project2job}=\%projects;
     return $config;
 }
