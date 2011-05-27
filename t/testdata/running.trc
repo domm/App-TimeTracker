@@ -1,0 +1,9 @@
+{
+   "__CLASS__" : "App::TimeTracker::Data::Task",
+   "project" : "App-TimeTracker",
+   "user" : "domm",
+   "start" : "2011-05-28T00:35:05",
+   "tags" : [
+      "tests"
+   ]
+}
