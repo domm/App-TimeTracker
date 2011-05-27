@@ -188,10 +188,4 @@ sub find_task_files {
     return @found;
 }
 
-sub _endofday_to {
-    my $self = shift;
-    return if $self->to->hour;
-    $self->to->set(hour=>23,minute=>59,second=>59);
-}
-
 1;
