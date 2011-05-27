@@ -1,5 +1,7 @@
 Revision history for App::TimeTracker
 
+2.006
+
 2.005   2011-04-13 08:55:32
     - update RT->TimeWorked after stop
     - added --irc_quiet
