@@ -1,18 +1,15 @@
 use 5.010;
 use strict;
 use warnings;
+use lib 't';
 
 use Test::Most;
-use Test::File;
-use Test::Dir;
-use Path::Class;
-use DateTime;
-use File::Temp qw(tempdir);
 use IO::Capture::Stdout;
-my $capture = IO::Capture::Stdout->new();
-
+use testlib::Fixtures;
 use App::TimeTracker::Data::Task;
-my $tmp = Path::Class::Dir->new(tempdir(CLEANUP=>1));
+
+my $capture = IO::Capture::Stdout->new();
+my $tmp = testlib::Fixtures::setup_tempdir;
 
 {
     my $task = App::TimeTracker::Data::Task->new({

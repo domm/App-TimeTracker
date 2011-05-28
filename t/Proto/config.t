@@ -1,20 +1,13 @@
 use 5.010;
 use strict;
 use warnings;
-use lib qw(t/testlib);
+use lib qw(t);
 
 use Test::Most;
-use Test::File;
-use File::Copy;
-
-use FakeHomeDir;
-
+use testlib::FakeHomeDir;
 use App::TimeTracker::Proto;
-my $p = App::TimeTracker::Proto->new;
 
-like($p->home->stringify,qr/\.TimeTracker/,'we have a home');
-copy('t/testdata/test_tracker.json',$p->configfile);
-file_exists_ok($p->configfile);
+my $p = App::TimeTracker::Proto->new;
 
 {
     @ARGV=('--project','CPANTS');

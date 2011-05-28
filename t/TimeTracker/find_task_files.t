@@ -1,17 +1,14 @@
 use 5.010;
 use strict;
 use warnings;
+use lib 't';
 
 use Test::Most;
-use Path::Class;
+use testlib::Fixtures;
 use DateTime;
-use File::Temp qw(tempdir);
-use File::Copy::Recursive qw(dircopy);
-
 use App::TimeTracker;
-my $tmp = Path::Class::Dir->new(tempdir(CLEANUP=>$ENV{NO_CLEANUP} ? 0 : 1));
-dircopy('t/testdata/2011',$tmp->subdir('2011')) || die $!;
 
+my $tmp = testlib::Fixtures->setup_2011_05;
 my $t = App::TimeTracker->new(home=>$tmp,config=>{});
 
 {

@@ -1,16 +1,11 @@
 use 5.010;
 use strict;
 use warnings;
+use lib 't';
 
 use Test::Most;
-use Test::File;
-use Test::Dir;
-use Path::Class;
 use DateTime;
-use File::Temp qw(tempdir);
-
 use App::TimeTracker;
-my $tmp = Path::Class::Dir->new(tempdir(CLEANUP=>1));
 
 { # $self->now
     my $exp = DateTime->now(time_zone=>'local');
