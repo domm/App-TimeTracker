@@ -1,0 +1,12 @@
+{
+   "stop" : "2011-05-18T23:41:09",
+   "project" : "oe1.orf.at",
+   "duration" : "00:26:09",
+   "tags" : [
+      "RT8987"
+   ],
+   "seconds" : 1569,
+   "__CLASS__" : "App::TimeTracker::Data::Task",
+   "user" : "domm",
+   "start" : "2011-05-18T23:15:00"
+}

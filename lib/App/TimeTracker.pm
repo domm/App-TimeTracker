@@ -185,7 +185,7 @@ sub find_task_files {
 
         push(@found,$file);
     }
-    return @found;
+    return sort @found;
 }
 
 1;

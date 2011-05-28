@@ -1,0 +1,12 @@
+{
+   "stop" : "2011-05-26T08:40:22",
+   "project" : "App-TimeTracker",
+   "duration" : "00:17:46",
+   "tags" : [
+      "RT8687"
+   ],
+   "seconds" : 1066,
+   "__CLASS__" : "App::TimeTracker::Data::Task",
+   "user" : "domm",
+   "start" : "2011-05-26T08:22:36"
+}
