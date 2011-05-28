@@ -112,11 +112,6 @@ has '_previous_task' => (
     traits => [ 'NoGetopt' ],
 );
 
-sub _build_project {
-    my $self = shift;
-    return $self->_currentproject;
-}
-
 sub run {
     my $self = shift;
     my $command = 'cmd_'.($self->extra_argv->[0] || 'missing');

@@ -4,8 +4,10 @@ use warnings;
 use lib 't';
 
 use Test::Most;
+use testlib::Fixtures;
 use DateTime;
 use App::TimeTracker;
+my $tmp = testlib::Fixtures::setup_tempdir;
 
 { # $self->now
     my $exp = DateTime->now(time_zone=>'local');
@@ -30,6 +32,16 @@ use App::TimeTracker;
     foreach (@tests) {
         is(App::TimeTracker->beautify_seconds($_->[0]),$_->[1],join(' -> ',map { $_ // 'UNDEF'} @$_));
     }
+}
+
+{ # tags
+    my $t = App::TimeTracker->new({ home=>$tmp, config=>{} });
+    cmp_bag($t->tags,[],'no tags');
+    $t->add_tag('1');
+    $t->add_tag('2');
+    $t->insert_tag('3');
+    cmp_deeply($t->tags,[3,1,2],'some tags');
+
 }
 
 done_testing();
