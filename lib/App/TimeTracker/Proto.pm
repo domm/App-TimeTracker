@@ -12,6 +12,8 @@ use Path::Class;
 use Hash::Merge qw();
 use JSON;
 
+use App::TimeTracker::Data::Task;
+
 has 'home' => (
     is         => 'ro',
     isa        => 'Path::Class::Dir',
@@ -107,17 +109,29 @@ sub load_config {
     my $config;
     if ($project) {
         $self->project($project);
-        my $job = $projects{$project};
-        # merge project <- job <- global config
-        $config = Hash::Merge::merge($all_config->{'jobs'}{$job}{'projects'}{$project},$all_config->{'jobs'}{$job}{'job'});
-        $config = Hash::Merge::merge($config,$all_config->{'global'});
     }
     else {
-        say "Cannot figure out project. Please check config and/or --project";
-        $self->project('_no_project');
-        $config = $all_config->{'global'};
+        my $current =  App::TimeTracker::Data::Task->_load_from_link($self->home,'current');
+        if (defined $current) {
+            $self->project($current->project);
+        } else {
+            say "Cannot figure out project. Please check config and/or --project";
+            $self->project('_no_project');
+        }
     }
-
+    
+    given ($self->project) {
+        when ('_no_project') {
+            $config = $all_config->{'global'};
+        }
+        default {
+            my $job = $projects{$self->project};
+            # merge project <- job <- global config
+            $config = Hash::Merge::merge($all_config->{'jobs'}{$job}{'projects'}{$self->project},$all_config->{'jobs'}{$job}{'job'});
+            $config = Hash::Merge::merge($config,$all_config->{'global'});
+        }
+    }
+    
     $config->{project2job}=\%projects;
     return $config;
 }
