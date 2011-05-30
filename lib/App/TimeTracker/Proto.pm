@@ -91,45 +91,50 @@ sub load_config {
     while (@argv) { # check if project is specified via commandline
         my $arg = shift(@argv);
         if ($arg eq '--project') {
-            my $p = shift(@argv);
-            $project = $p if $projects{$p};
-            unless ($project) {
+            my $p = lc(shift(@argv));
+            foreach (keys %projects) {
+                if (lc($_) eq $p) {
+                    $project = $_;
+                    last; 
+                }
+            }
+            unless (defined $project) {
                 say "Cannot find project $p in config.";
             }
         }
     }
-    unless ($project) { # try to figure out project via current dir
+    unless (defined $project) { # try to figure out project via current dir
         my $cwd = Path::Class::Dir->new->absolute;
-        my $regex = join('|',keys %projects);
-        if ($cwd =~m{/($regex)}) {
-            $project = $1 if $projects{$1};
+        my $regex = join('|',sort { length($b) <=> length($a) } keys %projects);
+        if ($cwd =~ m{/($regex)}i) {
+            my $p = lc($1);
+            foreach (keys %projects) {
+                if (lc($_) eq $p) {
+                    $project = $_;
+                    last; 
+                }
+            }
+        }
+    }
+    
+    unless (defined $project) { # try to figure out project via current task
+        my $current =  App::TimeTracker::Data::Task->_load_from_link($self->home,'current');
+        if (defined $current) {
+            $project = $current->project;
         }
     }
 
     my $config;
-    if ($project) {
+    if (defined $project) {
         $self->project($project);
-    }
-    else {
-        my $current =  App::TimeTracker::Data::Task->_load_from_link($self->home,'current');
-        if (defined $current) {
-            $self->project($current->project);
-        } else {
-            say "Cannot figure out project. Please check config and/or --project";
-            $self->project('_no_project');
-        }
-    }
-    
-    given ($self->project) {
-        when ('_no_project') {
-            $config = $all_config->{'global'};
-        }
-        default {
-            my $job = $projects{$self->project};
-            # merge project <- job <- global config
-            $config = Hash::Merge::merge($all_config->{'jobs'}{$job}{'projects'}{$self->project},$all_config->{'jobs'}{$job}{'job'});
-            $config = Hash::Merge::merge($config,$all_config->{'global'});
-        }
+        my $job = $projects{$project};
+        # merge project <- job <- global config
+        $config = Hash::Merge::merge($all_config->{'jobs'}{$job}{'projects'}{$project},$all_config->{'jobs'}{$job}{'job'});
+        $config = Hash::Merge::merge($config,$all_config->{'global'});
+    } else {
+        say "Cannot figure out project. Please check config and/or --project";
+        $config = $all_config->{'global'};
+        $self->project('_no_project');
     }
     
     $config->{project2job}=\%projects;
