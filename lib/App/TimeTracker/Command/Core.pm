@@ -271,6 +271,12 @@ sub _load_attribs_start {
         lazy_build=>1,
     });
 }
+
+sub _build_project {
+    my $self = shift;
+    return $self->_currentproject;
+}
+
 *_load_attribs_append = \&_load_attribs_start;
 *_load_attribs_continue = \&_load_attribs_start;
 *_load_attribs_stop = \&_load_attribs_start;
