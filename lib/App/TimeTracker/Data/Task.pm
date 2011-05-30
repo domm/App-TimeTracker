@@ -125,7 +125,9 @@ sub _load_from_link {
     my ($class, $home, $link) = @_;
     my $file = $home->file($link);
     return unless -e $file;
-    return $class->load($file->slurp(chomp=>1));
+    my $linked_file = $file->slurp(chomp=>1);
+    return unless -e $linked_file;
+    return $class->load($linked_file);
 }
 
 sub say_project_tags {
