@@ -8,9 +8,9 @@ use 5.010;
 use Moose::Role;
 use Git::Repository;
 
-has 'branch' => (is=>'rw',isa=>'Str');
-has 'merge' => (is=>'ro',isa=>'Bool');
-has 'nobranch' => (is=>'ro',isa=>'Bool');
+has 'branch' => (is=>'rw',isa=>'Str', documentation=>'Git: Branch name');
+has 'merge' => (is=>'ro',isa=>'Bool', documentation=>'Git: Merge after stoping');
+has 'nobranch' => (is=>'ro',isa=>'Bool', documentation=>'Git: Do not create a branch');
 
 after 'cmd_start' => sub {
     my $self = shift;

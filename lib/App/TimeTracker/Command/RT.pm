@@ -9,11 +9,12 @@ use Moose::Role;
 use RT::Client::REST;
 use Try::Tiny;
 
-has 'rt' => (is=>'ro',isa=>'TT::RT',coerce=>1,);
+has 'rt' => (is=>'ro',isa=>'TT::RT',coerce=>1,documentation=>'RT: Ticket number');
 has 'rt_client' => (is=>'ro',isa=>'RT::Client::REST',lazy_build=>1);
 sub _build_rt_client {
     my $self = shift;
     my $config = $self->config->{rt};
+    
     unless ($config) {
         say "Please configure RT in your TimeTracker config";
         exit;

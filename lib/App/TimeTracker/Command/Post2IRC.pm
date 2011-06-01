@@ -9,7 +9,7 @@ use Moose::Role;
 use LWP::UserAgent;
 use Digest::SHA1 qw(sha1_hex);
 
-has 'irc_quiet' => (is=>'ro',isa=>'Bool');
+has 'irc_quiet' => (is=>'ro',isa=>'Bool',documentation=>'IRC: Do not post to IRC');
 
 after 'cmd_start' => sub {
     my $self = shift;

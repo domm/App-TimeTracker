@@ -251,10 +251,12 @@ sub _load_attribs_report {
     $meta->add_attribute('detail'=>{
         isa=>'Bool',
         is=>'ro',
+        documentation=>'Be detailed',
     });
     $meta->add_attribute('verbose'=>{
         isa=>'Bool',
         is=>'ro',
+        documentation=>'Be verbose',
     });
 }
 
@@ -264,10 +266,12 @@ sub _load_attribs_start {
         isa=>'TT::DateTime',
         is=>'ro',
         coerce=>1,
+        documentation=>'Start at',
     });
     $meta->add_attribute('project'=>{
         isa=>'Str',
         is=>'ro',
+        documentation=>'Project name',
         lazy_build=>1,
     });
 }

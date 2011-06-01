@@ -92,7 +92,8 @@ has 'tags' => (
     handles => {
         insert_tag  => 'unshift',
         add_tag  => 'push',
-    }
+    },
+    documentation => 'Tags [Multiple]',
 );
 
 has '_current_command' => (
@@ -106,6 +107,7 @@ has '_current_task' => (
     is=>'rw',
     traits => [ 'NoGetopt' ],
 );
+
 has '_previous_task' => (
     isa=>'App::TimeTracker::Data::Task',
     is=>'rw',

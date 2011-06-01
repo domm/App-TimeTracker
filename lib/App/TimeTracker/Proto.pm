@@ -37,7 +37,7 @@ sub _build_configfile {
     return $self->home->file('tracker.json');
 }
 
-has 'project' => (is=>'rw',isa=>'Str');
+has 'project' => (is=>'rw',isa=>'Str',documentation=>'Project name');
 
 sub run {
     my $self = shift;
