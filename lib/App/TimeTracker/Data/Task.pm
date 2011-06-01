@@ -75,6 +75,9 @@ has 'tags' => (
     is=>'ro',
     default=>sub { [] },
     traits  => ['Array'],
+    handles => {
+        has_tags    => 'count',
+    },
 );
 
 sub _filepath {
