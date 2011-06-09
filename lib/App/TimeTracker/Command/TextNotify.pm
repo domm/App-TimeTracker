@@ -22,6 +22,12 @@ after 'cmd_current' => sub {
     $self->_update_text_notify();
 };
 
+after 'cmd_continue' => sub {
+    my $self = shift;
+    $self->_update_text_notify();
+};
+
+
 sub _update_text_notify {
     my $self = shift;
     
@@ -30,8 +36,10 @@ sub _update_text_notify {
     if (my $task = App::TimeTracker::Data::Task->current($self->home)) {
         my $fh = $notify_file->openw();
         my $text = $task->project.' since '.$task->start->hms(':');
-        if ($task->has_tags) {
-            $text .= ' ('.join(',',@{$task->tags}).')';
+        
+        if ($task->can('rt_id')
+            && $task->can('rt_subject')) {
+            $text .= "\nRT" . $task->rt_id. ": ".$task->rt_subject;
         }
         print $fh $text;
         say $text;
