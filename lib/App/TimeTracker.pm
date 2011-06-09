@@ -108,11 +108,11 @@ has '_current_task' => (
     traits => [ 'NoGetopt' ],
 );
 
-has '_previous_task' => (
-    isa=>'App::TimeTracker::Data::Task',
-    is=>'rw',
-    traits => [ 'NoGetopt' ],
-);
+#has '_previous_task' => (
+#    isa=>'App::TimeTracker::Data::Task',
+#    is=>'rw',
+#    traits => [ 'NoGetopt' ],
+#);
 
 sub run {
     my $self = shift;
