@@ -14,6 +14,12 @@ use Moose::Util::TypeConstraints;
 use Path::Class::Iterator;
 use MooseX::Storage::Format::JSONpm;
 
+our $HOUR_RE = qr/(?<hour>[012]?\d)/;
+our $MINUTE_RE = qr/(?<minute>[0-5]?\d)/;
+our $DAY_RE = qr/(?<day>[0123]?\d)/;
+our $MONTH_RE = qr/(?<month>[01]?\d)/;
+our $YEAR_RE = qr/(?<year>2\d{3})/;
+
 with qw(
     MooseX::Getopt
 );
@@ -36,22 +42,17 @@ coerce 'TT::DateTime'
     my $dt = DateTime->now;
     $dt->set_time_zone('local');
 
-    given (length($raw)) {
-        when (5) { # "13:42"
+    given ($raw) {
+        when(/^$HOUR_RE:$MINUTE_RE$/) { # "13:42"
             $dt = DateTime->today;
-            my ($h,$m)=split(/:/,$raw);
-            $dt->set(hour=>$h, minute=>$m);
-            return $dt;
+            $dt->set(hour=>$+{hour}, minute=>$+{minute});
         }
-        when (10) { # "2010-02-26"
-            require DateTime::Format::Strptime;
-            my $dp = DateTime::Format::Strptime->new(pattern=>'%Y-%m-%d');
-            $dt = $dp->parse_datetime($raw);
+        when(/^$YEAR_RE[-.]$MONTH_RE[-.]$DAY_RE$/) { # "2010-02-26"
+            $dt = DateTime->today;
+            $dt->set(year => $+{year}, month=>$+{month}, day=>$+{day});
         }
-        when (16) { # "2010-02-26 23:42"
-            require DateTime::Format::Strptime;
-            my $dp = DateTime::Format::Strptime->new(pattern=>'%Y-%m-%d %H:%M');
-            $dt = $dp->parse_datetime($raw);
+        when(/^$YEAR_RE[-.]$MONTH_RE[-.]$DAY_RE\s$HOUR_RE:$MINUTE_RE/) { # "2010-02-26 12:34"
+            $dt = DateTime->new(year => $+{year}, month=>$+{month}, day=>$+{day}, hour=>$+{hour}, minute=>$+{minute});
         }
     }
     return $dt;
