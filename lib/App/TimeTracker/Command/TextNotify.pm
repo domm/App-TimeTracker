@@ -38,7 +38,8 @@ sub _update_text_notify {
         my $text = $task->project.' since '.$task->start->hms(':');
         
         if ($task->can('rt_id')
-            && $task->can('rt_subject')) {
+            && $task->can('rt_subject')
+            && $task->rt_id) {
             $text .= "\nRT" . $task->rt_id. ": ".$task->rt_subject;
         }
         print $fh $text;

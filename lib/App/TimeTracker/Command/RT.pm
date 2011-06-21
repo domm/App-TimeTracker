@@ -26,6 +26,9 @@ sub _build_rt_ticket {
         $self->rt($task->rt_id);
     }
 
+    return
+        unless $self->has_rt;
+    
     my $rt_ticket = RT::Client::REST::Ticket->new(
         rt  => $self->rt_client,
         id  => $self->rt,
@@ -85,9 +88,9 @@ after 'cmd_start' => sub {
 
     my $task = $self->_current_task;
     return unless $task;
+    
     my $ticket_id = $task->rt_id;
     unless ($ticket_id) {
-        say "No RT ticket id found, cannot take ticket";
         return;
     }
 
