@@ -110,7 +110,7 @@ after 'cmd_stop' => sub {
     return 
         unless $self->config->{rt}{update_time_worked};
 
-    my $task = $self->_current_task;
+    my $task = $self->_previous_task;
 
     return 
         unless $task && $task->rounded_minutes > 0;
@@ -120,7 +120,8 @@ after 'cmd_stop' => sub {
         say "No RT ticket id found, cannot update TimeWorked";
         return;
     }
-    
+   
+    # TODO BAD RT_TICKET!!
     unless ($self->rt_ticket) {
         say "Cannot find ticket $ticket_id in RT";
         return;
