@@ -12,7 +12,7 @@ use File::Find::Rule;
 sub cmd_start {
     my $self = shift;
 
-    $self->cmd_stop;
+    $self->cmd_stop('no_exit');
     
     my $task = App::TimeTracker::Data::Task->new({
         start=>$self->at || $self->now,
@@ -26,10 +26,14 @@ sub cmd_start {
 }
 
 sub cmd_stop {
-    my $self = shift;
-    
+    my ($self, $dont_exit) = @_;
+
     my $task = App::TimeTracker::Data::Task->current($self->home);
-    return unless $task;
+    unless ($task) {
+        return if $dont_exit;
+        say "Currently not working on anything";
+        exit;
+    }
     $self->_previous_task($task);
 
     $task->stop($self->at || $self->now);
