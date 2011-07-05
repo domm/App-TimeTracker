@@ -31,7 +31,7 @@ sub _post_to_irc {
     my $cfg = $self->config->{post2irc};
     return unless $cfg;
 
-    my $ua = LWP::UserAgent->new;
+    my $ua = LWP::UserAgent->new(timeout=>3);
     my $message = $task->user 
         . ( $status eq 'start' ? ' is now' : ' stopped' ) 
         . ' working on '
