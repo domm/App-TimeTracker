@@ -70,6 +70,11 @@ has 'project' => (
     is=>'ro',
     required=>1,
 );
+has 'description' => (
+    isa=>'Maybe[Str]',
+    is=>'ro',
+    required=>0,
+);
 has 'tags' => (
     isa=>'ArrayRef',
     is=>'ro',
