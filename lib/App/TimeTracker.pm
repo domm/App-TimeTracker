@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use 5.010;
 
-our $VERSION = "2.005";
+our $VERSION = "2.006";
 # ABSTRACT: Track time spend on projects from the commandline
 
 use App::TimeTracker::Data::Task;
