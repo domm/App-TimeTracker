@@ -18,6 +18,7 @@ sub cmd_start {
         start=>$self->at || $self->now,
         project=>$self->project,
         tags=>$self->tags,
+        description=>$self->description,
     });
     $self->_current_task($task);
 
@@ -273,6 +274,11 @@ sub _load_attribs_start {
         is=>'ro',
         documentation=>'Project name',
         lazy_build=>1,
+    });
+    $meta->add_attribute('description'=>{
+        isa=>'Str',
+        is=>'rw',
+        documentation=>'Description',
     });
 }
 
