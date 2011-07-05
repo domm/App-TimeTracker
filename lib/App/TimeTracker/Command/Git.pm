@@ -28,7 +28,7 @@ after 'cmd_start' => sub {
     }
 
     if (!$branches{$branch}) {
-        $r->command('checkout','-b', $branch);
+        $r->command('branch', $branch);
     }
 
     print $r->command('checkout',$branch)->stderr->getlines;
