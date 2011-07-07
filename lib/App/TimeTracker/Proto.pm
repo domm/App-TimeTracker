@@ -11,6 +11,7 @@ use File::HomeDir ();
 use Path::Class;
 use Hash::Merge qw();
 use JSON;
+use Carp;
 
 use App::TimeTracker::Data::Task;
 
@@ -78,21 +79,15 @@ sub run {
 sub load_config {
     my $self = shift;
 
-    my $all_config = decode_json( $self->configfile->slurp );
-    my %projects;
-    foreach my $job (keys %{$all_config->{jobs}}) {
-        foreach my $project (keys %{$all_config->{jobs}{$job}{projects}}) {
-            $projects{$project} = $job;
-        }
-    }
-
+    my $projects = decode_json( $self->configfile->slurp );
     my $project;
+    
     my @argv = @ARGV;
     while (@argv) { # check if project is specified via commandline
         my $arg = shift(@argv);
         if ($arg eq '--project') {
             my $p = lc(shift(@argv));
-            foreach (keys %projects) {
+            foreach (keys %$projects) {
                 if (lc($_) eq $p) {
                     $project = $_;
                     last; 
@@ -104,40 +99,40 @@ sub load_config {
         }
     }
     unless (defined $project) { # try to figure out project via current dir
-        my $cwd = Path::Class::Dir->new->absolute;
-        my $regex = join('|',sort { length($b) <=> length($a) } keys %projects);
-        if ($cwd =~ m{/($regex)}i) {
-            my $p = lc($1);
-            foreach (keys %projects) {
-                if (lc($_) eq $p) {
-                    $project = $_;
-                    last; 
-                }
+        my @path = Path::Class::Dir->new->absolute->dir_list;
+        while (my $dir = pop(@path)) {
+            if ($projects->{$dir}) {
+                $project = $dir;
+                last;
             }
         }
     }
-    
     unless (defined $project) { # try to figure out project via current task
         my $current =  App::TimeTracker::Data::Task->_load_from_link($self->home,'current');
         if (defined $current) {
             $project = $current->project;
         }
     }
-
+    
     my $config;
+    my %seen;
     if (defined $project) {
         $self->project($project);
-        my $job = $projects{$project};
-        # merge project <- job <- global config
-        $config = Hash::Merge::merge($all_config->{'jobs'}{$job}{'projects'}{$project},$all_config->{'jobs'}{$job}{'job'});
-        $config = Hash::Merge::merge($config,$all_config->{'global'});
+
+        my $merger = Hash::Merge->new('RIGHT_PRECEDENT');
+        $config = $projects->{$project};
+        my $parent = $config->{'parent'};
+        while ($parent) {
+            croak "Endless recursion on parent $parent, aborting!" if $seen{$parent}++;
+            my $parent_config = $projects->{$parent};
+            $config = $merger->merge($parent_config,$config);
+            $parent = $parent_config->{'parent'};
+        }
     } else {
-        say "Cannot figure out project. Please check config and/or --project";
-        $config = $all_config->{'global'};
+        $config = {};
         $self->project('_no_project');
     }
-    
-    $config->{project2job}=\%projects;
+    $config->{_projects} = $projects;
     return $config;
 }
 

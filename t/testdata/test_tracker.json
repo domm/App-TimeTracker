@@ -1,35 +1,12 @@
 {
-   "jobs" : {
-      "perl" : {
-         "projects" : {
-            "App-TimeTracker" : {
-                "plugins" : [
-                    "Git",
-		            "SyncViaGit",
-                    "RT",
-                    "Post2IRC"
-                 ],
-                 "rt" : {
-                    "update_time_worked" : "1"
-                 }
-              }
-         },
-         "job" : {}
-      },
-      "vienna.pm" : {
-         "job" : {
-            "plugins" : [
-                "RT"
-             ]
-         },
-         "projects" : {
-            "CPANTS" : {
-                "rt" : {
-                    "set_owner_to" : null
-                }
-            }
-         }
-      }
+   "perl" : {
+      "parent" : "global"
+   },
+   "vienna.pm" : {
+      "plugins" : [
+         "RT"
+      ],
+      "parent" : "global"
    },
    "global" : {
       "post2irc" : {
@@ -41,6 +18,24 @@
       ],
       "rt" : {
          "set_owner_to" : "domm"
+      }
+   },
+   "CPANTS" : {
+      "parent" : "vienna.pm",
+      "rt" : {
+         "set_owner_to" : null
+      }
+   },
+   "App-TimeTracker" : {
+      "plugins" : [
+         "Git",
+         "SyncViaGit",
+         "RT",
+         "Post2IRC"
+      ],
+      "parent" : "perl",
+      "rt" : {
+         "update_time_worked" : "1"
       }
    }
 }

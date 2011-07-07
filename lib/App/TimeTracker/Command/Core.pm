@@ -132,13 +132,12 @@ sub cmd_report {
     my $report={};
     my $format="%- 20s % 12s\n";
 
-    my $job_map = $self->config->{project2job};
+    my $project_map = $self->config->{_projects};
 
     foreach my $file ( @files ) {
         my $task = App::TimeTracker::Data::Task->load($file->stringify);
         my $time = $task->seconds // $task->_build_seconds;
         my $project = $task->project;
-        my $job = $job_map->{$project} || '_nojob';
 
         if ($time >= 60*60*8) {
             say "Found dubious trackfile: ".$file->basename;
@@ -147,18 +146,17 @@ sub cmd_report {
 
         $total+=$time;
 
-        $report->{$job}{'_total'} += $time;
-        $report->{$job}{$project}{'_total'} += $time;
+        $report->{$project}{'_total'} += $time;
 
         if ( $self->detail ) {
             my $tags = $task->tags;
             if (@$tags) {
                 foreach my $tag ( @$tags ) {
-                    $report->{$job}{$project}{$tag} += $time;
+                    $report->{$project}{$tag} += $time;
                 }
             }
             else {
-                $report->{$job}{$project}{'_untagged'} += $time;
+                $report->{$project}{'_untagged'} += $time;
             }
         }
         if ($self->verbose) {
@@ -166,25 +164,26 @@ sub cmd_report {
         }
     }
 
+    foreach my $project (keys %$report) {
+        my $parent = $project_map->{$project}{parent};
+        while ($parent) {
+            $report->{$parent}{'_total'}+=$report->{$project}{'_total'} || 0;
+            $report->{$parent}{$project} = $report->{$project}{'_total'} || 0;
+            $parent = $project_map->{$parent}{parent};
+        }
+    }
+
     my $padding='';
     my $tagpadding='   ';
-    foreach my $job (sort keys %$report) {
-        my $job_total = delete $report->{$job}{'_total'};
-        unless ($job eq '_nojob') {
-            printf ($format, $job, $self->beautify_seconds( $job_total ) );
-            $padding = "   ";
-        }
+    foreach my $project (sort keys %$report) {
+        my $data = $report->{$project};
+        printf( $padding.$format, $project, $self->beautify_seconds( delete $data->{'_total'} ) );
+        printf( $padding.$tagpadding.$format, 'untagged', $self->beautify_seconds( delete $data->{'_untagged'} ) ) if $data->{'_untagged'};
 
-        foreach my $project (sort keys %{$report->{$job}}) {
-            my $data = $report->{$job}{$project};
-            printf( $padding.$format, $project, $self->beautify_seconds( delete $data->{'_total'} ) );
-            printf( $padding.$tagpadding.$format, 'untagged', $self->beautify_seconds( delete $data->{'_untagged'} ) ) if $data->{'_untagged'};
-
-            if ( $self->detail ) {
-                foreach my $tag ( sort { $data->{$b} <=> $data->{$a} } keys %{ $data } ) {
-                    my $time = $data->{$tag};
-                    printf( $padding.$tagpadding.$format, $tag, $self->beautify_seconds($time) );
-                }
+        if ( $self->detail ) {
+            foreach my $tag ( sort { $data->{$b} <=> $data->{$a} } keys %{ $data } ) {
+                my $time = $data->{$tag};
+                printf( $padding.$tagpadding.$format, $tag, $self->beautify_seconds($time) );
             }
         }
     }
