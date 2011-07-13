@@ -129,7 +129,7 @@ sub load_config {
             $parent = $parent_config->{'parent'};
         }
     } else {
-        $config = {};
+        $config = $projects->{default} || {};
         $self->project('_no_project');
     }
     $config->{_projects} = $projects;

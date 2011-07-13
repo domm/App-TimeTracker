@@ -27,4 +27,19 @@ my $p = App::TimeTracker::Proto->new;
     is($c->{rt}{update_time_worked},1,'rt->update_time_worked');
 }
 
+{
+    no warnings 'redefine';
+    eval "sub App::TimeTracker::Data::Task::_load_from_link {
+        return;
+    }
+    sub Path::Class::Dir::dir_list {
+        return ();
+    }";
+    @ARGV=('--project','no_such_project');
+    my $c = $p->load_config;
+    is($p->project,'_no_project','project set per default to _no_project');
+    is($c->{rt}{set_owner_to},'domm','no rt->set_owner_to');
+    is($c->{rt}{update_time_worked},undef,'no rt->update_time_worked');
+}
+
 done_testing();

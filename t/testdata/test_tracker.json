@@ -1,14 +1,14 @@
 {
    "perl" : {
-      "parent" : "global"
+      "parent" : "default"
    },
    "vienna.pm" : {
       "plugins" : [
          "RT"
       ],
-      "parent" : "global"
+      "parent" : "default"
    },
-   "global" : {
+   "default" : {
       "post2irc" : {
          "secret" : "12345",
          "host" : "http://irc.example.com/"
