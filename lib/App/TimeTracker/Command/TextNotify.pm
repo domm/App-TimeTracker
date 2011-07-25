@@ -7,26 +7,10 @@ use 5.010;
 
 use Moose::Role;
 
-after 'cmd_start' => sub {
+after ['cmd_start','cmd_stop','cmd_current','cmd_continue'] => sub {
     my $self = shift;
     $self->_update_text_notify();
 };
-
-after 'cmd_stop' => sub {
-    my $self = shift;
-    $self->_update_text_notify();
-};
-
-after 'cmd_current' => sub {
-    my $self = shift;
-    $self->_update_text_notify();
-};
-
-after 'cmd_continue' => sub {
-    my $self = shift;
-    $self->_update_text_notify();
-};
-
 
 sub _update_text_notify {
     my $self = shift;

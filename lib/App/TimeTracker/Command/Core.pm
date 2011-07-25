@@ -152,8 +152,6 @@ sub cmd_report {
             my $tags = $task->tags;
             if (@$tags) {
                 foreach my $tag ( @$tags ) {
-                    next
-                        unless $tag =~ m/^RT\d+$/;
                     $report->{$project}{$tag} += $time;
                 }
             }
