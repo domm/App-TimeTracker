@@ -101,9 +101,11 @@ sub load_config {
     unless (defined $project) { # try to figure out project via current dir
         my @path = Path::Class::Dir->new->absolute->dir_list;
         while (my $dir = pop(@path)) {
-            if ($projects->{$dir}) {
-                $project = $dir;
-                last;
+            foreach my $check_project (keys %{$projects}) {
+                if (lc($dir) eq lc($check_project)) {
+                    $project = $check_project;
+                    last;
+                }
             }
         }
     }
