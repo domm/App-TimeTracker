@@ -9,7 +9,13 @@ use Moose::Role;
 use LWP::UserAgent;
 use Digest::SHA1 qw(sha1_hex);
 
-has 'irc_quiet' => (is=>'ro',isa=>'Bool',documentation=>'IRC: Do not post to IRC');
+has 'irc_quiet' => (
+    is=>'ro',
+    isa=>'Bool',
+    documentation=>'IRC: Do not post to IRC',
+    cmd_aliases => [qw/ircquiet/],
+    traits    => [ 'Getopt' ],
+);
 
 after ['cmd_start','cmd_continue'] => sub {
     my $self = shift;
