@@ -47,7 +47,7 @@ coerce 'TT::DateTime'
             $dt = DateTime->today;
             $dt->set(hour=>$+{hour}, minute=>$+{minute});
         }
-        when(/^$YEAR_RE[-.]$MONTH_RE[-.]$DAY_RE$/) { # "2010-02-26"
+        when(/^$YEAR_RE[-.]?$MONTH_RE[-.]?$DAY_RE$/) { # "2010-02-26"
             $dt = DateTime->today;
             $dt->set(year => $+{year}, month=>$+{month}, day=>$+{day});
         }
