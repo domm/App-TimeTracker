@@ -144,6 +144,7 @@ sub say_project_tags {
     my $tags = $self->tags;
     my $rv = $self->project;
     $rv .= ' ('.join(', ',@$tags).')' if @$tags;
+    $rv .= ' '.$self->description if $self->description;
     return $rv;
 }
 
