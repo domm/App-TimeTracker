@@ -83,6 +83,7 @@ sub load_config {
     my $project;
     
     my @argv = @ARGV;
+    CHECK_ARGV:
     while (@argv) { # check if project is specified via commandline
         my $arg = shift(@argv);
         if ($arg eq '--project') {
@@ -90,7 +91,7 @@ sub load_config {
             foreach (keys %$projects) {
                 if (lc($_) eq $p) {
                     $project = $_;
-                    last; 
+                    last CHECK_ARGV; 
                 }
             }
             unless (defined $project) {
@@ -100,11 +101,13 @@ sub load_config {
     }
     unless (defined $project) { # try to figure out project via current dir
         my @path = Path::Class::Dir->new->absolute->dir_list;
+        CHECK_PROJECT:
         while (my $dir = pop(@path)) {
+            
             foreach my $check_project (keys %{$projects}) {
                 if (lc($dir) eq lc($check_project)) {
                     $project = $check_project;
-                    last;
+                    last CHECK_PROJECT;
                 }
             }
         }
