@@ -88,9 +88,11 @@ sub load_config {
         my $arg = shift(@argv);
         if ($arg eq '--project') {
             my $p = lc(shift(@argv));
-            foreach (keys %$projects) {
-                if (lc($_) eq $p) {
-                    $project = $_;
+            foreach my $check_project (keys %$projects) {
+                next
+                    if $check_project eq 'global';
+                if (lc($check_project) eq $p) {
+                    $project = $check_project;
                     last CHECK_ARGV; 
                 }
             }
@@ -105,6 +107,8 @@ sub load_config {
         while (my $dir = pop(@path)) {
             
             foreach my $check_project (keys %{$projects}) {
+                next
+                    if $check_project eq 'global';
                 if (lc($dir) eq lc($check_project)) {
                     $project = $check_project;
                     last CHECK_PROJECT;
@@ -125,19 +129,27 @@ sub load_config {
         $self->project($project);
 
         my $merger = Hash::Merge->new('RIGHT_PRECEDENT');
+        
         $config = $projects->{$project};
         my $parent = $config->{'parent'};
-        while ($parent) {
+        while (defined $parent) {
             croak "Endless recursion on parent $parent, aborting!" if $seen{$parent}++;
             my $parent_config = $projects->{$parent};
             $config = $merger->merge($parent_config,$config);
             $parent = $parent_config->{'parent'};
         }
+        
+        # unique plugins
+        $config->{plugins} ||= [];
+        my %plugins_unique = map {$_ =>  1} @{$config->{plugins}};
+        $config->{plugins} = [ keys %plugins_unique ];
+        
     } else {
         $config = $projects->{default} || {};
         $self->project('_no_project');
     }
     $config->{_projects} = $projects;
+    
     return $config;
 }
 
