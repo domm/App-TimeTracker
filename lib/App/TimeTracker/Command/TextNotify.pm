@@ -39,7 +39,8 @@ sub _update_text_notify {
         
         if ($task->can('rt_id')
             && $task->can('rt_subject')
-            && $task->rt_id) {
+            && $task->can('has_rt')
+            && $task->has_rt) {
             $text .= "\nRT" . $task->rt_id. ": ".$task->rt_subject;
         }
         print $fh $text;
