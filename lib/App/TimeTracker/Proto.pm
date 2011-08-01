@@ -116,7 +116,6 @@ sub load_config {
     $self->_write_config_file_locations;
 
     if (-e $self->global_config_file) {
-        warn $self->global_config_file
         $config = merge($config, decode_json($self->global_config_file->slurp));
     }
     

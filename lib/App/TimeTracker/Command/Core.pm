@@ -132,8 +132,6 @@ sub cmd_report {
     my $report={};
     my $format="%- 20s % 12s\n";
 
-    my $project_map = $self->config->{_projects};
-
     foreach my $file ( @files ) {
         my $task = App::TimeTracker::Data::Task->load($file->stringify);
         my $time = $task->seconds // $task->_build_seconds;
@@ -164,14 +162,15 @@ sub cmd_report {
         }
     }
 
-    foreach my $project (keys %$report) {
-        my $parent = $project_map->{$project}{parent};
-        while ($parent) {
-            $report->{$parent}{'_total'}+=$report->{$project}{'_total'} || 0;
-            $report->{$parent}{$project} = $report->{$project}{'_total'} || 0;
-            $parent = $project_map->{$parent}{parent};
-        }
-    }
+# TODO: calc sum for parent(s)
+#    foreach my $project (keys %$report) {
+#        my $parent = $project_map->{$project}{parent};
+#        while ($parent) {
+#            $report->{$parent}{'_total'}+=$report->{$project}{'_total'} || 0;
+#            $report->{$parent}{$project} = $report->{$project}{'_total'} || 0;
+#            $parent = $project_map->{$parent}{parent};
+#        }
+#    }
 
     my $padding='';
     my $tagpadding='   ';
