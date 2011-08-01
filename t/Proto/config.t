@@ -4,42 +4,46 @@ use warnings;
 use lib qw(t);
 
 use Test::Most;
-use testlib::FakeHomeDir;
+use testlib::Fixtures;
 use App::TimeTracker::Proto;
+use Path::Class;
 
-my $p = App::TimeTracker::Proto->new;
+{
+    my $testdir = testlib::Fixtures::setup_tree('tree1');
+    my $p = App::TimeTracker::Proto->new(home=>$testdir);
+    my $c = $p->load_config(dir($testdir,(qw(a b c d))));
+    is($p->project,'d','project d');
+    is($c->{rt}{update_time_worked},1,'deep config');
+    is(keys %{$p->config_file_locations},4, '4 config files');
+}
 
+testlib::Fixtures::reset_tempdir();
+{
+    my $testdir = testlib::Fixtures::setup_tree('tree1');
+    my $p = App::TimeTracker::Proto->new(home=>$testdir);
+    my $c = $p->load_config(dir($testdir,(qw(a b))));
+    is($p->project,'b','project b');
+    is($c->{rt}{update_time_worked},undef,'not so deep config');
+    is(keys %{$p->config_file_locations},2, '2 config files');
+}
+
+testlib::Fixtures::reset_tempdir();
+{
+    my $testdir = testlib::Fixtures::setup_tree('tree1');
+    my $p = App::TimeTracker::Proto->new(home=>$testdir);
+    my $c = $p->load_config(dir($testdir,(qw(z))));
+    is($p->project,'no_project','no_project');
+    is(keys %{$p->config_file_locations},0, '0 config files');
+}
+
+testlib::Fixtures::reset_tempdir();
 {
     @ARGV=('--project','CPANTS');
-    my $c = $p->load_config;
-    is($p->project,'CPANTS','project set via ARGV to CPANTS');
-    is($c->{rt}{set_owner_to},undef,'no rt->set_owner_to');
-    is($c->{rt}{update_time_worked},undef,'no rt->update_time_worked');
-}
-
-{
-    @ARGV=();
-    my $c = $p->load_config;
-    is($p->project,'App-TimeTracker','project set via path to TimeTracker');
-    is($c->{'_projects'}{'App-TimeTracker'}{'parent'},'perl','A-TT belongs to perl');
-    is($c->{'_projects'}{'CPANTS'}{'parent'},'vienna.pm','CPANTS belongs to Vienna.pm');
-    is($c->{rt}{set_owner_to},'domm','rt->set_owner_to');
-    is($c->{rt}{update_time_worked},1,'rt->update_time_worked');
-}
-
-{
-    no warnings 'redefine';
-    eval "sub App::TimeTracker::Data::Task::_load_from_link {
-        return;
-    }
-    sub Path::Class::Dir::dir_list {
-        return ();
-    }";
-    @ARGV=('--project','no_such_project');
-    my $c = $p->load_config;
-    is($p->project,'_no_project','project set per default to _no_project');
-    is($c->{rt}{set_owner_to},'domm','no rt->set_owner_to');
-    is($c->{rt}{update_time_worked},undef,'no rt->update_time_worked');
+    my $testdir = testlib::Fixtures::setup_tree('tree1');
+    my $p = App::TimeTracker::Proto->new(home=>$testdir);
+    my $c = $p->load_config(dir($testdir,(qw(z))));
+    is($p->project,'CPANTS','project via argv');
+    is(keys %{$p->config_file_locations},0, '0 config files');
 }
 
 done_testing();

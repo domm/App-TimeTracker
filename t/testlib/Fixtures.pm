@@ -15,6 +15,10 @@ sub setup_tempdir {
     return $tempdir;
 }
 
+sub reset_tempdir {
+    undef $tempdir;
+}
+
 sub setup_2011_05 {
     my $tmp = setup_tempdir();
     dircopy('t/testdata/2011',$tmp->subdir('2011')) || die $!;
@@ -34,6 +38,13 @@ sub setup_running {
         close $fh;
     }
     
+    return $tmp;
+}
+
+sub setup_tree {
+    my $tree = shift;
+    my $tmp = setup_tempdir();
+    dircopy('t/testdata/'.$tree,$tmp) || die $!;
     return $tmp;
 }
 

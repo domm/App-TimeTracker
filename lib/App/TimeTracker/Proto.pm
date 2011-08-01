@@ -9,7 +9,7 @@ use Moose;
 use MooseX::Types::Path::Class;
 use File::HomeDir ();
 use Path::Class;
-use Hash::Merge qw();
+use Hash::Merge qw(merge);
 use JSON;
 use Carp;
 
@@ -28,17 +28,33 @@ sub _build_home {
     return $home;
 }
 
-has 'configfile' => (
+has 'global_config_file' => (
     is         => 'ro',
     isa        => 'Path::Class::File',
     lazy_build => 1,
 );
-sub _build_configfile {
+sub _build_global_config_file {
     my $self = shift;
     return $self->home->file('tracker.json');
 }
 
-has 'project' => (is=>'rw',isa=>'Str',documentation=>'Project name');
+has 'config_file_locations' => (
+    is         => 'ro',
+    isa        => 'HashRef',
+    lazy_build => 1,
+);
+sub _build_config_file_locations {
+    my $self = shift;
+    my $file = $self->home->file('projects.json');
+    if (-e $file && -s $file) {
+        return decode_json($file->slurp);
+    }
+    else {
+        return {};
+    }
+}
+
+has 'project' => (is=>'rw',isa=>'Str',predicate => 'has_project');
 
 sub run {
     my $self = shift;
@@ -77,63 +93,60 @@ sub run {
 }
 
 sub load_config {
+    my ($self, $dir) = @_;
+    $dir ||= Path::Class::Dir->new->absolute;
+    my $config={};
+
+    WALKUP: while (1) {
+        my $config_file = $dir->file('.tracker.json');
+        if (-e $config_file) {
+            my $this_config = decode_json( $config_file->slurp );
+            $config = merge($config, $this_config);
+
+            my @path = $config_file->parent->dir_list;
+            my $project = $path[-1];
+            $self->config_file_locations->{$project}=$config_file->stringify;
+
+            $self->project($project) unless $self->has_project;
+        }
+        last WALKUP if $dir->parent eq $dir;
+        $dir = $dir->parent;
+    }
+
+    $self->_write_config_file_locations;
+
+    if (-e $self->global_config_file) {
+        warn $self->global_config_file
+        $config = merge($config, decode_json($self->global_config_file->slurp));
+    }
+    
+    unless ($self->has_project) {
+        $self->find_project_in_argv;
+    }
+
+    return $config;
+}
+
+sub find_project_in_argv {
     my $self = shift;
 
-    my $projects = decode_json( $self->configfile->slurp );
-    my $project;
-    
     my @argv = @ARGV;
-    while (@argv) { # check if project is specified via commandline
+    while (@argv) {
         my $arg = shift(@argv);
         if ($arg eq '--project') {
-            my $p = lc(shift(@argv));
-            foreach (keys %$projects) {
-                if (lc($_) eq $p) {
-                    $project = $_;
-                    last; 
-                }
-            }
-            unless (defined $project) {
-                say "Cannot find project $p in config.";
-            }
+            my $p = shift(@argv);
+            $self->project($p);
+            return;
         }
     }
-    unless (defined $project) { # try to figure out project via current dir
-        my @path = Path::Class::Dir->new->absolute->dir_list;
-        while (my $dir = pop(@path)) {
-            if ($projects->{$dir}) {
-                $project = $dir;
-                last;
-            }
-        }
-    }
-    unless (defined $project) { # try to figure out project via current task
-        my $current =  App::TimeTracker::Data::Task->_load_from_link($self->home,'current');
-        if (defined $current) {
-            $project = $current->project;
-        }
-    }
-    
-    my $config;
-    my %seen;
-    if (defined $project) {
-        $self->project($project);
+    $self->project('no_project');
+}
 
-        my $merger = Hash::Merge->new('RIGHT_PRECEDENT');
-        $config = $projects->{$project};
-        my $parent = $config->{'parent'};
-        while ($parent) {
-            croak "Endless recursion on parent $parent, aborting!" if $seen{$parent}++;
-            my $parent_config = $projects->{$parent};
-            $config = $merger->merge($parent_config,$config);
-            $parent = $parent_config->{'parent'};
-        }
-    } else {
-        $config = $projects->{default} || {};
-        $self->project('_no_project');
-    }
-    $config->{_projects} = $projects;
-    return $config;
+sub _write_config_file_locations {
+    my $self = shift;
+    my $fh = $self->home->file('projects.json')->openw;
+    print $fh encode_json($self->config_file_locations);
+    close $fh;
 }
 
 1;
