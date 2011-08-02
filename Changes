@@ -1,5 +1,9 @@
 Revision history for App::TimeTracker
 
+2.008  2011-08-01T17:12:11+0200
+    - back to per-dir config files, much saner
+
+
 2.007  2011-07-07T15:00:02+0200
     - another new config file layout, which sucks less
 
