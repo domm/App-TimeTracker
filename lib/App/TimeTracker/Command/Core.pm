@@ -8,6 +8,7 @@ use 5.010;
 use Moose::Role;
 use File::Copy qw(move);
 use File::Find::Rule;
+use Data::Dumper;
 
 sub cmd_start {
     my $self = shift;
@@ -207,6 +208,11 @@ sub cmd_recalc_trackfile {
     my $task = App::TimeTracker::Data::Task->load($file);
     $task->save($self->home);
     say "recalced $file";
+}
+
+sub cmd_show_config {
+    my $self = shift;
+    warn Data::Dumper::Dumper $self->config;
 }
 
 sub cmd_commands {
