@@ -48,6 +48,16 @@ after 'cmd_start' => sub {
     print $r->command('checkout',$branch)->stderr->getlines;
 };
 
+after 'cmd_continue' => sub {
+    my $self = shift;
+    
+    return unless $self->branch;
+    return if $self->no_branch;
+    
+    my $r = Git::Repository->new( work_tree => '.' );
+    print $r->command('checkout',$self->branch)->stderr->getlines;
+};
+
 after cmd_stop => sub {
     my $self = shift;
     return unless $self->merge;
