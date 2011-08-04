@@ -43,16 +43,26 @@ coerce 'TT::DateTime'
     $dt->set_time_zone('local');
 
     given ($raw) {
-        when(/^$HOUR_RE:$MINUTE_RE$/) { # "13:42"
+        when(/^ $HOUR_RE : $MINUTE_RE $/x) { # "13:42"
             $dt = DateTime->today;
             $dt->set(hour=>$+{hour}, minute=>$+{minute});
         }
-        when(/^$YEAR_RE[-.]?$MONTH_RE[-.]?$DAY_RE$/) { # "2010-02-26"
+        when(/^ $YEAR_RE [-.]? $MONTH_RE [-.]? $DAY_RE $/x) { # "2010-02-26"
             $dt = DateTime->today;
             $dt->set(year => $+{year}, month=>$+{month}, day=>$+{day});
         }
-        when(/^$YEAR_RE[-.]$MONTH_RE[-.]$DAY_RE\s$HOUR_RE:$MINUTE_RE/) { # "2010-02-26 12:34"
+        when(/^ $YEAR_RE [-.]? $MONTH_RE [-.]? $DAY_RE \s+ $HOUR_RE : $MINUTE_RE $/x) { # "2010-02-26 12:34"
             $dt = DateTime->new(year => $+{year}, month=>$+{month}, day=>$+{day}, hour=>$+{hour}, minute=>$+{minute});
+        }
+        when(/^ $DAY_RE [-.]? $MONTH_RE [-.]? $YEAR_RE $/x) { # "26-02-2010"
+            $dt = DateTime->today;
+            $dt->set(year => $+{year}, month=>$+{month}, day=>$+{day});
+        }
+        when(/^ $DAY_RE [-.]? $MONTH_RE [-.]? $YEAR_RE \s $HOUR_RE : $MINUTE_RE $/x) { # "26-02-2010 12:34"
+            $dt = DateTime->new(year => $+{year}, month=>$+{month}, day=>$+{day}, hour=>$+{hour}, minute=>$+{minute});
+        }
+        default {
+            confess "Invalid date format '$raw'";
         }
     }
     return $dt;
