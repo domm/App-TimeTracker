@@ -350,3 +350,228 @@ no Moose::Role;
 
 __END__
 
+=head1 CORE COMMANDS
+
+More commands are implemented in various plugins. Plugins might also alter and/or amend commands.
+
+=head2 start
+
+    ~/perl/Your-Project$ tracker start
+    Started working on Your-Project at 23:44:19
+
+Start tracking the current project now. Automatically stop the previous task, if there was one.
+
+B<Options:>
+
+=over
+
+=item --at TT::DateTime
+
+    ~/perl/Your-Project$ tracker start --at 12:42
+    ~/perl/Your-Project$ tracker start --at '2011-02-26 12:42'
+
+Start at the specified time/datetime instead of now. If only a time is
+provided, the day defaults to today. See L<TT::DateTime> in L<App::TimeTracker>.
+
+=item --project SomeProject
+
+  ~/perl/Your-Project$ tracker start --project SomeProject
+
+Use the specified project instead of the one determined by the current
+working directory.
+
+=item --description 'some prosa'
+
+  ~/perl/Your-Project$ tracker start --description "Solving nasty bug"
+
+Supply some descriptive text to the task. Might be used by reporting plugins etc.
+
+=item --tags RT1234 [Multiple]
+
+  ~/perl/Your-Project$ tracker start --tag RT1234 --tag testing
+
+A list of tags to add to the task. Can be used by reporting plugins.
+
+=back
+
+=head2 stop
+
+    ~/perl/Your-Project$ tracker stop
+    Worked 00:20:50 on Your-Project
+
+Stop tracking the current project now.
+
+B<Options:>
+
+=over
+
+=item --at TT::DateTime
+
+Stop at the specified time/datetime instead of now.
+
+=back
+
+=head2 continue
+
+    ~/perl/Your-Project$ tracker continue
+
+Continue working on the previous task after a break.
+
+Example:
+
+    ~$ tracker start --project ExplainContinue --tag testing
+    Started working on ExplainContinue (testing) at 12:42
+    
+    # ... time passes, it's now 13:17
+    ~$ tracker stop
+    Worked 00:35:00 on ExplainContinue
+    
+    # back from lunch at 13:58
+    ~$ tracker continue
+    Started working on ExplainContinue (testing) at 13:58
+    
+B<Options:> same as L<start>
+
+=head2 append 
+
+    ~/perl/Your-Project$ tracker append
+
+Start working on a task at exactly the time you stopped working at the previous task.
+
+Example:
+
+    ~$ tracker start --project ExplainAppend --tag RT1234
+    Started working on ExplainAppend (RT1234) at 14:23
+    
+    # ... time passes (14:46)
+    ~$ tracker stop
+    Worked 00:23:00 on ExplainAppend (RT1234)
+    
+    # start working on new ticket
+    # ...
+    # but forgot to hit start (14:53)
+    ~$ tracker append --tag RT7890
+    Started working on ExplainAppend (RT7890) at 14:46
+
+B<Options:> same as L<start>
+
+=head2 current
+
+    ~/perl/Your-Project$ tracker current
+    Working 00:20:17 on Your-Project
+
+Display what you're currently working on, and for how long.
+
+B<Options:> none
+
+=head2 worked
+
+    ~/perl/Your-Project$ tracker worked [SPAN]
+
+Report the total time worked in the given time span, maybe limited to
+some projects.
+
+B<Options:>
+
+=over
+
+=item --from TT::DateTime [REQUIRED (or use --this/--last)]
+
+Begin of reporting iterval.
+
+=item --to TT::DateTime [REQUIRED (or use --this/--last)]
+
+End of reporting iterval.
+
+=item --this [day, week, month, year]
+
+Automatically set C<--from> and C<--to> to the calculated values
+
+    ~/perl/Your-Project$ tracker worked --this week
+    17:01:50
+
+=item --last [day, week, month, year]
+
+Automatically set C<--from> and C<--to> to the calculated values
+
+    ~/perl/Your-Project$ tracker worked --last day (=yesterday)
+    06:39:12
+
+=item --project SomeProject [Multiple]
+
+    ~$ tracker worked --last day --project SomeProject
+    02:04:47
+    
+=back
+
+=head2 report
+
+    ~/perl/Your-Project$ tracker report
+
+Print out a detailed report of what you did. All worked times are
+summed up per project (and optionally per tag)
+
+B<Options:>
+
+The same options as for L<worked>, plus:
+
+=over
+
+=item --detail
+
+    ~/perl/Your-Project$ tracker report --last month --detail
+
+Also calc sums per tag.
+
+=item --verbose
+
+    ~/perl/Your-Project$ tracker report --last month --verbose
+
+Lists all found trackfiles and their respective duration before printing out the report.
+
+=back
+
+=head2 init
+
+    ~/perl/Your-Project$ tracker init
+
+Create a rather empty F<.tracker.json> config file in the current directory.
+
+B<Options:> none
+
+=head2 show_config
+
+    ~/perl/Your-Project$ tracker show_config
+
+Dump the config that's valid for the current directory. Might be handy when setting up plugins etc.
+
+B<Options:> none
+
+=head2 recalc_trackfile
+
+    ~/perl/Your-Project$ tracker recalc_trackfile --trackfile 20110808-232327_App_TimeTracker.trc
+
+Recalculates the duration stored in an old trackfile. Might be useful
+after a manual update in a trackfile. Might be unneccessary in the
+future, as soon as task duration is always calculated lazyly.
+
+B<Options:>
+
+=over
+
+=item --trackfile name_of_trackfile.trc REQUIRED
+
+Only the name of the trackfile is required, but you can also pass in
+the absolute path to the file. Broken trackfiles are sometimes
+reported during L<report>.
+
+=back
+
+=head2 commands
+
+    ~/perl/Your-Project$ tracker commands
+
+List all available commands, based on your current config.
+
+B<Options:> none
+

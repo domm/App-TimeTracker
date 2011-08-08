@@ -197,3 +197,12 @@ sub find_task_files {
 }
 
 1;
+
+__END__
+
+
+
+=head1 CONTRIBUTORS
+
+Maros Kollar C<< <maros@cpan.org> >>, Klaus Ita C<< <klaus@worstofall.com> >>
+
