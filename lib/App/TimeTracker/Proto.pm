@@ -12,6 +12,7 @@ use Path::Class;
 use Hash::Merge qw(merge);
 use JSON;
 use Carp;
+use Try::Tiny;
 
 use App::TimeTracker::Data::Task;
 
@@ -100,7 +101,14 @@ sub load_config {
     WALKUP: while (1) {
         my $config_file = $dir->file('.tracker.json');
         if (-e $config_file) {
-            my $this_config = decode_json( $config_file->slurp );
+            my $this_config = try {
+                decode_json( $config_file->slurp )
+            }
+            catch {
+                say "Cannot parse config file $config_file:\n$_";
+                exit;
+            };
+
             $config = merge($config, $this_config);
 
             my @path = $config_file->parent->dir_list;
