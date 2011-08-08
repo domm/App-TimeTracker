@@ -234,11 +234,13 @@ sub _load_attribs_worked {
         is=>'ro',
         coerce=>1,
         lazy_build=>1,
+        #cmd_aliases => [qw/start/],
     });
     $meta->add_attribute('to'=>{
         isa=>'TT::DateTime',
         is=>'ro',
         coerce=>1,
+        #cmd_aliases => [qw/end/],
         lazy_build=>1,
     });
     $meta->add_attribute('this'=>{
