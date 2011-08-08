@@ -10,7 +10,7 @@ use MooseX::Types::Path::Class;
 use File::HomeDir ();
 use Path::Class;
 use Hash::Merge qw(merge);
-use JSON;
+use JSON::XS;
 use Carp;
 use Try::Tiny;
 
@@ -57,6 +57,12 @@ sub _build_config_file_locations {
 
 has 'project' => (is=>'rw',isa=>'Str',predicate => 'has_project');
 
+has 'json_decoder' => (is=>'ro',isa=>'JSON::XS',lazy_build=>1);
+sub _build_json_decoder {
+    my $self = shift;
+    return JSON::XS->new->utf8->pretty->relaxed;
+}
+
 sub run {
     my $self = shift;
 
@@ -101,15 +107,7 @@ sub load_config {
     WALKUP: while (1) {
         my $config_file = $dir->file('.tracker.json');
         if (-e $config_file) {
-            my $this_config = try {
-                decode_json( $config_file->slurp )
-            }
-            catch {
-                say "Cannot parse config file $config_file:\n$_";
-                exit;
-            };
-
-            $config = merge($config, $this_config);
+            $config = merge($config, $self->slurp_config($config_file));
 
             my @path = $config_file->parent->dir_list;
             my $project = $path[-1];
@@ -124,7 +122,7 @@ sub load_config {
     $self->_write_config_file_locations;
 
     if (-e $self->global_config_file) {
-        $config = merge($config, decode_json($self->global_config_file->slurp));
+        $config = merge($config, $self->slurp_config( $self->global_config_file ));
     }
     
     unless ($self->has_project) {
@@ -154,6 +152,18 @@ sub _write_config_file_locations {
     my $fh = $self->home->file('projects.json')->openw;
     print $fh encode_json($self->config_file_locations);
     close $fh;
+}
+
+sub slurp_config {
+    my ($self, $file ) = @_;
+    try {
+        my $content = $file->slurp( iomode => '<:encoding(UTF-8)' );
+        return $self->json_decoder->decode( $content );
+    }
+    catch {
+        say "Cannot parse config file $file:\n$_";
+        exit;
+    };
 }
 
 1;
