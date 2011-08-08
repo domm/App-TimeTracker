@@ -42,10 +42,11 @@ after 'cmd_start' => sub {
     }
 
     if (!$branches{$branch}) {
-        $r->command('branch', $branch);
+        print $r->command('checkout', '-b', $branch)->stderr->getlines;
     }
-
-    print $r->command('checkout',$branch)->stderr->getlines;
+    else {
+        print $r->command('checkout',$branch)->stderr->getlines;
+    }
 };
 
 after 'cmd_continue' => sub {
