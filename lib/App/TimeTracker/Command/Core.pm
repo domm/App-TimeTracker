@@ -215,6 +215,25 @@ sub cmd_show_config {
     warn Data::Dumper::Dumper $self->config;
 }
 
+sub cmd_init {
+    my $self = shift;
+    my $cwd = Path::Class::Dir->new->absolute;
+    if (-e $cwd->file('.tracker.json')) {
+        say "This directory is already set up.\nTry 'tracker show_config' to see the current aggregated config.";
+        exit;
+    }
+
+    my @dirs = $cwd->dir_list;
+    my $project = $dirs[-1];
+    my $fh = $cwd->file('.tracker.json')->openw;
+    say $fh <<EOCONFIG;
+{
+    "project":"$project"
+}
+EOCONFIG
+    say "Set up this directory for time-tracking via file .tracker.json";
+}
+
 sub cmd_commands {
     my $self = shift;
 
