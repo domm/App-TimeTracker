@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use 5.010;
 
-# ABSTRACT: TimeTracker RT plugin
+# ABSTRACT: App::TimeTracker RT plugin
 
 use Moose::Role;
 use RT::Client::REST;
@@ -145,4 +145,89 @@ no Moose::Role;
 1;
 
 __END__
+
+=head1 DESCRIPTION
+
+This plugin takes a lot of hassle out of working with Best Practical's
+RequestTracker available for free from
+L<http://bestpractical.com/rt/>.
+
+It can set the description and tags of the current task based on data
+entered into RT, set the owner of the ticket and update the
+time-worked in RT. If you also use the C<Git> plugin, this plugin will
+generate very nice branch names based on RT information.
+
+=head1 CONFIGURATION
+
+=over
+
+=item * Add C<RT> to the list of plugins. 
+
+=item * add a hash named C<rt>, containing the following keys:
+
+=over
+
+=item * server [REQUIRED]
+
+The server name RT is running on.
+
+=item * username [REQUIRED]
+
+Username to connect with. As the password of this user might be distributed on a lot of computer, grant as little rights as needed.
+
+=item * password [REQUIRED]
+
+Password to connect with.
+
+=item * timeout
+
+Time in seconds to wait for an connection to be established. Default: 300 seconds (via RT::Client::REST)
+
+=item * set_owner_to
+
+If set, set the owner of the current ticket to the specified value during C<start>.
+
+=item * update_time_worked
+
+If set, store the time worked on this task also in RT.
+
+=back
+
+=back
+
+=head1 NEW COMMANDS
+
+none
+
+=head1 CHANGES TO OTHER COMMANDS
+
+=head2 start, continue
+
+B<New Options>:
+
+=over
+
+=item --rt
+
+    ~/perl/Your-Project$ tracker start --rt 1234
+
+If C<--rt> is set to a valid ticket number:
+
+=over
+
+=item * store the tickets subject in the tasks description ("Rev up FluxCompensator!!")
+
+=item * add the ticket number to the tasks tags ("RT1234")
+
+=item * if C<Git> is also used, determine a save branch name from the ticket number and subject, and change into this branch ("RT1234_rev_up_fluxcompensator")
+
+=item * set the owner of the ticket in RT (if C<set_owner_to> is set in config)
+
+=back
+
+=back
+
+=head2 stop
+
+If <update_time_worked> is set in config, add the time worked on this task to the ticket.
 

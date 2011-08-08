@@ -1,7 +1,7 @@
 package App::TimeTracker::Data::Task;
 use 5.010;
 
-# ABSTRACT: TimeTracker Task storage
+# ABSTRACT: App::TimeTracker Task storage
 
 use Moose;
 use namespace::autoclean;
@@ -172,4 +172,8 @@ __PACKAGE__->meta->make_immutable;
 1;
 
 __END__
+
+=head1 DESCRIPTION
+
+Rather boring class implementing a Task object. Mainly used for storage etc.
 

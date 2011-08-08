@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use 5.010;
 
-# ABSTRACT: TimeTracker SyncViaGit plugin
+# ABSTRACT: App::TimeTracker SyncViaGit plugin
 
 use Moose::Role;
 use Git::Repository;
@@ -31,4 +31,44 @@ no Moose::Role;
 1;
 
 __END__
+
+=head1 DESCRIPTION
+
+This plugin allows you to syncronize your tracker files (living in
+F<~/.TimeTracker>) via C<git> to various other computers (eg desktop
+machine at work and laptop). All of the complex stuff is done by
+C<git>, this plugin is just a telling C<git> what to do (via
+L<Git::Repository>).
+
+=head1 CONFIGURATION
+
+=over 
+
+=item * Add C<SyncViaGit> to the list of plugins. I usually put it into my top-level config file (i.e. F<~/.TimeTracker/tracker.json>).
+
+=item * Turn F<~/.TimeTracker> into a git repository and make sure you
+can pull/push this repo from all your machines. I do not recommend a
+public git hoster, as the information contained in your tracking files
+might be rather private.
+
+=back
+
+=head1 NEW COMMANDS
+
+=head2 sync
+
+  ~/somewhere/on/your/disc$ tracker sync
+  # some git output
+
+Adds all new tracker files to the git repo, pulls from remote, and
+then pushes to remote.
+
+If you get conflicts (which can happen from time to time, especially
+if you forget to C<stop>), fix them and call C<tracker sync> again.
+
+B<Options:> none
+
+=head1 CHANGES TO OTHER COMMANDS
+
+none.
 

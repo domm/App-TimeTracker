@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use 5.010;
 
-# ABSTRACT: TimeTracker Proto Class
+# ABSTRACT: App::TimeTracker Proto Class
 
 use Moose;
 use MooseX::Types::Path::Class;
@@ -167,3 +167,10 @@ sub slurp_config {
 }
 
 1;
+
+__END__
+
+=head1 DESCRIPTION
+
+ugly internal stuff, see upcoming YAPC::Europe 2011 talk...
+

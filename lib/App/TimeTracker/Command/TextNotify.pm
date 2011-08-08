@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use 5.010;
 
-# ABSTRACT: TimeTracker post mac desktop integration plugin
+# ABSTRACT: App::TimeTracker post mac desktop integration plugin
 
 use Moose::Role;
 
