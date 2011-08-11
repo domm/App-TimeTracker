@@ -1,6 +1,8 @@
 Revision history for App::TimeTracker
 
 2.009
+    - more docs
+    - new command: plugins
     - fixed MANIFEST.SKIP (thanks to Tokuhiro Matsuno for the tipp)
 
 
