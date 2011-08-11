@@ -1,7 +1,16 @@
 Revision history for App::TimeTracker
 
-2.008  2011-08-01T17:12:11+0200
+2.009
+    - fixed MANIFEST.SKIP (thanks to Tokuhiro Matsuno for the tipp)
+
+
+2.008  2011-08-09T15:30:53+0200
+    - this is going to be the first release to CPAN since 0.21
+    - relaxed decoding of json config files
+    - started to add docs 
     - back to per-dir config files, much saner
+    - new commands: show_config, init
+    - Better datetime parsing
 
 
 2.007  2011-07-07T15:00:02+0200
