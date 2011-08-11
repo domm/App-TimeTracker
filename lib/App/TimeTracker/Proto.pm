@@ -103,10 +103,12 @@ sub load_config {
     my ($self, $dir) = @_;
     $dir ||= Path::Class::Dir->new->absolute;
     my $config={};
+    my @used_config_files;
 
     WALKUP: while (1) {
         my $config_file = $dir->file('.tracker.json');
         if (-e $config_file) {
+            push(@used_config_files, $config_file->stringify);
             $config = merge($config, $self->slurp_config($config_file));
 
             my @path = $config_file->parent->dir_list;
@@ -122,9 +124,11 @@ sub load_config {
     $self->_write_config_file_locations;
 
     if (-e $self->global_config_file) {
+        push(@used_config_files, $self->global_config_file->stringify);
         $config = merge($config, $self->slurp_config( $self->global_config_file ));
     }
-    
+    $config->{_used_config_files} = \@used_config_files;
+
     unless ($self->has_project) {
         $self->find_project_in_argv;
     }
