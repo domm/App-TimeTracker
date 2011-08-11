@@ -562,6 +562,14 @@ Dump the config that's valid for the current directory. Might be handy when sett
 
 B<Options:> none
 
+=head2 plugins
+
+    ~/perl/Your-Project$ tracker plugins
+
+List all installed plugins (i.e. stuff in C<App::TimeTracker::Command::*)
+
+B<Options:> none
+
 =head2 recalc_trackfile
 
     ~/perl/Your-Project$ tracker recalc_trackfile --trackfile 20110808-232327_App_TimeTracker.trc
