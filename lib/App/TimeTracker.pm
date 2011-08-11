@@ -200,7 +200,9 @@ sub find_task_files {
 
 __END__
 
+=head1 SYNOPSIS
 
+Backend for the C<tracker> command. See C<man tracker> and/or C<perldoc tracker> for details.
 
 =head1 CONTRIBUTORS
 

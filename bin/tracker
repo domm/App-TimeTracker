@@ -8,3 +8,131 @@ my $app = App::TimeTracker::Proto->new->run;
 
 # ABSTRACT: run App::TimeTracker
 # PODNAME: tracker
+
+__END__
+
+=head1 SYNOPSIS
+
+  ~/perl/Some-Project$ tracker start
+  Started working on Some-Project at 09:03:41
+
+  ~/perl/Some-Project$ tracker stop
+  Worked 00:07:42 on Some-Project
+
+=head1 DESCRIPTION
+
+C<tracker> is the front end script to L<App::TimeTracker>. C<tracker>
+allows you to easily track and report the time you spend on various
+jobs, projects, tasks etc from the commandline.
+
+Custom commands or adaptions to your workflow can be implemented via
+an "interesting" set of L<Moose>-powered plugins. You can configure
+different sets of plugins for different jobs or projects.
+
+B<Tipp:> Use C<tracker plugins> to list all installed plugins. Read more about each plugin in C<App::TimeTracker::Command::PLUGIN-NAME>.
+
+Currently, there are plugins to interact with RT (RequestTracker),
+git and IRC. For example, the command
+
+  tracker start --rt 1234
+
+might (depending on the current configuration)
+
+=over
+
+=item * fetch the ticket subject from RT
+
+=item * create a new git branch named after the ticket subject and check it out
+
+=item * post a notification to your internal IRC channel, informing your colleagues that you're now working on that ticket
+
+=item * tell you're window manager to display the current ticket in your taskbar
+
+=item * and of course: store the time you started working on this ticket
+
+=back
+
+Each time you C<start> a new task, a so-called C<tracking file> will
+be created. This file contains all information regarding the task
+you're currently working on. If you call C<stop>, the current time is
+stored into the C<tracking file> and the time spend working on this
+task is calculated (and also stored).
+
+All C<tracking files> are plain text files containing JSON. It is very
+easy to synchronize them on different machines, using anything from
+rsync to version control systems. Or you just can use the
+C<SyncViaGit> plugin!
+
+=head1 CONFIG FILES
+
+The first time you use C<tracker>, it will create a directory named
+F<.TimeTracker> in your home directory (provided by L<File::HomeDir).
+This directory will contain your master config file F<tracker.json>
+and all C<tracking files>.
+
+You can override and ammend your default configuration by creating a
+project specific config file named F<.tracker.json> in your project
+directory.
+
+B<Tipp:> Use C<tracker init> to create an empty config file in the
+current working directory.
+
+All C<.tracker.json> files found in your current working
+directory and all its parent are merged into one configuration.
+
+Example:
+
+  ~/.TimeTracker/tracker.json
+  ~/job/.tracker.json
+  ~/job/project/.tracker.json
+
+If you hit C<start> in F<~/job/project/>, all three of those config
+files will be merged and the resulting hash will be used as the
+current configuration. 
+
+If you hit C<start> in F<~/job/>, only F<~/job/.tracker.json> and C<~/.TimeTracker/tracker.json> will be used.
+
+This allows you to have global default settings, different default
+setting for different jobs, and finetuned settings for each project.
+Of course you can have as many levels of configs as you want.
+
+B<Tipp:> Use C<tracker show_config> to dump the current configuration.
+
+=head1 TRACKING FILES
+
+A C<tracking file> contains all information about one interval you
+worked on one task. The data is provided by
+L<App::TimeTracker::Data::Task> and stored in JSON via
+L<MooseX::Storage>.
+
+C<tracking files> are stored in F<~/.TimeTracker> in a directory
+hierarchy consisting of the current year and the current month. This
+makes it easy (easier..) to find a specific C<tracking file> in case
+you need to make some manual corrections (an interface for easier
+editing of C<tracking files> is planned).
+
+The filename of a C<tracking file> looks like
+'YYYYMMDD-HHMMSS_$project.trc', for example:
+F<20110811-090437_App_TimeTracker.trc>.
+
+There are three special files in F<~/.TimeTracker>:
+
+=over
+
+=item * F<current>
+
+This file contains the filename of the currently active C<tracking file>. If you're not working on anything at the moment, this file does not exist.
+
+=item * F<previous>
+
+This file contains the filename of the last active C<tracking file>.
+
+=item * F<projects.json>
+
+This file contains a JSON hash listing all the projects and their
+config files that you used. Currently it is not used, but we will need
+it shortly to make the reports nicer. Using this file, we can find all
+projects that are time-tracked, without having to traverse your whole
+filesystem.
+
+=back
