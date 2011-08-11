@@ -234,6 +234,21 @@ EOCONFIG
     say "Set up this directory for time-tracking via file .tracker.json";
 }
 
+sub cmd_plugins {
+    my $self = shift;
+
+    my $base = Path::Class::file($INC{'App/TimeTracker/Command/Core.pm'})->parent;
+    my @hits;
+    while (my $file = $base->next) {
+        next unless -f $file;
+        next if $file->basename eq 'Core.pm';
+        my $plugin = $file->basename;
+        $plugin =~s/\.pm$//;
+        push(@hits, $plugin);
+    }
+    say "Installed plugins:\n  ".join(', ',@hits);
+}
+
 sub cmd_commands {
     my $self = shift;
 
