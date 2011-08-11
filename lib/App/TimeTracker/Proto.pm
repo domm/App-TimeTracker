@@ -154,7 +154,7 @@ sub find_project_in_argv {
 sub _write_config_file_locations {
     my $self = shift;
     my $fh = $self->home->file('projects.json')->openw;
-    print $fh encode_json($self->config_file_locations);
+    print $fh $self->json_decoder->encode($self->config_file_locations);
     close $fh;
 }
 
