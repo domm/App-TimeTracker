@@ -104,6 +104,7 @@ sub load_config {
     $dir ||= Path::Class::Dir->new->absolute;
     my $config={};
     my @used_config_files;
+    my $cfl = $self->config_file_locations;
 
     WALKUP: while (1) {
         my $config_file = $dir->file('.tracker.json');
@@ -113,7 +114,7 @@ sub load_config {
 
             my @path = $config_file->parent->dir_list;
             my $project = $path[-1];
-            $self->config_file_locations->{$project}=$config_file->stringify;
+            $cfl->{$project}=$config_file->stringify;
 
             $self->project($project) unless $self->has_project;
         }
@@ -121,7 +122,7 @@ sub load_config {
         $dir = $dir->parent;
     }
 
-    $self->_write_config_file_locations;
+    $self->_write_config_file_locations($cfl);
 
     if (-e $self->global_config_file) {
         push(@used_config_files, $self->global_config_file->stringify);
@@ -152,9 +153,9 @@ sub find_project_in_argv {
 }
 
 sub _write_config_file_locations {
-    my $self = shift;
+    my ($self, $cfl) = @_;
     my $fh = $self->home->file('projects.json')->openw;
-    print $fh $self->json_decoder->encode($self->config_file_locations);
+    print $fh $self->json_decoder->encode($cfl || $self->config_file_locations);
     close $fh;
 }
 
