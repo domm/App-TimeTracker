@@ -26,10 +26,10 @@ allows you to easily track and report the time you spend on various
 jobs, projects, tasks etc from the commandline.
 
 Custom commands or adaptions to your workflow can be implemented via
-an "interesting" set of L<Moose>-powered plugins. You can configure
-different sets of plugins for different jobs or projects.
+an "interesting" set of L<Moose>-powered plug-ins. You can configure
+different sets of plug-ins for different jobs or projects.
 
-B<Tipp:> Use C<tracker plugins> to list all installed plugins. Read more about each plugin in C<App::TimeTracker::Command::PLUGIN-NAME>.
+B<Tip:> Use C<tracker plugins> to list all installed plugins. Read more about each plug-in in C<App::TimeTracker::Command::PLUGIN-NAME>.
 
 Currently, there are plugins to interact with RT (RequestTracker),
 git and IRC. For example, the command
@@ -46,7 +46,7 @@ might (depending on the current configuration)
 
 =item * post a notification to your internal IRC channel, informing your colleagues that you're now working on that ticket
 
-=item * tell you're window manager to display the current ticket in your taskbar
+=item * tell you're window manager to display the current ticket in your task bar
 
 =item * and of course: store the time you started working on this ticket
 
@@ -61,20 +61,20 @@ task is calculated (and also stored).
 All C<tracking files> are plain text files containing JSON. It is very
 easy to synchronize them on different machines, using anything from
 rsync to version control systems. Or you just can use the
-C<SyncViaGit> plugin!
+C<SyncViaGit> plug-in!
 
 =head1 CONFIG FILES
 
 The first time you use C<tracker>, it will create a directory named
-F<.TimeTracker> in your home directory (provided by L<File::HomeDir).
+F<.TimeTracker> in your home directory (provided by L<File::HomeDir>).
 This directory will contain your master config file F<tracker.json>
 and all C<tracking files>.
 
-You can override and ammend your default configuration by creating a
+You can override and amend your default configuration by creating a
 project specific config file named F<.tracker.json> in your project
 directory.
 
-B<Tipp:> Use C<tracker init> to create an empty config file in the
+B<Tip:> Use C<tracker init> to create an empty config file in the
 current working directory.
 
 All C<.tracker.json> files found in your current working
@@ -93,10 +93,10 @@ current configuration.
 If you hit C<start> in F<~/job/>, only F<~/job/.tracker.json> and C<~/.TimeTracker/tracker.json> will be used.
 
 This allows you to have global default settings, different default
-setting for different jobs, and finetuned settings for each project.
+setting for different jobs, and fine tuned settings for each project.
 Of course you can have as many levels of configs as you want.
 
-B<Tipp:> Use C<tracker show_config> to dump the current configuration.
+B<Tip:> Use C<tracker show_config> to dump the current configuration.
 
 =head1 TRACKING FILES
 
@@ -133,6 +133,6 @@ This file contains a JSON hash listing all the projects and their
 config files that you used. Currently it is not used, but we will need
 it shortly to make the reports nicer. Using this file, we can find all
 projects that are time-tracked, without having to traverse your whole
-filesystem.
+file system.
 
 =back
