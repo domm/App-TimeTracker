@@ -163,33 +163,45 @@ sub cmd_report {
         }
     }
 
-# TODO: calc sum for parent(s)
-#    foreach my $project (keys %$report) {
-#        my $parent = $project_map->{$project}{parent};
-#        while ($parent) {
-#            $report->{$parent}{'_total'}+=$report->{$project}{'_total'} || 0;
-#            $report->{$parent}{$project} = $report->{$project}{'_total'} || 0;
-#            $parent = $project_map->{$parent}{parent};
-#        }
-#    }
+    my $projects = $self->project_tree;
+
+    foreach my $project (keys %$report) {
+        my $parent = $projects->{$project}{parent};
+        while ($parent) {
+            $report->{$parent}{'_total'}+=$report->{$project}{'_total'} || 0;
+            $parent = $projects->{$parent}{parent};
+        }
+    }
 
     my $padding='';
     my $tagpadding='   ';
-    foreach my $project (sort keys %$report) {
-        my $data = $report->{$project};
-        printf( $padding.$format, $project, $self->beautify_seconds( delete $data->{'_total'} ) );
-        printf( $padding.$tagpadding.$format, 'untagged', $self->beautify_seconds( delete $data->{'_untagged'} ) ) if $data->{'_untagged'};
-
-        if ( $self->detail ) {
-            foreach my $tag ( sort { $data->{$b} <=> $data->{$a} } keys %{ $data } ) {
-                my $time = $data->{$tag};
-                printf( $padding.$tagpadding.$format, $tag, $self->beautify_seconds($time) );
-            }
-        }
+    foreach my $project (keys %$report) {
+        next if $projects->{$project}{parent};
+        $self->_print_report_tree($report, $projects, $project, $padding, $tagpadding);
     }
-    #say '=' x 35;
+    
     printf( $format, 'total', $self->beautify_seconds($total) );
 }
+
+sub _print_report_tree {
+    my ($self, $report, $projects, $project, $padding, $tagpadding ) = @_;
+    my $data = $report->{$project};
+    my $format="%- 20s % 12s\n";
+
+    printf( $padding.$format, substr($project,0,20), $self->beautify_seconds( delete $data->{'_total'} ) );
+    if ( $self->detail ) {
+        printf( $padding.$tagpadding.$format, 'untagged', $self->beautify_seconds( delete $data->{'_untagged'} ) ) if $data->{'_untagged'};
+        foreach my $tag ( sort { $data->{$b} <=> $data->{$a} } keys %{ $data } ) {
+            my $time = $data->{$tag};
+            printf( $padding.$tagpadding.$format, $tag, $self->beautify_seconds($time) );
+        }
+    }
+    foreach my $child (keys %{$projects->{$project}{children}}) {
+        $self->_print_report_tree($report, $projects, $child, $padding.'   ', $tagpadding);
+    }
+}
+
+
 
 sub cmd_recalc_trackfile {
     my $self = shift;

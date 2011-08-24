@@ -13,6 +13,7 @@ use Moose;
 use Moose::Util::TypeConstraints;
 use Path::Class::Iterator;
 use MooseX::Storage::Format::JSONpm;
+use JSON::XS;
 
 our $HOUR_RE = qr/(?<hour>[012]?\d)/;
 our $MINUTE_RE = qr/(?<minute>[0-5]?\d)/;
@@ -194,6 +195,26 @@ sub find_task_files {
         push(@found,$file);
     }
     return sort @found;
+}
+
+sub project_tree {
+    my $self = shift;
+    my $file = $self->home->file('projects.json');
+    return unless -e $file && -s $file;
+    my $projects = decode_json($file->slurp);
+
+    my %tree;
+    while (my ($project,$location) = each %$projects) {
+        $tree{$project} //= {parent=>undef,childs=>{}};
+        my @parts = Path::Class::file($location)->parent->parent->dir_list;
+        foreach my $dir (@parts) {
+            if (my $parent = $projects->{$dir}) {
+                $tree{$project}->{parent} = $dir;
+                $tree{$dir}->{children}{$project}=1;#$location;
+            }
+        }
+    }
+    return \%tree;
 }
 
 1;
