@@ -81,6 +81,7 @@ sub run {
         $method =~ s/^cmd_//;
         $commands{$method}=1;
     }
+    
     my $load_attribs_for_command;
     foreach (@ARGV) {
         if ($commands{$_}) {
@@ -106,6 +107,25 @@ sub load_config {
     my @used_config_files;
     my $cfl = $self->config_file_locations;
 
+    my $project;
+    my $opt_parser = Getopt::Long::Parser->new( config => [ qw( no_auto_help pass_through ) ] );
+    $opt_parser->getoptions( "project=s" => \$project );
+
+    if (defined $project) {
+        my $file = $self->home->file('projects.json');
+        return unless -e $file && -s $file;
+        my $projects = decode_json($file->slurp);
+        if (my $project_config = $projects->{$project}) {
+            $dir = Path::Class::Dir->new($project_config);
+        } else {
+            say "Cannot find project: $project\nKnown projects are:";
+            foreach (keys %$projects) {
+                say "   ".$_;
+            }
+            exit;
+        }
+    }
+
     WALKUP: while (1) {
         my $config_file = $dir->file('.tracker.json');
         if (-e $config_file) {
@@ -116,7 +136,8 @@ sub load_config {
             my $project = $path[-1];
             $cfl->{$project}=$config_file->stringify;
 
-            $self->project($project) unless $self->has_project;
+            $self->project($project) 
+                unless $self->has_project;
         }
         last WALKUP if $dir->parent eq $dir;
         $dir = $dir->parent;
@@ -131,25 +152,10 @@ sub load_config {
     $config->{_used_config_files} = \@used_config_files;
 
     unless ($self->has_project) {
-        $self->find_project_in_argv;
+        $self->project('no_project');
     }
 
     return $config;
-}
-
-sub find_project_in_argv {
-    my $self = shift;
-
-    my @argv = @ARGV;
-    while (@argv) {
-        my $arg = shift(@argv);
-        if ($arg eq '--project') {
-            my $p = shift(@argv);
-            $self->project($p);
-            return;
-        }
-    }
-    $self->project('no_project');
 }
 
 sub _write_config_file_locations {
