@@ -185,6 +185,9 @@ sub cmd_report {
 
 sub _print_report_tree {
     my ($self, $report, $projects, $project, $padding, $tagpadding ) = @_;
+
+    return unless $data->{'_total'};
+
     my $data = $report->{$project};
     my $format="%- 20s % 12s\n";
 
