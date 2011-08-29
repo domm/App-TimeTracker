@@ -6,6 +6,7 @@ use 5.010;
 # ABSTRACT: App::TimeTracker post mac desktop integration plugin
 
 use Moose::Role;
+use App::TimeTracker::Utils qw(pretty_date);
 
 after ['cmd_start','cmd_stop','cmd_current','cmd_continue'] => sub {
     my $self = shift;
@@ -19,7 +20,7 @@ sub _update_text_notify {
     
     if (my $task = App::TimeTracker::Data::Task->current($self->home)) {
         my $fh = $notify_file->openw();
-        my $text = $task->project.' since '.$task->start->hms(':');
+        my $text = $task->project.' since '.pretty_date($task->start);
         
         if ($task->can('rt_id')
             && $task->rt_id) {

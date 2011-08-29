@@ -6,6 +6,7 @@ use 5.010;
 # ABSTRACT: App::TimeTracker Core commands
 
 use Moose::Role;
+use App::TimeTracker::Utils qw(now pretty_date);
 use File::Copy qw(move);
 use File::Find::Rule;
 use Data::Dumper;
@@ -16,7 +17,7 @@ sub cmd_start {
     $self->cmd_stop('no_exit');
     
     my $task = App::TimeTracker::Data::Task->new({
-        start=>$self->at || $self->now,
+        start=>$self->at || now(),
         project=>$self->project,
         tags=>$self->tags,
         description=>$self->description,
@@ -37,7 +38,7 @@ sub cmd_stop {
     }
     $self->_previous_task($task);
 
-    $task->stop($self->at || $self->now);
+    $task->stop($self->at || now());
     $task->save($self->home);
     
     move($self->home->file('current')->stringify,$self->home->file('previous')->stringify);
@@ -49,11 +50,13 @@ sub cmd_current {
     my $self = shift;
     
     if (my $task = App::TimeTracker::Data::Task->current($self->home)) {
-        say "Working ".$task->_calc_duration($self->now)." on ".$task->say_project_tags;
+        say "Working ".$task->_calc_duration(now())." on ".$task->say_project_tags;
+        say 'Started at '. pretty_date($task->start);
     }
     elsif (my $prev = App::TimeTracker::Data::Task->previous($self->home)) {
         say "Currently not working on anything, but the last thing you worked on was:";
         say $prev->say_project_tags;
+        say 'Worked '.$prev->rounded_minutes.' minutes from '.pretty_date($prev->start).' till '.pretty_date($prev->stop);
     }
     else {
         say "Currently not working on anything, and I have no idea what you worked on earlier...";
@@ -90,7 +93,7 @@ sub cmd_continue {
     }
     elsif (my $prev = App::TimeTracker::Data::Task->previous($self->home)) {
         my $task = App::TimeTracker::Data::Task->new({
-            start=>$self->at || $self->now,
+            start=>$self->at || now(),
             project=>$prev->project,
             tags=>$prev->tags,
         });
@@ -359,10 +362,10 @@ sub _load_attribs_recalc_trackfile {
 sub _build_from {
     my $self = shift;
     if (my $last = $self->last) {
-        return $self->now->truncate( to => $last)->subtract( $last.'s' => 1 );
+        return now()->truncate( to => $last)->subtract( $last.'s' => 1 );
     }
     elsif (my $this = $self->this) {
-        return $self->now->truncate( to => $this);
+        return now()->truncate( to => $this);
     }
 }
 
