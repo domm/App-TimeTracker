@@ -10,6 +10,7 @@ use App::TimeTracker::Utils qw(now pretty_date);
 use File::Copy qw(move);
 use File::Find::Rule;
 use Data::Dumper;
+use Text::Table;
 
 sub cmd_start {
     my $self = shift;
@@ -123,6 +124,37 @@ sub cmd_worked {
     say $self->beautify_seconds($total);
 }
 
+sub cmd_list {
+    my $self = shift;
+
+    my @files = $self->find_task_files({
+        from=>$self->from,
+        to=>$self->to,
+        projects=>$self->projects,
+    });
+    
+    my $table = Text::Table->new(
+        "Project", \"|", "Start", \"|", "Stop", ($self->detail ? ( \"|", "Seconds", \"|", "File"):()),
+    );
+    
+    foreach my $file ( @files ) {
+        my $task = App::TimeTracker::Data::Task->load($file->stringify);
+        my $time = $task->seconds // $task->_build_seconds;
+        
+        $table->add(    
+            $task->project,
+            pretty_date($task->start),
+            pretty_date($task->stop),
+            ($self->detail ? ($time,$file->stringify) : ()),
+        );
+    }
+    
+    print $table->title;
+    print $table->rule('-','+');
+    print $table->body;
+}
+
+
 sub cmd_report {
     my $self = shift;
 
@@ -160,9 +192,6 @@ sub cmd_report {
             else {
                 $report->{$project}{'_untagged'} += $time;
             }
-        }
-        if ($self->verbose) {
-            printf("%- 40s -> % 8s\n",$file->basename, $self->beautify_seconds($time));
         }
     }
 
@@ -275,7 +304,6 @@ sub cmd_commands {
     }
     exit;
 }
-
 sub _load_attribs_worked {
     my ($class, $meta) = @_;
     $meta->add_attribute('from'=>{
@@ -305,19 +333,31 @@ sub _load_attribs_worked {
         is=>'ro',
     });
 }
+sub _load_attribs_list {
+    my ($class, $meta) = @_;
+    $class->_load_attribs_worked($meta);
+    $meta->add_attribute('detail'=>{
+        isa=>'Bool',
+        is=>'ro',
+        default=>0,
+        documentation=>'Be detailed',
+    });
+}
 sub _load_attribs_report {
     my ($class, $meta) = @_;
     $class->_load_attribs_worked($meta);
     $meta->add_attribute('detail'=>{
         isa=>'Bool',
         is=>'ro',
+        default=>0,
         documentation=>'Be detailed',
     });
-    $meta->add_attribute('verbose'=>{
-        isa=>'Bool',
-        is=>'ro',
-        documentation=>'Be verbose',
-    });
+#    $meta->add_attribute('verbose'=>{
+#        isa=>'Bool',
+#        is=>'ro',
+#        default=>0,
+#        documentation=>'Be verbose',
+#    });
 }
 
 sub _load_attribs_start {
