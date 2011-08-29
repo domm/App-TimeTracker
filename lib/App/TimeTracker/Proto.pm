@@ -68,6 +68,11 @@ sub run {
 
     my $config = $self->load_config;
 
+    # unique plugins
+    $config->{plugins} ||= [];
+    my %plugins_unique = map {$_ =>  1} @{$config->{plugins}};
+    $config->{plugins} = [ keys %plugins_unique ];
+
     my $class = Moose::Meta::Class->create_anon_class(
         superclasses => ['App::TimeTracker'],
         roles        => [
