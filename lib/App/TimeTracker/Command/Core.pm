@@ -134,7 +134,7 @@ sub cmd_list {
     });
     
     my $table = Text::Table->new(
-        "Project", \"|", "Start", \"|", "Stop", ($self->detail ? ( \"|", "Seconds", \"|", "File"):()),
+        "Project", \"|", "Tag",  \"|", "Start", \"|", "Stop", ($self->detail ? ( \"|", "Seconds", \"|", "Description", \"|", "File"):()),
     );
     
     foreach my $file ( @files ) {
@@ -143,9 +143,10 @@ sub cmd_list {
         
         $table->add(    
             $task->project,
+            join(', ',@{$task->tags}),
             pretty_date($task->start),
             pretty_date($task->stop),
-            ($self->detail ? ($time,$file->stringify) : ()),
+            ($self->detail ? ($time,$task->description,$file->stringify) : ()),
         );
     }
     
