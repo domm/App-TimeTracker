@@ -218,6 +218,8 @@ sub cmd_report {
 sub _print_report_tree {
     my ($self, $report, $projects, $project, $padding, $tagpadding ) = @_;
     my $data = $report->{$project};
+    return unless $data->{'_total'};
+
     my $format="%- 20s % 12s\n";
 
     printf( $padding.$format, substr($project,0,20), $self->beautify_seconds( delete $data->{'_total'} ) );

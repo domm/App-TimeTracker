@@ -210,7 +210,7 @@ sub project_tree {
         foreach my $dir (@parts) {
             if (my $parent = $projects->{$dir}) {
                 $tree{$project}->{parent} = $dir;
-                $tree{$dir}->{children}{$project}=1;#$location;
+                $tree{$dir}->{children}{$project}=1;
             }
         }
     }
