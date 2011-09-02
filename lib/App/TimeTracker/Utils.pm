@@ -3,6 +3,8 @@ use strict;
 use warnings;
 use 5.010;
 
+# ABSTRACT: Utility Methods/Functions for App::TimeTracker
+
 use Scalar::Util qw(blessed);
 
 use Exporter;
@@ -32,7 +34,6 @@ sub pretty_date {
         }
     }
 }
-
 
 sub now {
     my $dt = DateTime->now();
