@@ -6,6 +6,7 @@ use 5.010;
 # ABSTRACT: App::TimeTracker SyncViaGit plugin
 
 use Moose::Role;
+use App::TimeTracker::Utils qw(now);
 use Git::Repository;
 
 sub cmd_sync {
@@ -18,7 +19,7 @@ sub cmd_sync {
         $r->run(add=>$changed);
     }
     
-    $r->run(commit => '-m','synced on '.$self->now);
+    $r->run(commit => '-m','synced on '.now());
 
     foreach my $cmd (qw(pull push)) {
         my $c = $r->command( $cmd );

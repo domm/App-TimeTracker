@@ -6,9 +6,11 @@ use 5.010;
 # ABSTRACT: App::TimeTracker Core commands
 
 use Moose::Role;
+use App::TimeTracker::Utils qw(now pretty_date);
 use File::Copy qw(move);
 use File::Find::Rule;
 use Data::Dumper;
+use Text::Table;
 
 sub cmd_start {
     my $self = shift;
@@ -16,7 +18,7 @@ sub cmd_start {
     $self->cmd_stop('no_exit');
     
     my $task = App::TimeTracker::Data::Task->new({
-        start=>$self->at || $self->now,
+        start=>$self->at || now(),
         project=>$self->project,
         tags=>$self->tags,
         description=>$self->description,
@@ -37,7 +39,7 @@ sub cmd_stop {
     }
     $self->_previous_task($task);
 
-    $task->stop($self->at || $self->now);
+    $task->stop($self->at || now());
     $task->save($self->home);
     
     move($self->home->file('current')->stringify,$self->home->file('previous')->stringify);
@@ -49,11 +51,13 @@ sub cmd_current {
     my $self = shift;
     
     if (my $task = App::TimeTracker::Data::Task->current($self->home)) {
-        say "Working ".$task->_calc_duration($self->now)." on ".$task->say_project_tags;
+        say "Working ".$task->_calc_duration(now())." on ".$task->say_project_tags;
+        say 'Started at '. pretty_date($task->start);
     }
     elsif (my $prev = App::TimeTracker::Data::Task->previous($self->home)) {
         say "Currently not working on anything, but the last thing you worked on was:";
         say $prev->say_project_tags;
+        say 'Worked '.$prev->rounded_minutes.' minutes from '.pretty_date($prev->start).' till '.pretty_date($prev->stop);
     }
     else {
         say "Currently not working on anything, and I have no idea what you worked on earlier...";
@@ -90,7 +94,7 @@ sub cmd_continue {
     }
     elsif (my $prev = App::TimeTracker::Data::Task->previous($self->home)) {
         my $task = App::TimeTracker::Data::Task->new({
-            start=>$self->at || $self->now,
+            start=>$self->at || now(),
             project=>$prev->project,
             tags=>$prev->tags,
         });
@@ -119,6 +123,37 @@ sub cmd_worked {
 
     say $self->beautify_seconds($total);
 }
+
+sub cmd_list {
+    my $self = shift;
+
+    my @files = $self->find_task_files({
+        from=>$self->from,
+        to=>$self->to,
+        projects=>$self->projects,
+    });
+    
+    my $table = Text::Table->new(
+        "Project", \"|", "Start", \"|", "Stop", ($self->detail ? ( \"|", "Seconds", \"|", "File"):()),
+    );
+    
+    foreach my $file ( @files ) {
+        my $task = App::TimeTracker::Data::Task->load($file->stringify);
+        my $time = $task->seconds // $task->_build_seconds;
+        
+        $table->add(    
+            $task->project,
+            pretty_date($task->start),
+            pretty_date($task->stop),
+            ($self->detail ? ($time,$file->stringify) : ()),
+        );
+    }
+    
+    print $table->title;
+    print $table->rule('-','+');
+    print $table->body;
+}
+
 
 sub cmd_report {
     my $self = shift;
@@ -157,9 +192,6 @@ sub cmd_report {
             else {
                 $report->{$project}{'_untagged'} += $time;
             }
-        }
-        if ($self->verbose) {
-            printf("%- 40s -> % 8s\n",$file->basename, $self->beautify_seconds($time));
         }
     }
 
@@ -274,7 +306,6 @@ sub cmd_commands {
     }
     exit;
 }
-
 sub _load_attribs_worked {
     my ($class, $meta) = @_;
     $meta->add_attribute('from'=>{
@@ -304,19 +335,31 @@ sub _load_attribs_worked {
         is=>'ro',
     });
 }
+sub _load_attribs_list {
+    my ($class, $meta) = @_;
+    $class->_load_attribs_worked($meta);
+    $meta->add_attribute('detail'=>{
+        isa=>'Bool',
+        is=>'ro',
+        default=>0,
+        documentation=>'Be detailed',
+    });
+}
 sub _load_attribs_report {
     my ($class, $meta) = @_;
     $class->_load_attribs_worked($meta);
     $meta->add_attribute('detail'=>{
         isa=>'Bool',
         is=>'ro',
+        default=>0,
         documentation=>'Be detailed',
     });
-    $meta->add_attribute('verbose'=>{
-        isa=>'Bool',
-        is=>'ro',
-        documentation=>'Be verbose',
-    });
+#    $meta->add_attribute('verbose'=>{
+#        isa=>'Bool',
+#        is=>'ro',
+#        default=>0,
+#        documentation=>'Be verbose',
+#    });
 }
 
 sub _load_attribs_start {
@@ -361,10 +404,10 @@ sub _load_attribs_recalc_trackfile {
 sub _build_from {
     my $self = shift;
     if (my $last = $self->last) {
-        return $self->now->truncate( to => $last)->subtract( $last.'s' => 1 );
+        return now()->truncate( to => $last)->subtract( $last.'s' => 1 );
     }
     elsif (my $this = $self->this) {
-        return $self->now->truncate( to => $this);
+        return now()->truncate( to => $this);
     }
 }
 

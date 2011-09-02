@@ -4,6 +4,7 @@ use 5.010;
 # ABSTRACT: App::TimeTracker Task storage
 
 use Moose;
+use App::TimeTracker::Utils qw(now);
 use namespace::autoclean;
 use App::TimeTracker;
 use DateTime::Format::ISO8601;
@@ -29,7 +30,7 @@ has 'start' => (
     isa=>'DateTime',
     is=>'ro',
     required=>1,
-    default=>sub { DateTime->now(time_zone=>'local') }
+    default=>sub { now() }
 );
 has 'stop' => (
     isa=>'DateTime',
@@ -43,7 +44,7 @@ has 'seconds' => (
 );
 sub _build_seconds {
     my $self = shift;
-    my $delta = DateTime->now(time_zone=>'local')->subtract_datetime($self->start);
+    my $delta = now()->subtract_datetime($self->start);
     my $s =$dtf_sec->format_duration($delta);
     return undef unless $s > 1;
     return $s;
