@@ -1,0 +1,9 @@
+{
+  "plugins" : [
+    "Git"
+  ],
+  "post2irc" : {
+    "secret" : "42!",
+    "host" : "http://example.com/"
+  }
+}

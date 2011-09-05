@@ -1,0 +1,12 @@
+{
+  "plugins" : [
+    "Post2IRC",
+    "RT"
+  ],
+  "rt" : {
+    "password" : "43!",
+    "timeout" : "5",
+    "server" : "https://example.com/rt",
+    "username" : "rt"
+  }
+}
