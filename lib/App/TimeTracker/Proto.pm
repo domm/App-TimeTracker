@@ -158,10 +158,6 @@ sub load_config {
     }
     $config->{_used_config_files} = \@used_config_files;
 
-    unless ($self->has_project) {
-        $self->project('no_project');
-    }
-
     return $config;
 }
 

@@ -6,7 +6,7 @@ use 5.010;
 # ABSTRACT: App::TimeTracker Core commands
 
 use Moose::Role;
-use App::TimeTracker::Utils qw(now pretty_date);
+use App::TimeTracker::Utils qw(now pretty_date error_message);
 use File::Copy qw(move);
 use File::Find::Rule;
 use Data::Dumper;
@@ -14,6 +14,10 @@ use Text::Table;
 
 sub cmd_start {
     my $self = shift;
+
+    unless ($self->has_project) {
+        error_message("Could not find project\nUse --project or chdir into the project directory");
+    }
 
     $self->cmd_stop('no_exit');
     
@@ -30,6 +34,10 @@ sub cmd_start {
 
 sub cmd_stop {
     my ($self, $dont_exit) = @_;
+
+    unless ($self->has_project) {
+        error_message("Could not find project\nUse --project or chdir into the project directory");
+    }
 
     my $task = App::TimeTracker::Data::Task->current($self->home);
     unless ($task) {
