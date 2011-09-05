@@ -413,8 +413,14 @@ sub _build_from {
 
 sub _build_to {
     my $self = shift;
-    my $dur = $self->this || $self->last;
-    return $self->from->clone->add( $dur.'s' => 1 );
+    if (my $dur = $self->this ) {
+        return $dur;
+    }
+    elsif ( $dur = $self->last ) {
+        return $self->from->clone
+                   ->add( $dur.'s' => 1 )
+                   ->subtract( seconds => 1);
+    }
 }
 
 no Moose::Role;
