@@ -9,10 +9,18 @@ use Exporter;
 use parent qw(Exporter);
 
 our @EXPORT = qw();
-our @EXPORT_OK = qw(pretty_date now);
+our @EXPORT_OK = qw(pretty_date now error_message);
 our %EXPORT_TAGS = (
     all => \@EXPORT_OK
 );
+
+sub error_message {
+    my ($message,@params) = @_;
+    
+    my $error = sprintf($message,@params);
+    say $error;
+    exit;
+}
 
 sub pretty_date {
     my ($date) = @_;

@@ -4,6 +4,7 @@ use warnings;
 use 5.010;
 
 # ABSTRACT: App::TimeTracker RT plugin
+use App::TimeTracker::Utils qw(error_message);
 
 use Moose::Role;
 use RT::Client::REST;
@@ -28,8 +29,7 @@ sub _build_rt_client {
     my $config = $self->config->{rt};
     
     unless ($config) {
-        say "Please configure RT in your TimeTracker config";
-        exit;
+        error_message("Please configure RT in your TimeTracker config")
     }
 
     my $client = RT::Client::REST->new(

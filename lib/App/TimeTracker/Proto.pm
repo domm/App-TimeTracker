@@ -5,6 +5,8 @@ use 5.010;
 
 # ABSTRACT: App::TimeTracker Proto Class
 
+use App::TimeTracker::Utils qw(error_message);
+
 use Moose;
 use MooseX::Types::Path::Class;
 use File::HomeDir ();
@@ -123,11 +125,11 @@ sub load_config {
         if (my $project_config = $projects->{$project}) {
             $dir = Path::Class::Dir->new($project_config);
         } else {
-            say "Cannot find project: $project\nKnown projects are:";
+            my $error = "Cannot find project: $project\nKnown projects are:\n";
             foreach (keys %$projects) {
-                say "   ".$_;
+                $error .= "   ".$_."\n";
             }
-            exit;
+            error_message($error);
         }
     }
 
@@ -177,8 +179,7 @@ sub slurp_config {
         return $self->json_decoder->decode( $content );
     }
     catch {
-        say "Cannot parse config file $file:\n$_";
-        exit;
+        error_message("Cannot parse config file $file:\n%s",$_)
     };
 }
 

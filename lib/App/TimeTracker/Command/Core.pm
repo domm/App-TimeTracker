@@ -246,8 +246,7 @@ sub cmd_recalc_trackfile {
         if ($+{year} && $+{month}) {
             $file = $self->home->file($+{year},$+{month},$file)->stringify;
             unless (-e $file) {
-                say "Cannot find file ".$self->trackfile;
-                exit;
+                error_message("Cannot find file %s",$self->trackfile)
             }
         }
     }
@@ -266,8 +265,7 @@ sub cmd_init {
     my $self = shift;
     my $cwd = Path::Class::Dir->new->absolute;
     if (-e $cwd->file('.tracker.json')) {
-        say "This directory is already set up.\nTry 'tracker show_config' to see the current aggregated config.";
-        exit;
+        error_message("This directory is already set up.\nTry 'tracker show_config' to see the current aggregated config.")
     }
 
     my @dirs = $cwd->dir_list;
