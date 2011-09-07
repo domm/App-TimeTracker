@@ -27,6 +27,7 @@ with qw(
 
 subtype 'TT::DateTime' => as class_type('DateTime');
 subtype 'TT::RT' => as 'Int';
+subtype 'TT::Duration' => as enum([qw(day week month year)]);
 
 coerce 'TT::RT'
     => from 'Str'

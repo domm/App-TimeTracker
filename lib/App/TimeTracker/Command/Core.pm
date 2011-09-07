@@ -330,11 +330,11 @@ sub _load_attribs_worked {
         lazy_build=>1,
     });
     $meta->add_attribute('this'=>{
-        isa=>'Str',
+        isa=>'TT::Duration',
         is=>'ro',
     });
     $meta->add_attribute('last'=>{
-        isa=>'Str',
+        isa=>'TT::Duration',
         is=>'ro',
     });
     $meta->add_attribute('projects'=>{
