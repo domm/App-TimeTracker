@@ -390,10 +390,10 @@ sub _load_attribs_start {
     });
 }
 
-#sub _build_project {
-#    my $self = shift;
-#    return $self->_current_project;
-#}
+sub _build_project {
+    my $self = shift;
+    return $self->_current_project;
+}
 
 *_load_attribs_append = \&_load_attribs_start;
 *_load_attribs_continue = \&_load_attribs_start;
