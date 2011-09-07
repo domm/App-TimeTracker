@@ -103,7 +103,7 @@ sub run {
     $class->name->new_with_options( {
             home            => $self->home,
             config          => $config,
-            _currentproject => $self->project,
+            ($self->has_project ? (_current_project=> $self->project) : ()),
         } )->run;
 }
 
@@ -123,6 +123,7 @@ sub load_config {
         return unless -e $file && -s $file;
         my $projects = decode_json($file->slurp);
         if (my $project_config = $projects->{$project}) {
+            $self->project($project);
             $dir = Path::Class::Dir->new($project_config);
         } else {
             my $error = "Cannot find project: $project\nKnown projects are:\n";

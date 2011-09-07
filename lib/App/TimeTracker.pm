@@ -90,9 +90,10 @@ has 'config' => (
     required=>1,
     traits => [ 'NoGetopt' ],
 );
-has '_currentproject' => (
+has '_current_project' => (
     is=>'ro',
     isa=>'Str',
+    predicate => 'has_current_project',
     traits => [ 'NoGetopt' ],
 );
 

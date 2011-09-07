@@ -15,7 +15,7 @@ use Text::Table;
 sub cmd_start {
     my $self = shift;
 
-    unless ($self->has_project) {
+    unless ($self->has_current_project) {
         error_message("Could not find project\nUse --project or chdir into the project directory");
     }
 
@@ -35,7 +35,7 @@ sub cmd_start {
 sub cmd_stop {
     my ($self, $dont_exit) = @_;
 
-    unless ($self->has_project) {
+    unless ($self->has_current_project) {
         error_message("Could not find project\nUse --project or chdir into the project directory");
     }
 
@@ -390,10 +390,10 @@ sub _load_attribs_start {
     });
 }
 
-sub _build_project {
-    my $self = shift;
-    return $self->_currentproject;
-}
+#sub _build_project {
+#    my $self = shift;
+#    return $self->_current_project;
+#}
 
 *_load_attribs_append = \&_load_attribs_start;
 *_load_attribs_continue = \&_load_attribs_start;
