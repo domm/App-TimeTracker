@@ -118,9 +118,12 @@ sub load_config {
     my $opt_parser = Getopt::Long::Parser->new( config => [ qw( no_auto_help pass_through ) ] );
     $opt_parser->getoptions( "project=s" => \$project );
 
+
     if (defined $project) {
         my $file = $self->home->file('projects.json');
-        return unless -e $file && -s $file;
+        unless (-e $file && -s $file) {
+            error_message("Cannot find projects.json\n");
+        }
         my $projects = decode_json($file->slurp);
         if (my $project_config = $projects->{$project}) {
             $self->project($project);
