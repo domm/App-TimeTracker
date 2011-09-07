@@ -99,6 +99,7 @@ sub run {
     if ($load_attribs_for_command && $class->has_method($load_attribs_for_command)) {
         $class->name->$load_attribs_for_command($class);
     }
+    $class->make_immutable();
 
     $class->name->new_with_options( {
             home            => $self->home,
