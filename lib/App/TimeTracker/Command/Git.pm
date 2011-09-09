@@ -16,7 +16,7 @@ has 'branch' => (
 has 'merge' => (
     is=>'ro',
     isa=>'Bool', 
-    documentation=>'Git: Merge after stoping'
+    documentation=>'Git: Merge after stopping'
 );
 has 'no_branch' => (
     is=>'ro',
