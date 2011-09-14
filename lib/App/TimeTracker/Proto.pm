@@ -116,16 +116,11 @@ sub load_config {
     my $cfl = $self->config_file_locations;
 
     my $project;
+    my $projects = $self->slurp_projects;
     my $opt_parser = Getopt::Long::Parser->new( config => [ qw( no_auto_help pass_through ) ] );
     $opt_parser->getoptions( "project=s" => \$project );
 
-
     if (defined $project) {
-        my $file = $self->home->file('projects.json');
-        unless (-e $file && -s $file) {
-            error_message("Cannot find projects.json\n");
-        }
-        my $projects = decode_json($file->slurp);
         if (my $project_config = $projects->{$project}) {
             $self->project($project);
             $dir = Path::Class::Dir->new($project_config);
@@ -140,19 +135,35 @@ sub load_config {
 
     WALKUP: while (1) {
         my $config_file = $dir->file('.tracker.json');
+        my $this_config;
         if (-e $config_file) {
             push(@used_config_files, $config_file->stringify);
-            $config = merge($config, $self->slurp_config($config_file));
+            $this_config = $self->slurp_config($config_file);
+            $config = merge($config, $this_config);
 
             my @path = $config_file->parent->dir_list;
             my $project = $path[-1];
             $cfl->{$project}=$config_file->stringify;
 
-            $self->project($project) 
+            $self->project($project)
                 unless $self->has_project;
+
         }
         last WALKUP if $dir->parent eq $dir;
-        $dir = $dir->parent;
+
+        if (my $parent = $this_config->{'parent'}) {
+            if ($projects->{$parent}) {
+                $dir = Path::Class::file($projects->{$parent})->parent;
+                say $dir;
+            }
+            else {
+                $dir = $dir->parent;
+                say "Cannot find project >$parent< that's specified as a parent in $config_file";
+            }
+        }
+        else {
+            $dir = $dir->parent;
+        }
     }
 
     $self->_write_config_file_locations($cfl);
@@ -182,6 +193,16 @@ sub slurp_config {
     catch {
         error_message("Cannot parse config file $file:\n%s",$_)
     };
+}
+
+sub slurp_projects {
+    my $self = shift;
+    my $file = $self->home->file('projects.json');
+    unless (-e $file && -s $file) {
+        error_message("Cannot find projects.json\n");
+    }
+    my $projects = decode_json($file->slurp);
+    return $projects;
 }
 
 1;
