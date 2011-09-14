@@ -140,16 +140,16 @@ sub cmd_list {
         to=>$self->to,
         projects=>$self->projects,
     });
-    
+
     my $table = Text::Table->new(
         "Project", \"|", "Tag",  \"|", "Start", \"|", "Stop", ($self->detail ? ( \"|", "Seconds", \"|", "Description", \"|", "File"):()),
     );
-    
+
     foreach my $file ( @files ) {
         my $task = App::TimeTracker::Data::Task->load($file->stringify);
         my $time = $task->seconds // $task->_build_seconds;
-        
-        $table->add(    
+
+        $table->add(
             $task->project,
             join(', ',@{$task->tags}),
             pretty_date($task->start),
@@ -157,12 +157,11 @@ sub cmd_list {
             ($self->detail ? ($time,$task->description,$file->stringify) : ()),
         );
     }
-    
+
     print $table->title;
     print $table->rule('-','+');
     print $table->body;
 }
-
 
 sub cmd_report {
     my $self = shift;
