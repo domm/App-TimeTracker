@@ -14,11 +14,11 @@ sub cmd_sync {
 
     my $r = Git::Repository->new( work_tree => $self->home );
 
-    my @new = $r->run('ls-files' =>'-om');
+    my @new = $r->run('ls-files' =>'-om','--exclude-standard');
     foreach my $changed (@new) {
         $r->run(add=>$changed);
     }
-    
+
     $r->run(commit => '-m','synced on '.now());
 
     foreach my $cmd (qw(pull push)) {
