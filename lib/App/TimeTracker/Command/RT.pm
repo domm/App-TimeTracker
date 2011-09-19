@@ -12,9 +12,25 @@ use RT::Client::REST::Ticket;
 use Try::Tiny;
 use Unicode::Normalize;
 
-has 'rt' => (is=>'rw',isa=>'TT::RT',coerce=>1,documentation=>'RT: Ticket number', predicate => 'has_rt');
-has 'rt_client' => (is=>'ro',isa=>'RT::Client::REST',lazy_build=>1);
-has 'rt_ticket' => (is=>'ro',isa=>'Maybe[RT::Client::REST::Ticket]',lazy_build=>1);
+has 'rt' => (
+    is=>'rw',
+    isa=>'TT::RT',
+    coerce=>1,
+    documentation=>'RT: Ticket number', 
+    predicate => 'has_rt'
+);
+has 'rt_client' => (
+    is=>'ro',
+    isa=>'RT::Client::REST',
+    lazy_build=>1,
+    traits => [ 'NoGetopt' ],
+);
+has 'rt_ticket' => (
+    is=>'ro',
+    isa=>'Maybe[RT::Client::REST::Ticket]',
+    lazy_build=>1,
+    traits => [ 'NoGetopt' ],
+);
 
 sub _build_rt_ticket {
     my ($self) = @_;
