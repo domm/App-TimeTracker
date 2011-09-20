@@ -110,6 +110,12 @@ after 'cmd_stop' => sub {
     my $worked = $ticket->time_worked || 0;
     $worked =~s/\D//g;
 
+    try {
+        $ticket->comment(message=>$task->user." worked on this ticket for ".$task->rounded_minutes." minutes");
+    }
+    catch {
+        say "Could not add comment about time-worked to ticket: $_";
+    };
     $ticket->time_worked( $worked + $task->rounded_minutes );
     $ticket->store;
 };
