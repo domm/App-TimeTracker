@@ -45,7 +45,7 @@ sub _post_to_irc {
     my $token = sha1_hex($message, $cfg->{secret});
     my $res = $ua->get($cfg->{host}.'?message='.$message.'&token='.$token);
     unless ($res->is_success) {
-        say "Could not post to IRC...";
+        error_message('Could not post to IRC: %s',$res->status);
     }
 }
 
