@@ -17,6 +17,7 @@ sub cmd_start {
 
     unless ($self->has_current_project) {
         error_message("Could not find project\nUse --project or chdir into the project directory");
+        exit;
     }
 
     $self->cmd_stop('no_exit');
@@ -37,6 +38,7 @@ sub cmd_stop {
 
     unless ($self->has_current_project) {
         error_message("Could not find project\nUse --project or chdir into the project directory");
+        exit;
     }
 
     my $task = App::TimeTracker::Data::Task->current($self->home);
@@ -253,7 +255,8 @@ sub cmd_recalc_trackfile {
         if ($+{year} && $+{month}) {
             $file = $self->home->file($+{year},$+{month},$file)->stringify;
             unless (-e $file) {
-                error_message("Cannot find file %s",$self->trackfile)
+                error_message("Cannot find file %s",$self->trackfile);
+                exit;
             }
         }
     }
@@ -272,7 +275,8 @@ sub cmd_init {
     my $self = shift;
     my $cwd = Path::Class::Dir->new->absolute;
     if (-e $cwd->file('.tracker.json')) {
-        error_message("This directory is already set up.\nTry 'tracker show_config' to see the current aggregated config.")
+        error_message("This directory is already set up.\nTry 'tracker show_config' to see the current aggregated config.");
+        exit;
     }
 
     my @dirs = $cwd->dir_list;

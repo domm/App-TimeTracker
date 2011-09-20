@@ -6,6 +6,7 @@ use 5.010;
 # ABSTRACT: Utility Methods/Functions for App::TimeTracker
 
 use Scalar::Util qw(blessed);
+use Term::ANSIColor;
 
 use Exporter;
 use parent qw(Exporter);
@@ -19,9 +20,12 @@ our %EXPORT_TAGS = (
 sub error_message {
     my ($message,@params) = @_;
     
+    # TODO better error handling
     my $error = sprintf($message,@params);
-    say $error;
-    exit;
+    
+    print color 'bold red';
+    print $error;
+    say color 'reset';
 }
 
 sub pretty_date {

@@ -130,6 +130,7 @@ sub load_config {
                 $error .= "   ".$_."\n";
             }
             error_message($error);
+            exit;
         }
     }
 
@@ -191,7 +192,8 @@ sub slurp_config {
         return $self->json_decoder->decode( $content );
     }
     catch {
-        error_message("Cannot parse config file $file:\n%s",$_)
+        error_message("Cannot parse config file $file:\n%s",$_);
+        exit;
     };
 }
 
@@ -200,6 +202,7 @@ sub slurp_projects {
     my $file = $self->home->file('projects.json');
     unless (-e $file && -s $file) {
         error_message("Cannot find projects.json\n");
+        exit;
     }
     my $projects = decode_json($file->slurp);
     return $projects;

@@ -45,7 +45,8 @@ sub _build_rt_client {
     my $config = $self->config->{rt};
     
     unless ($config) {
-        error_message("Please configure RT in your TimeTracker config")
+        error_message("Please configure RT in your TimeTracker config");
+        exit;
     }
 
     my $client = RT::Client::REST->new(
@@ -102,7 +103,7 @@ after 'cmd_start' => sub {
         $ticket->store();
     }
     catch {
-        say $_;    
+        error_message('Could not set RT owner and status: %s',$_);
     };
 };
 
@@ -128,12 +129,12 @@ after 'cmd_stop' => sub {
 
     try {
         $ticket->comment(message=>$task->user." worked on this ticket for ".$task->rounded_minutes." minutes");
+        $ticket->time_worked( $worked + $task->rounded_minutes );
+        $ticket->store;
     }
     catch {
-        say "Could not add comment about time-worked to ticket: $_";
+        error_message('Could not set RT time worked and comment: %s',$_);
     };
-    $ticket->time_worked( $worked + $task->rounded_minutes );
-    $ticket->store;
 };
 
 sub init_rt_ticket {
