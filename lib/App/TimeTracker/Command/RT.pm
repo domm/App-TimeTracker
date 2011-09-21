@@ -127,14 +127,8 @@ after 'cmd_stop' => sub {
     my $worked = $ticket->time_worked || 0;
     $worked =~s/\D//g;
 
-    try {
-        $ticket->comment(message=>$task->user." worked on this ticket for ".$task->rounded_minutes." minutes");
-        $ticket->time_worked( $worked + $task->rounded_minutes );
-        $ticket->store;
-    }
-    catch {
-        error_message('Could not set RT time worked and comment: %s',$_);
-    };
+    $ticket->time_worked( $worked + $task->rounded_minutes );
+    $ticket->store;
 };
 
 sub init_rt_ticket {
