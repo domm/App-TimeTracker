@@ -19,10 +19,10 @@ our %EXPORT_TAGS = (
 
 sub error_message {
     my ($message,@params) = @_;
-    
+
     # TODO better error handling
     my $error = sprintf($message,@params);
-    
+
     print color 'bold red';
     print $error;
     say color 'reset';
