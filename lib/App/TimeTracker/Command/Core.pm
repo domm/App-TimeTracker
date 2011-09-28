@@ -245,8 +245,6 @@ sub _print_report_tree {
     }
 }
 
-
-
 sub cmd_recalc_trackfile {
     my $self = shift;
     my $file = $self->trackfile;
@@ -340,10 +338,17 @@ sub _load_attribs_worked {
         isa=>'TT::Duration',
         is=>'ro',
     });
-    $meta->add_attribute('projects'=>{
-        isa=>'ArrayRef[Str]',
+    $meta->add_attribute('fprojects'=>{
+        isa=>'ArrayRef',
         is=>'ro',
+        documentation=>'Filter by project',
     });
+    $meta->add_attribute('ftags'=>{
+        isa=>'ArrayRef',
+        is=>'ro',
+        documentation=>'Filter by tag',
+    });
+
 }
 sub _load_attribs_list {
     my ($class, $meta) = @_;
