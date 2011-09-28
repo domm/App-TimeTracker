@@ -174,6 +174,10 @@ sub find_task_files {
     if ($args->{projects}) {
         $projects = join('|',@{$args->{projects}});
     }
+    my $tags;
+    if ($args->{tags}) {
+        $tags = join('|',@{$args->{tags}});
+    }
 
     my @found;
     my $iterator = Path::Class::Iterator->new(
@@ -192,7 +196,12 @@ sub find_task_files {
             next if $time > $cmp_to;
         }
 
-        next if $projects && ! ($name ~~ /$projects/);
+        next if $projects && ! ($name ~~ /$projects/i);
+
+        if ($tags) {
+            my $raw_content = $file->slurp;
+            next unless $raw_content =~ /$tags/i;
+        }
 
         push(@found,$file);
     }
