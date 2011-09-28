@@ -145,8 +145,9 @@ sub cmd_list {
         tags     => $self->ftags,
     });
 
+    my $s=\' | ';
     my $table = Text::Table->new(
-        "Project", \"|", "Tag",  \"|", "Start", \"|", "Stop", ($self->detail ? ( \"|", "Seconds", \"|", "Description", \"|", "File"):()),
+        "Project", $s, "Tag", $s, "Start", $s, "Stop", ($self->detail ? ( $s, "Seconds", $s, "Description", $s, "File"):()),
     );
 
     foreach my $file ( @files ) {
