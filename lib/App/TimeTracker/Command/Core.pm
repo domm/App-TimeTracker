@@ -120,9 +120,10 @@ sub cmd_worked {
     my $self = shift;
 
     my @files = $self->find_task_files({
-        from=>$self->from,
-        to=>$self->to,
-        projects=>$self->projects,
+        from     => $self->from,
+        to       => $self->to,
+        projects => $self->fprojects,
+        tags     => $self->ftags,
     });
 
     my $total=0;
@@ -138,9 +139,10 @@ sub cmd_list {
     my $self = shift;
 
     my @files = $self->find_task_files({
-        from=>$self->from,
-        to=>$self->to,
-        projects=>$self->projects,
+        from     => $self->from,
+        to       => $self->to,
+        projects => $self->fprojects,
+        tags     => $self->ftags,
     });
 
     my $table = Text::Table->new(
@@ -169,9 +171,10 @@ sub cmd_report {
     my $self = shift;
 
     my @files = $self->find_task_files({
-        from=>$self->from,
-        to=>$self->to,
-        projects=>$self->projects,
+        from     => $self->from,
+        to       => $self->to,
+        projects => $self->fprojects,
+        tags     => $self->ftags,
     });
 
     my $total = 0;
