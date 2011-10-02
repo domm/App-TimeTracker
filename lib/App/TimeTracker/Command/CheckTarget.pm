@@ -18,7 +18,7 @@ has 'current_target_file' => (
 );
 sub _build_current_target_file {
     my $self = shift;
-    my $now = now();
+    my $now = $self->to || now();
     return $self->home->file($now->year,sprintf('%02d',$now->month),'target.json');
 }
 has 'targets' => (
