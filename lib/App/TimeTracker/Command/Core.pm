@@ -120,9 +120,10 @@ sub cmd_worked {
     my $self = shift;
 
     my @files = $self->find_task_files({
-        from=>$self->from,
-        to=>$self->to,
-        projects=>$self->projects,
+        from     => $self->from,
+        to       => $self->to,
+        projects => $self->fprojects,
+        tags     => $self->ftags,
     });
 
     my $total=0;
@@ -138,13 +139,15 @@ sub cmd_list {
     my $self = shift;
 
     my @files = $self->find_task_files({
-        from=>$self->from,
-        to=>$self->to,
-        projects=>$self->projects,
+        from     => $self->from,
+        to       => $self->to,
+        projects => $self->fprojects,
+        tags     => $self->ftags,
     });
 
+    my $s=\' | ';
     my $table = Text::Table->new(
-        "Project", \"|", "Tag",  \"|", "Start", \"|", "Stop", ($self->detail ? ( \"|", "Seconds", \"|", "Description", \"|", "File"):()),
+        "Project", $s, "Tag", $s, "Duration", $s, "Start", $s, "Stop", ($self->detail ? ( $s, "Seconds", $s, "Description", $s, "File"):()),
     );
 
     foreach my $file ( @files ) {
@@ -154,6 +157,7 @@ sub cmd_list {
         $table->add(
             $task->project,
             join(', ',@{$task->tags}),
+            $task->duration || 'working',
             pretty_date($task->start),
             pretty_date($task->stop),
             ($self->detail ? ($time,$task->description_short,$file->stringify) : ()),
@@ -169,9 +173,10 @@ sub cmd_report {
     my $self = shift;
 
     my @files = $self->find_task_files({
-        from=>$self->from,
-        to=>$self->to,
-        projects=>$self->projects,
+        from     => $self->from,
+        to       => $self->to,
+        projects => $self->fprojects,
+        tags     => $self->ftags,
     });
 
     my $total = 0;
@@ -244,8 +249,6 @@ sub _print_report_tree {
         $self->_print_report_tree($report, $projects, $child, $padding.'   ', $tagpadding);
     }
 }
-
-
 
 sub cmd_recalc_trackfile {
     my $self = shift;
@@ -340,10 +343,17 @@ sub _load_attribs_worked {
         isa=>'TT::Duration',
         is=>'ro',
     });
-    $meta->add_attribute('projects'=>{
-        isa=>'ArrayRef[Str]',
+    $meta->add_attribute('fprojects'=>{
+        isa=>'ArrayRef',
         is=>'ro',
+        documentation=>'Filter by project',
     });
+    $meta->add_attribute('ftags'=>{
+        isa=>'ArrayRef',
+        is=>'ro',
+        documentation=>'Filter by tag',
+    });
+
 }
 sub _load_attribs_list {
     my ($class, $meta) = @_;

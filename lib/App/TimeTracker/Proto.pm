@@ -88,7 +88,7 @@ sub run {
         $method =~ s/^cmd_//;
         $commands{$method}=1;
     }
-    
+
     my $load_attribs_for_command;
     foreach (@ARGV) {
         if ($commands{$_}) {
