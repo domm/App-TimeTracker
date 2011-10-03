@@ -184,7 +184,7 @@ sub cmd_report {
         my $project = $task->project;
 
         if ($time >= 60*60*8) {
-            say "Found dubious trackfile: ".$file->basename;
+            say "Found dubious trackfile: ".$file->stringify;
             say "  Are you sure you worked ".$self->beautify_seconds($time)." on one task?";
         }
 
