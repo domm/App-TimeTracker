@@ -156,7 +156,7 @@ sub cmd_list {
             join(', ',@{$task->tags}),
             pretty_date($task->start),
             pretty_date($task->stop),
-            ($self->detail ? ($time,$task->description,$file->stringify) : ()),
+            ($self->detail ? ($time,$task->description_short,$file->stringify) : ()),
         );
     }
 
