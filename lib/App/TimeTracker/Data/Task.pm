@@ -112,6 +112,16 @@ sub storage_location {
     return $file;
 }
 
+sub description_short {
+    my ($self) = @_;
+    my $description = $self->description;
+    
+    $description =~ s/(.{40}[[:alnum:]]*).+$/$1.../;
+    $description =~ s/^(.{50}).+$/$1.../;
+    $description =~ s/\.{3,}$/.../;
+    return $description;
+}
+
 sub save {
     my ($self, $home) = @_;
 
