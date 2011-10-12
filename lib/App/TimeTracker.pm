@@ -172,7 +172,7 @@ sub find_task_files {
     }
     my $projects;
     if ($args->{projects}) {
-        $projects = join('|',@{$args->{projects}});
+        $projects = join('|',map {s/-/./g; $_} @{$args->{projects}});
     }
     my $tags;
     if ($args->{tags}) {
