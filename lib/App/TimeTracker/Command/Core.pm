@@ -646,7 +646,7 @@ B<Options:> none
 
     ~/perl/Your-Project$ tracker plugins
 
-List all installed plugins (i.e. stuff in C<App::TimeTracker::Command::*)
+List all installed plugins (i.e. stuff in C<App::TimeTracker::Command::*>)
 
 B<Options:> none
 
