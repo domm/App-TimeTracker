@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use 5.010;
 
-# ABSTRACT: App::TimeTracker plugin to compare time-worked with a target time
+# ABSTRACT: App::TimeTracker plugin to compare time-worked to a target time
 
 use Moose::Role;
 use App::TimeTracker::Utils qw(now);
