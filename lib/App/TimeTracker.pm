@@ -289,7 +289,7 @@ We use C<< git >> for version control and maintain a public repository on L<gith
 
 You can find the latest version of App::TimeTracker here:
 
-https://github.com/domm/App-TimeTracker
+L<https://github.com/domm/App-TimeTracker>
 
 If you want to work on App::TimeTracker, add a feature, add a plugin or fix a bug, please feel free to L<fork|http://help.github.com/fork-a-repo/> the repo and send us L<pull requests|http://help.github.com/send-pull-requests/> to merge your changes.
 
@@ -297,13 +297,13 @@ To report a bug, please do not use the C<< issues >> feature from github. Use RT
 
 =head3 CPAN
 
-App::TimeTracker is distributed via L<CPAN|http://cpan.org>, the Comprehensive Perl Archive Network. Here are a few different views into the CPAN, offering slightly different features:
+App::TimeTracker is distributed via L<CPAN|http://cpan.org/>, the Comprehensive Perl Archive Network. Here are a few different views into the CPAN, offering slightly different features:
 
 =over
 
-=item * https://metacpan.org/release/App-TimeTracker
+=item * L<https://metacpan.org/release/App-TimeTracker/>
 
-=item * http://search.cpan.org/dist/App-TimeTracker
+=item * L<http://search.cpan.org/dist/App-TimeTracker/>
 
 =back
 
@@ -314,7 +314,7 @@ We use L<rt.cpan.org|http://rt.cpan.org> (thank you L<BestPractical|http://rt.be
 
 Please use this URL to view and report bugs:
 
-https://rt.cpan.org/Public/Dist/Display.html?Name=App-TimeTracker
+L<https://rt.cpan.org/Public/Dist/Display.html?Name=App-TimeTracker>
 
 
 

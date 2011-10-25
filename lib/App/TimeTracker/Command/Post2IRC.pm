@@ -75,19 +75,15 @@ The messages is transfered as a GET-Request like this:
 
 =item * add a hash named C<post2irc>, containing the following keys:
 
-=over
-
 =item * host
 
 The hostname of the server C<Bot::FromHTTP> is running on. Might also contain a special port number (C<http://ircbox.vpn.yourcompany.com:9090>)
 
-=item secret
+=item * secret
 
 A shared secret used to calculate the authentification token. The token is calculated like this:
 
   my $token = Digest::SHA1::sha1_hex($message, $secret);
-
-=back
 
 =back
 
