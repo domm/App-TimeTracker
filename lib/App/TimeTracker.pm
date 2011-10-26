@@ -236,9 +236,97 @@ __END__
 
 Backend for the C<tracker> command. See C<man tracker> and/or C<perldoc tracker> for details.
 
-=head1 CONTRIBUTORS
+=head1 USAGE
 
-Maros Kollar C<< <maros@cpan.org> >>, Klaus Ita C<< <klaus@worstofall.com> >>
+=head2 Basic Usage
+
+Call C<tracker start> when you start working on some project, and C<tracker stop> when you're done:
+
+  ~/work/some_project$ tracker start
+  Started working on some_project at 13:06:20
+  
+  ~/work/some_project$ hack .. hack .. hack
+  
+  ~/work/some_project$ tracker stop
+  Worked 01:43:07 on some_project
+
+To see how long you worked, use C<tracker report>:
+
+  ~/work/some_project$ tracker report --this day
+  work                     02:15:49
+     some_project             01:43:07
+     another_project          00:32:42
+  perl                     02:23:58
+     App-TimeTracker          02:23:58
+  total                    04:39:47
+
+=head2 Advanced Usage with git, RT and IRC
+
+By using some Plugins we can make C<tracker> a much more powerful tool. Let's use the C<git>, C<RT> and C<Post2IRC> plugins for maximum lazyness.
+
+The first step is to add some setting to the tracker config file to your project directory. Or add those settings to a config file in a parent directory, see L<Configuration> for more information on that.
+
+  ~/revdev/Some-Project$ cat .tracker.json
+  {
+    "plugins" : [
+      "Git",
+      "RT",
+      "Post2IRC",
+    ],
+    "post2irc" : {
+      "secret" : "bai0uKiw",
+      "host" : "http://devbox.vpn.somewhere.com/"
+    },
+    "rt" : {
+      "set_owner_to" : "domm",
+      "timeout" : "5",
+      "update_time_worked" : "1",
+      "server" : "https://somewhere.com/rt",
+      "username" : "revbot"
+      "password" : "12345",
+    }
+  }
+
+After setting everything up, we can do a simple (but sligtly amended) C<tracker start>:
+
+  ~/revdev/Some-Project$ tracker start --rt 1234
+  Started working on SomeProject (RT1234) flux capacitor needs more jigawatts at 15:32
+  Switched to a new branch 'RT1234_flux_capacitor_needs_more_jigawatts'
+
+While this output might not seem very impressive, a lot of things have happend:
+
+=over
+
+=item * A new local git branch (based on the name of the RT ticket 1234) has been set up and checked out.
+
+=item * You have been assigned the owner of this ticket in RT.
+
+=item * A message has been posted in the internal IRC channel, informing your colleagues that you're now working on this ticket.
+
+=item * And of course we now keep track of the time!
+
+=back
+
+As soon as you're done, you do the ususal C<tracker stop>
+
+  ~/revdev/Some-Project$ tracker stop
+  Worked 00:15:42 on some_project
+
+Which does the following:
+
+=over
+
+=item * Calculate the time you worked and store it locally in the tracking file.
+
+=item * Post the time worked to RT.
+
+=item * Post a message to IRC.
+
+=item * C<git checkout master; git merge $branch> is not performed, but you could enable this by using the command line flag C<--merge>.
+
+=back
+
+Even if those steps only shave off a few minutes per ticket, those are still a few minutes you don't have to spend on doing boring, repetative task (which one tends to forget / repress).
 
 =head1 INSTALLATION
 
@@ -316,5 +404,8 @@ Please use this URL to view and report bugs:
 
 L<https://rt.cpan.org/Public/Dist/Display.html?Name=App-TimeTracker>
 
+=head1 CONTRIBUTORS
+
+Maros Kollar C<< <maros@cpan.org> >>, Klaus Ita C<< <klaus@worstofall.com> >>
 
 
