@@ -120,20 +120,12 @@ __END__
 
 =head1 CONFIGURATION
 
-=over 
-
-=item * 
-
-=back
-
 =head1 NEW COMMANDS
 
-=head2 
+=head2 TODO
 
   ~/somewhere/on/your/disc$ tracker 
   # some git output
-
-B<Options:> none
 
 =head1 CHANGES TO OTHER COMMANDS
 

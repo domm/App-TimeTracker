@@ -456,11 +456,9 @@ More commands are implemented in various plugins. Plugins might also alter and/o
 
 Start tracking the current project now. Automatically stop the previous task, if there was one.
 
-B<Options:>
+=head3 Options:
 
-=over
-
-=item --at TT::DateTime
+=head4 --at TT::DateTime
 
     ~/perl/Your-Project$ tracker start --at 12:42
     ~/perl/Your-Project$ tracker start --at '2011-02-26 12:42'
@@ -468,26 +466,24 @@ B<Options:>
 Start at the specified time/datetime instead of now. If only a time is
 provided, the day defaults to today. See L<TT::DateTime> in L<App::TimeTracker>.
 
-=item --project SomeProject
+=head4 --project SomeProject
 
   ~/perl/Your-Project$ tracker start --project SomeProject
 
 Use the specified project instead of the one determined by the current
 working directory.
 
-=item --description 'some prosa'
+=head4 --description 'some prosa'
 
   ~/perl/Your-Project$ tracker start --description "Solving nasty bug"
 
 Supply some descriptive text to the task. Might be used by reporting plugins etc.
 
-=item --tags RT1234 [Multiple]
+=head4 --tags RT1234 [Multiple]
 
   ~/perl/Your-Project$ tracker start --tag RT1234 --tag testing
 
 A list of tags to add to the task. Can be used by reporting plugins.
-
-=back
 
 =head2 stop
 
@@ -496,15 +492,11 @@ A list of tags to add to the task. Can be used by reporting plugins.
 
 Stop tracking the current project now.
 
-B<Options:>
+=head3 Options
 
-=over
-
-=item --at TT::DateTime
+=head4 --at TT::DateTime
 
 Stop at the specified time/datetime instead of now.
-
-=back
 
 =head2 continue
 
@@ -525,7 +517,9 @@ Example:
     ~$ tracker continue
     Started working on ExplainContinue (testing) at 13:58
     
-B<Options:> same as L<start>
+=head3 Options:
+
+same as L<start>
 
 =head2 append 
 
@@ -548,7 +542,9 @@ Example:
     ~$ tracker append --tag RT7890
     Started working on ExplainAppend (RT7890) at 14:46
 
-B<Options:> same as L<start>
+=head3 Options:
+
+same as L<start>
 
 =head2 current
 
@@ -557,7 +553,7 @@ B<Options:> same as L<start>
 
 Display what you're currently working on, and for how long.
 
-B<Options:> none
+=head3 No options
 
 =head2 worked
 
@@ -566,38 +562,34 @@ B<Options:> none
 Report the total time worked in the given time span, maybe limited to
 some projects.
 
-B<Options:>
+=head3 Options:
 
-=over
-
-=item --from TT::DateTime [REQUIRED (or use --this/--last)]
+=head4 --from TT::DateTime [REQUIRED (or use --this/--last)]
 
 Begin of reporting iterval.
 
-=item --to TT::DateTime [REQUIRED (or use --this/--last)]
+=head4 --to TT::DateTime [REQUIRED (or use --this/--last)]
 
 End of reporting iterval.
 
-=item --this [day, week, month, year]
+=head4 --this [day, week, month, year]
 
 Automatically set C<--from> and C<--to> to the calculated values
 
     ~/perl/Your-Project$ tracker worked --this week
     17:01:50
 
-=item --last [day, week, month, year]
+=head4 --last [day, week, month, year]
 
 Automatically set C<--from> and C<--to> to the calculated values
 
     ~/perl/Your-Project$ tracker worked --last day (=yesterday)
     06:39:12
 
-=item --project SomeProject [Multiple]
+=head4 --project SomeProject [Multiple]
 
     ~$ tracker worked --last day --project SomeProject
     02:04:47
-    
-=back
 
 =head2 report
 
@@ -606,25 +598,21 @@ Automatically set C<--from> and C<--to> to the calculated values
 Print out a detailed report of what you did. All worked times are
 summed up per project (and optionally per tag)
 
-B<Options:>
+=head3 Options:
 
 The same options as for L<worked>, plus:
 
-=over
-
-=item --detail
+=head4 --detail
 
     ~/perl/Your-Project$ tracker report --last month --detail
 
 Also calc sums per tag.
 
-=item --verbose
+=head4 --verbose
 
     ~/perl/Your-Project$ tracker report --last month --verbose
 
 Lists all found trackfiles and their respective duration before printing out the report.
-
-=back
 
 =head2 init
 
@@ -632,7 +620,7 @@ Lists all found trackfiles and their respective duration before printing out the
 
 Create a rather empty F<.tracker.json> config file in the current directory.
 
-B<Options:> none
+=head3 No options
 
 =head2 show_config
 
@@ -640,7 +628,7 @@ B<Options:> none
 
 Dump the config that's valid for the current directory. Might be handy when setting up plugins etc.
 
-B<Options:> none
+=head3 No options
 
 =head2 plugins
 
@@ -648,7 +636,7 @@ B<Options:> none
 
 List all installed plugins (i.e. stuff in C<App::TimeTracker::Command::*>)
 
-B<Options:> none
+=head3 No options
 
 =head2 recalc_trackfile
 
@@ -658,17 +646,13 @@ Recalculates the duration stored in an old trackfile. Might be useful
 after a manual update in a trackfile. Might be unneccessary in the
 future, as soon as task duration is always calculated lazyly.
 
-B<Options:>
+=head3 Options:
 
-=over
-
-=item --trackfile name_of_trackfile.trc REQUIRED
+=head4 --trackfile name_of_trackfile.trc REQUIRED
 
 Only the name of the trackfile is required, but you can also pass in
 the absolute path to the file. Broken trackfiles are sometimes
 reported during L<report>.
-
-=back
 
 =head2 commands
 
@@ -676,5 +660,5 @@ reported during L<report>.
 
 List all available commands, based on your current config.
 
-B<Options:> none
+=head3 No options
 

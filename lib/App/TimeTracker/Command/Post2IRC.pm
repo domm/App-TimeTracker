@@ -69,23 +69,23 @@ The messages is transfered as a GET-Request like this:
 
 =head1 CONFIGURATION
 
-=over
+=head2 plugins
 
-=item * add C<Post2IRC> to your list of plugins
+add C<Post2IRC> to your list of plugins
 
-=item * add a hash named C<post2irc>, containing the following keys:
+=head2 post2irc
 
-=item * host
+add a hash named C<post2irc>, containing the following keys:
+
+=head3 host
 
 The hostname of the server C<Bot::FromHTTP> is running on. Might also contain a special port number (C<http://ircbox.vpn.yourcompany.com:9090>)
 
-=item * secret
+=head3 secret
 
 A shared secret used to calculate the authentification token. The token is calculated like this:
 
   my $token = Digest::SHA1::sha1_hex($message, $secret);
-
-=back
 
 =head1 NEW COMMANDS
 
@@ -98,15 +98,12 @@ none
 After running the respective command, a message is sent to the
 webservice that will afterwards post the message to IRC.
 
-B<New Options>:
+=head3 New Options
 
-=over
-
-=item --irc_quiet
+=head4 --irc_quiet
 
     ~/perl/Your-Project$ tracker start --irc_quiet
 
 Do not post this action to IRC.
 
-=back
 
