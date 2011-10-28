@@ -27,7 +27,13 @@ sub _build_home {
     my $self = shift;
     my $home =
         Path::Class::Dir->new( File::HomeDir->my_home, '.TimeTracker' );
-    $home->mkpath unless -d $home;
+    unless (-d $home) {
+        $home->mkpath;
+        $self->_write_config_file_locations({});
+        my $fh = $self->global_config_file->openw;
+        print $fh $self->json_decoder->encode({});
+        close $fh;
+    }
     return $home;
 }
 
