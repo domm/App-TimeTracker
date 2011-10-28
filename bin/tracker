@@ -51,7 +51,9 @@ The new and shiny CPAN client!
   Successfully installed App-TimeTracker-2.009
   1 distribution installed
 
-If you don't have C<<cpanminus>> installed yet, install it right now.
+If you don't have C<<cpanminus>> installed yet, L<install it right now|http://search.cpan.org/dist/App-cpanminus/lib/App/cpanminus.pm#INSTALLATION>:
+
+  ~$ curl -L http://cpanmin.us | perl - --sudo App::cpanminus
 
 =head3 CPANPLUS
 
