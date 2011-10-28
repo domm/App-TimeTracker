@@ -3,8 +3,8 @@ use strict;
 use warnings;
 use 5.010;
 
-our $VERSION = "2.009";
-# ABSTRACT: Track time spend on projects from the commandline
+our $VERSION = "2.010";
+# ABSTRACT: time tracking for impatient and lazy command line lovers
 
 use App::TimeTracker::Data::Task;
 
@@ -234,87 +234,9 @@ __END__
 
 =head1 SYNOPSIS
 
-Backend for the C<tracker> command. See C<man tracker> and/or C<perldoc tracker> for details.
+Backend for the C<tracker> command. See L<tracker> and/or C<perldoc tracker> for details.
 
 =head1 CONTRIBUTORS
 
 Maros Kollar C<< <maros@cpan.org> >>, Klaus Ita C<< <klaus@worstofall.com> >>
-
-=head1 INSTALLATION
-
-=head3 From CPAN
-
-The easiest way to install the current stable version of App::TimeTracker is via L<CPAN|http://cpan.org>. There are several different CPAN clients available:
-
-=head4 cpanminus
-
-The new and shiny CPAN client!
-
-  ~$ cpanm App::TimeTracker
-  --> Working on App::TimeTracker
-  Fetching http://search.cpan.org/CPAN/authors/id/D/DO/DOMM/App-TimeTracker-2.009.tar.gz ... OK
-  Configuring App-TimeTracker-2.009 ... OK
-  Building and testing App-TimeTracker-2.009 ... OK
-  Successfully installed App-TimeTracker-2.009
-  1 distribution installed
-
-If you don't have C<<cpanminus>> installed yet, install it right now.
-
-=head4 CPANPLUS
-
-CPANPLUS comes preinstalled with recent Perls (5.10 and newer).
-
-  cpanp install App::TimeTracker
-
-=head4 CPAN.pm
-
-CPAN.pm is available on ancient Perls, and feels a bit ancient, too.
-
-  cpanp install App::TimeTracker
-
-=head3 From a tarball or git checkout
-
-To install App::TimeTracker from a tarball or a git checkout, do the usual CPAN module install dance:
-
-  ~/perl/App-TimeTracker$ perl Build.PL
-  ~/perl/App-TimeTracker$ ./Build
-  ~/perl/App-TimeTracker$ ./Build test
-  ~/perl/App-TimeTracker$ ./Build install  # might require sudo
-
-=head1 SOURCE CODE
-
-=head3 git
-
-We use C<< git >> for version control and maintain a public repository on L<github|http://github.com>.
-
-You can find the latest version of App::TimeTracker here:
-
-https://github.com/domm/App-TimeTracker
-
-If you want to work on App::TimeTracker, add a feature, add a plugin or fix a bug, please feel free to L<fork|http://help.github.com/fork-a-repo/> the repo and send us L<pull requests|http://help.github.com/send-pull-requests/> to merge your changes.
-
-To report a bug, please do not use the C<< issues >> feature from github. Use RT instead.
-
-=head3 CPAN
-
-App::TimeTracker is distributed via L<CPAN|http://cpan.org>, the Comprehensive Perl Archive Network. Here are a few different views into the CPAN, offering slightly different features:
-
-=over
-
-=item * https://metacpan.org/release/App-TimeTracker
-
-=item * http://search.cpan.org/dist/App-TimeTracker
-
-=back
-
-
-=head1 Viewing and reporting Bugs
-
-We use L<rt.cpan.org|http://rt.cpan.org> (thank you L<BestPractical|http://rt.bestpractical.com>) for bug reporting. Please do not use the C<issues> feature of github! We pay no attention to those...
-
-Please use this URL to view and report bugs:
-
-https://rt.cpan.org/Public/Dist/Display.html?Name=App-TimeTracker
-
-
 
