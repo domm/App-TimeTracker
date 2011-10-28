@@ -1,5 +1,11 @@
 Revision history for App::TimeTracker
 
+2.011   2011-10-28T16:36:21+0200
+    - autocreate tracker.json and projects.json if there is no
+      home yet (Thomas Klausner)
+    - rearranged docs (Thomas Klausner
+
+
 2.010   2011-10-28T00:28:54+0200
     - new plugin: Overtime (Thomas Klausner)
     - pass new fproject ftag to find_task_files (Thomas Klausner)
