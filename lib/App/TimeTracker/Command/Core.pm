@@ -220,13 +220,14 @@ sub cmd_report {
         }
     }
 
+    $self->_say_current_report_interval;
     my $padding='';
     my $tagpadding='   ';
     foreach my $project (keys %$report) {
         next if $projects->{$project}{parent};
         $self->_print_report_tree($report, $projects, $project, $padding, $tagpadding);
     }
-    
+
     printf( $format, 'total', $self->beautify_seconds($total) );
 }
 
@@ -429,15 +430,27 @@ sub _build_from {
     elsif (my $this = $self->this) {
         return now()->truncate( to => $this);
     }
+    else {
+        return now()->truncate( to => 'month');
+    }
 }
 
 sub _build_to {
     my $self = shift;
     
-    my $date = $self->this || $self->last;
-    return $self->from->clone
-       ->add( $date.'s' => 1 )
-       ->subtract( seconds => 1);
+    if (my $date = $self->this || $self->last) {
+        return $self->from->clone
+        ->add( $date.'s' => 1 )
+        ->subtract( seconds => 1);
+    }
+    else {
+        return now();
+    }
+}
+
+sub _say_current_report_interval {
+    my $self = shift;
+    printf ("From %s to %s you worked on:\n",$self->from,$self->to);
 }
 
 no Moose::Role;
@@ -566,11 +579,11 @@ some projects.
 
 =head4 --from TT::DateTime [REQUIRED (or use --this/--last)]
 
-Begin of reporting iterval.
+Begin of reporting iterval, defaults to first day of current month.
 
 =head4 --to TT::DateTime [REQUIRED (or use --this/--last)]
 
-End of reporting iterval.
+End of reporting iterval, default to DateTime->now.
 
 =head4 --this [day, week, month, year]
 
