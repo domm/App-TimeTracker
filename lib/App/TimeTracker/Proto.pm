@@ -24,8 +24,9 @@ has 'home' => (
     lazy_build => 1,
 );
 sub _build_home {
-    my $self = shift;
-    my $home =
+    my ($self, $home) = @_;
+
+    $home ||=
         Path::Class::Dir->new( File::HomeDir->my_home, '.TimeTracker' );
     unless (-d $home) {
         $home->mkpath;

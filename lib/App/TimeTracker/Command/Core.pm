@@ -276,8 +276,8 @@ sub cmd_show_config {
 }
 
 sub cmd_init {
-    my $self = shift;
-    my $cwd = Path::Class::Dir->new->absolute;
+    my ($self, $cwd) = @_;
+    $cwd ||= Path::Class::Dir->new->absolute;
     if (-e $cwd->file('.tracker.json')) {
         error_message("This directory is already set up.\nTry 'tracker show_config' to see the current aggregated config.");
         exit;
