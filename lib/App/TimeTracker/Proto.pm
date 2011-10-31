@@ -76,6 +76,18 @@ sub run {
 
     my $config = $self->load_config;
 
+    my $class = $self->setup_class($config);
+
+    $class->name->new_with_options( {
+            home            => $self->home,
+            config          => $config,
+            ($self->has_project ? (_current_project=> $self->project) : ()),
+        } )->run;
+}
+
+sub setup_class {
+    my ($self, $config ) = @_;
+
     # unique plugins
     $config->{plugins} ||= [];
     my %plugins_unique = map {$_ =>  1} @{$config->{plugins}};
@@ -106,12 +118,7 @@ sub run {
         $class->name->$load_attribs_for_command($class);
     }
     $class->make_immutable();
-
-    $class->name->new_with_options( {
-            home            => $self->home,
-            config          => $config,
-            ($self->has_project ? (_current_project=> $self->project) : ()),
-        } )->run;
+    return $class;
 }
 
 sub load_config {
