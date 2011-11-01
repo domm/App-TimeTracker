@@ -59,13 +59,13 @@ If you don't have C<cpanminus> installed yet, L<install it right now|http://sear
 
 CPANPLUS comes preinstalled with recent Perls (5.10 and newer).
 
-  cpanp install App::TimeTracker
+  cpanp i App::TimeTracker
 
 =head3 CPAN.pm
 
 CPAN.pm is available on ancient Perls, and feels a bit ancient, too.
 
-  cpanp install App::TimeTracker
+  cpan App::TimeTracker
 
 =head2 From a tarball or git checkout
 
