@@ -91,7 +91,7 @@ sub run {
 
     my $load_attribs_for_command;
     foreach (@ARGV) {
-        if ($commands{$_}) {
+        if (defined $commands{$_}) {
             $load_attribs_for_command='_load_attribs_'.$_;
             last;
         }
