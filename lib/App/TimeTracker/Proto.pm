@@ -24,10 +24,17 @@ has 'home' => (
     lazy_build => 1,
 );
 sub _build_home {
-    my $self = shift;
-    my $home =
+    my ($self, $home) = @_;
+
+    $home ||=
         Path::Class::Dir->new( File::HomeDir->my_home, '.TimeTracker' );
-    $home->mkpath unless -d $home;
+    unless (-d $home) {
+        $home->mkpath;
+        $self->_write_config_file_locations({});
+        my $fh = $self->global_config_file->openw;
+        print $fh $self->json_decoder->encode({});
+        close $fh;
+    }
     return $home;
 }
 
@@ -70,6 +77,18 @@ sub run {
 
     my $config = $self->load_config;
 
+    my $class = $self->setup_class($config);
+
+    $class->name->new_with_options( {
+            home            => $self->home,
+            config          => $config,
+            ($self->has_project ? (_current_project=> $self->project) : ()),
+        } )->run;
+}
+
+sub setup_class {
+    my ($self, $config ) = @_;
+
     # unique plugins
     $config->{plugins} ||= [];
     my %plugins_unique = map {$_ =>  1} @{$config->{plugins}};
@@ -100,12 +119,7 @@ sub run {
         $class->name->$load_attribs_for_command($class);
     }
     $class->make_immutable();
-
-    $class->name->new_with_options( {
-            home            => $self->home,
-            config          => $config,
-            ($self->has_project ? (_current_project=> $self->project) : ()),
-        } )->run;
+    return $class;
 }
 
 sub load_config {
