@@ -43,9 +43,10 @@ sub _post_to_irc {
         . ' working on '
         . $task->say_project_tags;
     my $token = sha1_hex($message, $cfg->{secret});
+    
     my $res = $ua->get($cfg->{host}.'?message='.$message.'&token='.$token);
     unless ($res->is_success) {
-        error_message('Could not post to IRC: %s',$res->status);
+        error_message('Could not post to IRC: %s',$res->status_line);
     }
 }
 
