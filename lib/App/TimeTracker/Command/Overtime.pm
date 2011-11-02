@@ -1,9 +1,9 @@
-package App::TimeTracker::Command::CheckTarget;
+package App::TimeTracker::Command::Overtime;
 use strict;
 use warnings;
 use 5.010;
 
-# ABSTRACT: App::TimeTracker plugin to compare time-worked with a target time
+# ABSTRACT: Tells you if you have already worked enough
 
 use Moose::Role;
 use App::TimeTracker::Utils qw(now);
@@ -37,7 +37,7 @@ sub _build_targets {
     }
 }
 
-sub cmd_check_target {
+sub cmd_overtime {
     my $self = shift;
 
     my $targets = $self->targets;
@@ -106,7 +106,7 @@ sub cmd_check_target {
 
 }
 
-sub _load_attribs_check_target {
+sub _load_attribs_overtime {
     my ($class, $meta) = @_;
     $class->_load_attribs_worked($meta);
 }
@@ -118,22 +118,38 @@ __END__
 
 =head1 DESCRIPTION
 
+This plugin allows you to define the time you plan to work on your projects, and compare the time you actually worked with those targets.
+
 =head1 CONFIGURATION
 
-=over 
+=head2 plugins
 
-=item * 
+Add C<Overtime> to the list of plugins.
 
-=back
+=head2 other setup
+
+You have to add a file called F<target.json> to the directories containing the monthly tracking files (eg F<~/.TimeTracker/2011/10/target.json>). This files has to contain a JSON hash consisting of the project names as keys and the planned time (in hours) as values:
+
+  {
+    "some_project":"20",
+    "other_project":"35"
+  }
+
+Currently, C<Overtime> only supports per-month targets.
 
 =head1 NEW COMMANDS
 
-=head2 
+=head2 overtime
 
-  ~/somewhere/on/your/disc$ tracker 
-  # some git output
+  ~/work/some_project$ tracker overtime --this month
+  Project        | Worked   | Target | Status
+  ---------------+----------+--------+------------------------------
+  some_project   | 21:12:12 | 20     | You missed your target by 01:12:12
+  other_project  | 33:39:26 | 35     | Keep working 01:20:34 missing
 
-B<Options:> none
+=head2 Options
+
+Same as report, even though currently only C<--this month> will work.
 
 =head1 CHANGES TO OTHER COMMANDS
 

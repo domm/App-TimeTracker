@@ -12,6 +12,7 @@ use App::TimeTracker::Data::Task;
     my $task = App::TimeTracker::Data::Task->new({
         project => 'test',
         start   => DateTime->new(year=>2010,month=>2,day=>26,hour=>10,minute=>5,second=>42),
+        description=>'Some Test Task described in a very long sentence that will be probably be shortend',
     });
     my $stop = DateTime->new(year=>2010,month=>2,day=>26,hour=>12,minute=>25,second=>13);
     $task->_calc_duration($stop);
@@ -25,6 +26,7 @@ use App::TimeTracker::Data::Task;
     is ($task->seconds,'11971','_calc_duration: seconds');
     is ($task->duration,'03:19:31','_calc_duration: duration');
     is ($task->rounded_minutes,200,'rounded_minutes');
+    is ($task->description_short,'Some Test Task described in a very long sentence...','description_short');
 }
 
 done_testing();

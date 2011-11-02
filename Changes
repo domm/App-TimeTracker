@@ -1,5 +1,29 @@
 Revision history for App::TimeTracker
 
+2.011   2011-10-28T16:36:21+0200
+    - autocreate tracker.json and projects.json if there is no
+      home yet (Thomas Klausner)
+    - rearranged docs (Thomas Klausner
+
+
+2.010   2011-10-28T00:28:54+0200
+    - new plugin: Overtime (Thomas Klausner)
+    - pass new fproject ftag to find_task_files (Thomas Klausner)
+    - changed report params to --fprojects and --ftags (_f_ilter*)
+      (Thomas Klausner)
+    - SyncViaGit: honor .gitignore (Thomas Klausner)
+    - specify "parent" in tracker.json to switch to another path
+      (Thomas Klausner)
+    - Fix --this date option (Maros Kollar)
+    - Display error message if projects.json cannot be found (Maros Kollar)
+    - fix build_from (Klaus Ita)
+    - Add list command (Maros Kollar)
+    - do not report tasks without time (Thomas Klausner)
+    - Make project setable from cmdline options (Maros Kollar)
+    - show project tree in report (Thomas Klausner)
+    - fixed bug in writing projects.json (Thomas Klausner)
+
+
 2.009	2011-08-11T15:17:36+0200
     - more docs
     - new command: plugins

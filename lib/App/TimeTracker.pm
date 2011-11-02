@@ -3,8 +3,8 @@ use strict;
 use warnings;
 use 5.010;
 
-our $VERSION = "2.009";
-# ABSTRACT: Track time spend on projects from the commandline
+our $VERSION = "2.011";
+# ABSTRACT: time tracking for impatient and lazy command line lovers
 
 use App::TimeTracker::Data::Task;
 
@@ -173,7 +173,7 @@ sub find_task_files {
     }
     my $projects;
     if ($args->{projects}) {
-        $projects = join('|',@{$args->{projects}});
+        $projects = join('|',map {s/-/./g; $_} @{$args->{projects}});
     }
     my $tags;
     if ($args->{tags}) {
@@ -235,7 +235,7 @@ __END__
 
 =head1 SYNOPSIS
 
-Backend for the C<tracker> command. See C<man tracker> and/or C<perldoc tracker> for details.
+Backend for the C<tracker> command. See L<tracker> and/or C<perldoc tracker> for details.
 
 =head1 CONTRIBUTORS
 
