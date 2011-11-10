@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use 5.010;
 
-our $VERSION = "2.011";
+our $VERSION = "2.012";
 # ABSTRACT: time tracking for impatient and lazy command line lovers
 
 use App::TimeTracker::Data::Task;
@@ -132,7 +132,8 @@ sub run {
     my $self = shift;
     my $command = 'cmd_'.($self->extra_argv->[0] || 'missing');
 
-    $self->cmd_commands unless $self->can($command);
+    $self->cmd_commands() 
+        unless $self->can($command);
     $self->_current_command($command);
     $self->$command;
 }
@@ -215,7 +216,8 @@ sub project_tree {
     my $projects = decode_json($file->slurp);
 
     my %tree;
-    while (my ($project,$location) = each %$projects) {
+    my $depth;
+    while (($depth++ < 30) && (my ($project,$location) = each %$projects)) {
         $tree{$project} //= {parent=>undef,childs=>{}};
         my @parts = Path::Class::file($location)->parent->parent->dir_list;
         foreach my $dir (@parts) {

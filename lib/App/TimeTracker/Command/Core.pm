@@ -311,15 +311,26 @@ sub cmd_plugins {
 
 sub cmd_commands {
     my $self = shift;
-
-    say "Available commands:";
+    
+    my @commands;
     foreach my $method ($self->meta->get_all_method_names) {
         next unless $method =~ /^cmd_/;
         $method =~ s/^cmd_//;
-        say "\t$method";
+        push(@commands,$method);
+    }
+
+    if ($self->can('autocomplete')
+        && $self->autocomplete) {
+        say join(' ',@commands);
+    } else {
+        say "Available commands:";
+        foreach my $command (@commands) {
+            say "\t$command";
+        }
     }
     exit;
 }
+
 sub _load_attribs_worked {
     my ($class, $meta) = @_;
     $meta->add_attribute('from'=>{
@@ -355,6 +366,15 @@ sub _load_attribs_worked {
         documentation=>'Filter by tag',
     });
 
+}
+sub _load_attribs_commands {
+    my ($class, $meta) = @_;
+    $meta->add_attribute('autocomplete'=>{
+        isa=>'Bool',
+        is=>'ro',
+        default=>0,
+        documentation=>'Output for autocomplete',
+    });
 }
 sub _load_attribs_list {
     my ($class, $meta) = @_;

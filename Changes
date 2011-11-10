@@ -1,5 +1,12 @@
 Revision history for App::TimeTracker
 
+2.012   2011-11-01T19:29:55+0100
+    - doc fix suggested by David Mertens (Thomas Klausner)
+    - some tests for C::Core (init, start, stop, append) (c:61.1%;sc:83.9%) (Thomas Klausner)
+    - fixed CPAN-RT#72039 reported by Kartik Thakore (Thomas Klausner)
+    - cpanm install docs (Thomas Klausner)
+
+
 2.011   2011-10-28T16:36:21+0200
     - autocreate tracker.json and projects.json if there is no
       home yet (Thomas Klausner)

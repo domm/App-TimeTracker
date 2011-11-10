@@ -110,7 +110,7 @@ sub setup_class {
 
     my $load_attribs_for_command;
     foreach (@ARGV) {
-        if ($commands{$_}) {
+        if (defined $commands{$_}) {
             $load_attribs_for_command='_load_attribs_'.$_;
             last;
         }
@@ -148,7 +148,10 @@ sub load_config {
         }
     }
 
-    WALKUP: while (1) {
+    my $try = 0;
+    $dir = $dir->absolute;
+    WALKUP: while ($try++ < 30) {
+        say "Searching $dir";
         my $config_file = $dir->file('.tracker.json');
         my $this_config;
         if (-e $config_file) {

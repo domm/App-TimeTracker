@@ -8,6 +8,8 @@ use 5.010;
 use Moose::Role;
 use LWP::UserAgent;
 use Digest::SHA1 qw(sha1_hex);
+use URI::Escape;
+use App::TimeTracker::Utils qw(error_message);
 
 has 'irc_quiet' => (
     is=>'ro',
@@ -43,9 +45,11 @@ sub _post_to_irc {
         . ' working on '
         . $task->say_project_tags;
     my $token = sha1_hex($message, $cfg->{secret});
-    my $res = $ua->get($cfg->{host}.'?message='.$message.'&token='.$token);
+    
+    my $url = $cfg->{host}.'?message='.uri_escape($message).'&token='.$token;
+    my $res = $ua->get($url);
     unless ($res->is_success) {
-        error_message('Could not post to IRC: %s',$res->status);
+        error_message('Could not post to IRC status via %s: %s',$url,$res->status_line);
     }
 }
 
