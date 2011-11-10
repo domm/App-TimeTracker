@@ -216,7 +216,8 @@ sub project_tree {
     my $projects = decode_json($file->slurp);
 
     my %tree;
-    while (my ($project,$location) = each %$projects) {
+    my $depth;
+    while (($depth++ < 30) && (my ($project,$location) = each %$projects)) {
         $tree{$project} //= {parent=>undef,childs=>{}};
         my @parts = Path::Class::file($location)->parent->parent->dir_list;
         foreach my $dir (@parts) {
