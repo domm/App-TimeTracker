@@ -25,14 +25,31 @@ has 'no_branch' => (
     traits    => [ 'Getopt' ],
     cmd_aliases => [qw/nobranch/],
 );
+has 'repository' => (
+    is=>'ro',
+    isa=>'Maybe[Git::Repository]',
+    lazy_build=>1
+);
+
+sub _build_repository {
+    my ($self) = @_;
+    my $r;
+    eval {
+        $r = Git::Repository->new( work_tree => '.' );
+    };
+    return $r if $r;
+    say "Warning: No git repository found";
+    return;
+}
 
 after 'cmd_start' => sub {
     my $self = shift;
 
+    return unless $self->repository;
     return unless $self->branch;
     return if $self->no_branch;
 
-    my $r = Git::Repository->new( work_tree => '.' );
+    my $r = $self->repository;
     my $branch = $self->branch;
     my %branches = map { s/^\s+//; $_=>1 } $r->run('branch');
 
@@ -52,18 +69,19 @@ after 'cmd_start' => sub {
 after 'cmd_continue' => sub {
     my $self = shift;
     
+    return unless $self->repository;
     return unless $self->branch;
     return if $self->no_branch;
     
-    my $r = Git::Repository->new( work_tree => '.' );
-    print $r->command('checkout',$self->branch)->stderr->getlines;
+    print $self->repository->command('checkout',$self->branch)->stderr->getlines;
 };
 
 after cmd_stop => sub {
     my $self = shift;
+    return unless $self->repository;
     return unless $self->merge;
 
-    my $r = Git::Repository->new( work_tree => '.' );
+    my $r = $self->repository;
     my $branch = $self->branch;
     my %branches = map { s/^\s+//; $_=>1 } $r->run('branch');
 
