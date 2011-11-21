@@ -16,14 +16,15 @@ has 'rt' => (
     is=>'rw',
     isa=>'TT::RT',
     coerce=>1,
-    documentation=>'RT: Ticket number', 
+    documentation=>'RT: Ticket number',
     predicate => 'has_rt'
 );
 has 'rt_client' => (
     is=>'ro',
-    isa=>'RT::Client::REST',
+    isa=>'Maybe[RT::Client::REST]',
     lazy_build=>1,
     traits => [ 'NoGetopt' ],
+    predicate => 'has_rt_client'
 );
 has 'rt_ticket' => (
     is=>'ro',
@@ -34,7 +35,7 @@ has 'rt_ticket' => (
 
 sub _build_rt_ticket {
     my ($self) = @_;
-    
+
     if (my $ticket = $self->init_rt_ticket($self->_current_task)) {
         return $ticket
     }
@@ -43,37 +44,46 @@ sub _build_rt_ticket {
 sub _build_rt_client {
     my $self = shift;
     my $config = $self->config->{rt};
-    
+
     unless ($config) {
         error_message("Please configure RT in your TimeTracker config");
         exit;
     }
 
-    my $client = RT::Client::REST->new(
-        server  => $config->{server},
-        timeout => $config->{timeout},
-    );
-
-    $client->login( username => $config->{username}, password => $config->{password} );
-    return $client;
+    return try {
+        my $client = RT::Client::REST->new(
+            server  => $config->{server},
+            timeout => $config->{timeout},
+        );
+        $client->login( username => $config->{username}, password => $config->{password} );
+        return $client;
+    }
+    catch {
+        error_message("Could not log in to RT: $_");
+        return;
+    };
 }
 
 before ['cmd_start','cmd_continue'] => sub {
     my $self = shift;
-    
     return unless $self->has_rt;
-    
-    my $ticket = $self->rt_ticket;
-    my $ticketname='RT'.$self->rt;
 
-    $self->insert_tag($ticketname);
-    if (defined $ticket) {
-        $self->description($ticket->subject);
+    my $ticketname='RT'.$self->rt;
+    my $ticket;
+    unless ($self->rt_client) {
+        $self->insert_tag('RT'.$self->rt);
+    }
+    else {
+        $ticket = $self->rt_ticket;
+
+        $self->insert_tag($ticketname);
+        if (defined $ticket) {
+            $self->description($ticket->subject);
+        }
     }
 
     if ($self->meta->does_role('App::TimeTracker::Command::Git')) {
         my $branch = $ticketname;
-
         if ( $ticket ) {
             my $subject = $ticket->subject;
             $subject = NFKD($subject);
@@ -90,8 +100,7 @@ before ['cmd_start','cmd_continue'] => sub {
 
 after 'cmd_start' => sub {
     my $self = shift;
-
-    return unless $self->has_rt;
+    return unless $self->has_rt && $self->rt_client;
 
     my $ticket = $self->rt_ticket;
 
@@ -109,6 +118,7 @@ after 'cmd_start' => sub {
 
 after 'cmd_stop' => sub {
     my $self = shift;
+    return unless $self->has_rt && $self->rt_client;
 
     return 
         unless $self->config->{rt}{update_time_worked};
