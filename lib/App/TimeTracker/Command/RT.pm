@@ -47,7 +47,7 @@ sub _build_rt_client {
 
     unless ($config) {
         error_message("Please configure RT in your TimeTracker config");
-        exit;
+        return;
     }
 
     return try {
