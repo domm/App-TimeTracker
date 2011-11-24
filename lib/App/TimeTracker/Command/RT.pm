@@ -118,14 +118,12 @@ after 'cmd_start' => sub {
 
 after 'cmd_stop' => sub {
     my $self = shift;
-    return unless $self->has_rt && $self->rt_client;
-
-    return 
+    return unless $self->rt_client;
+    return
         unless $self->config->{rt}{update_time_worked};
-
     my $task = $self->_previous_task;
 
-    return 
+    return
         unless $task && $task->rounded_minutes > 0;
 
     my $ticket = $self->init_rt_ticket($task);
