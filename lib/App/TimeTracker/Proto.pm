@@ -76,7 +76,6 @@ sub run {
     my $self = shift;
 
     my $config = $self->load_config;
-
     my $class = $self->setup_class($config);
 
     $class->name->new_with_options( {
@@ -138,13 +137,11 @@ sub load_config {
         if (my $project_config = $projects->{$project}) {
             $self->project($project);
             $dir = Path::Class::Dir->new($project_config);
-        } else {
-            my $error = "Cannot find project: $project\nKnown projects are:\n";
-            foreach (keys %$projects) {
-                $error .= "   ".$_."\n";
-            }
-            error_message($error);
-            exit;
+        }
+        else {
+            say "Unkown project: $project";
+            $self->project($project);
+            $dir = Path::Class::Dir->new('/ttfake',$project);
         }
     }
 
