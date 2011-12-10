@@ -36,11 +36,6 @@ sub cmd_start {
 sub cmd_stop {
     my ($self, $dont_exit) = @_;
 
-    unless ($self->has_current_project) {
-        error_message("Could not find project\nUse --project or chdir into the project directory");
-        exit;
-    }
-
     my $task = App::TimeTracker::Data::Task->current($self->home);
     unless ($task) {
         return if $dont_exit;
