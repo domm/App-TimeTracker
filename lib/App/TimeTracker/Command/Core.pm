@@ -11,6 +11,9 @@ use File::Copy qw(move);
 use File::Find::Rule;
 use Data::Dumper;
 use Text::Table;
+use Data::ICal;
+use Data::ICal::Entry::Event;
+use Data::ICal::DateTime;
 
 sub cmd_start {
     my $self = shift;
@@ -162,6 +165,39 @@ sub cmd_list {
     print $table->title;
     print $table->rule('-','+');
     print $table->body;
+}
+
+sub cmd_ical {
+    my $self = shift;
+    
+    my @files = $self->find_task_files({
+        from     => $self->from,
+        to       => $self->to,
+        projects => $self->fprojects,
+        tags     => $self->ftags,
+    });
+    
+    my $calendar = Data::ICal->new();
+    
+    foreach my $file ( @files ) {
+        my $task = App::TimeTracker::Data::Task->load($file->stringify);
+
+        # if it's not the current (open) task, then add it to the calendar
+        if ($task->duration) {
+            my $event = Data::ICal::Entry::Event->new();
+
+            $event->add_properties(
+                summary => $task->project,
+                description => $task->description,
+            );
+            $event->start($task->start);
+            $event->end($task->stop);
+        
+            $calendar->add_entry($event);
+        }
+    }
+    
+    print $calendar->as_string;
 }
 
 sub cmd_report {
@@ -380,6 +416,10 @@ sub _load_attribs_list {
         default=>0,
         documentation=>'Be detailed',
     });
+}
+sub _load_attribs_ical {
+    my ($class, $meta) = @_;
+    $class->_load_attribs_worked($meta);
 }
 sub _load_attribs_report {
     my ($class, $meta) = @_;
