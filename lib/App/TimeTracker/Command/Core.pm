@@ -186,8 +186,15 @@ sub cmd_ical {
         if ($task->duration) {
             my $event = Data::ICal::Entry::Event->new();
 
+            # the summary (what you see when looking at all calendar events)
+            # will be the project name and any tags (in parentheses)
+            my $summary = $task->project;
+            $summary .= ' (' . join(', ',@{$task->tags}) . ')'
+                if $task->has_tags;
+
             $event->add_properties(
-                summary => $task->project,
+                summary => $summary,
+                # if a user opens a calendar event they see the description
                 description => $task->description,
             );
             $event->start($task->start);
