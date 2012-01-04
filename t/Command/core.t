@@ -52,9 +52,14 @@ my $c1 = $p->load_config($tmp->subdir(qw(some_project)));
     file_not_empty_ok($tracker_dir->file($basetf.'140000_some_project.trc'),'tracker file exists');
 }
 
-#{ # current
+{ # current
 #    # TODO: need to monkey-patch $class->now to return a mocked value
-#}
+    @ARGV=('current');
+    my $class = $p->setup_class($c1);
+    my $t = $class->name->new(home=>$home, config=>$c1, _current_project=>'some_project');
+    trap {$t->cmd_current };
+
+}
 
 { # stop
     @ARGV=('stop');
