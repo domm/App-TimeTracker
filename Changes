@@ -1,5 +1,21 @@
 Revision history for App::TimeTracker
 
+2.013   2012-01-04T19:37:11+0100
+    - fix tests for single digit months (Thomas Klausner)
+    - properly sync "current" (suggested by github.com/plu) (Thomas Klausner)
+    - stop does not require a project (Thomas Klausner)
+    - make --project work for "virtual" projects (i.e. ones
+      that do not exists in filesystem (Thomas Klausner)
+    - do not abort if there is no RT configured (Thomas Klausner)
+    - RT plugin now also works (a bit) offline (Thomas Klausner)
+    - Nicely fix directory traversal issue, by using absolute path for
+      parent traversing (Roland Lammel)
+    - Only throw warning if Git plugin does not find git repository
+      refactor repository init (Roland Lammel)
+    - Escape messages in IRC-bot post uri (Maros Kollar)
+    - Basic autocomplete (Maros Kollar)
+
+
 2.012   2011-11-01T19:29:55+0100
     - doc fix suggested by David Mertens (Thomas Klausner)
     - some tests for C::Core (init, start, stop, append) (c:61.1%;sc:83.9%) (Thomas Klausner)
