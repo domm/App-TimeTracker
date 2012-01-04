@@ -16,13 +16,14 @@ sub cmd_sync {
 
     my @new = $r->run('ls-files' =>'-om','--exclude-standard');
     foreach my $changed (@new) {
+        say $changed;
         $r->run(add=>$changed);
     }
 
-    foreach (qw(current previous)) {
-        unless (-e $self->home->file($_)) {
-            $r->run(rm=>$self->home->file($_)->stringify);
-        }
+    my @del = $r->run('ls-files' =>'-d','--exclude-standard');
+    foreach my $to_del (@del) {
+        say "to del $to_del";
+        $r->run(rm=>$to_del);
     }
 
     $r->run(commit => '-m','synced on '.now());
