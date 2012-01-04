@@ -689,6 +689,22 @@ Also calc sums per tag.
 
 Lists all found trackfiles and their respective duration before printing out the report.
 
+=head2 ical
+
+    ~/perl/Your-Project$ tracker ical
+
+    Print out an iCalendar calendar of events to standard out.
+
+Example:
+
+    ~/perl/Your-Project$ tracker ical > ~/work.ics
+
+    # ... open ~/work.ics in your least hated calendar/scheduling application
+
+=head3 Options:
+
+The same options as for L<worked>
+
 =head2 init
 
     ~/perl/Your-Project$ tracker init
