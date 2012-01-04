@@ -16,7 +16,7 @@ $tmp->subdir('other_project')->mkpath;
 my $p = App::TimeTracker::Proto->new(home=>$home);
 my $now = DateTime->now;
 my $basetf = $now->ymd('').'-';
-my $tracker_dir = $home->subdir($now->year,$now->month);
+my $tracker_dir = $home->subdir($now->year,sprintf("%02d",$now->month));
 
 { # init 
     @ARGV=('init');
