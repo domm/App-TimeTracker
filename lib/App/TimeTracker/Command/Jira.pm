@@ -203,7 +203,7 @@ time-worked.
 
 Add C<Jira> to the list of plugins. 
 
-=head2 rt
+=head2 jira
 
 add a hash named C<jira>, containing the following keys:
 
