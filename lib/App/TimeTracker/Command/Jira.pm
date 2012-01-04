@@ -227,6 +227,10 @@ If set, set the owner of the current ticket to the specified value during C<star
 
 If set, store the time worked on this task also in Jira.
 
+=head3 use_local_time_zone
+
+If set, your local time zone is used when logging time worked in Jira.
+
 =head1 NEW COMMANDS
 
 none
