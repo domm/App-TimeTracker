@@ -19,6 +19,12 @@ sub cmd_sync {
         $r->run(add=>$changed);
     }
 
+    foreach (qw(current previous)) {
+        unless (-e $self->home->file($_)) {
+            $r->run(rm=>$self->home->file($_)->stringify);
+        }
+    }
+
     $r->run(commit => '-m','synced on '.now());
 
     foreach my $cmd (qw(pull push)) {
