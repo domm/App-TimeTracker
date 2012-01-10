@@ -21,7 +21,7 @@ sub cmd_start {
     }
 
     $self->cmd_stop('no_exit');
-    
+
     my $task = App::TimeTracker::Data::Task->new({
         start=>$self->at || now(),
         project=>$self->project,
@@ -45,6 +45,10 @@ sub cmd_stop {
     $self->_previous_task($task);
 
     $task->stop($self->at || now());
+    if ($task->stop < $task->start) {
+        say sprintf ('The stop time you specified (%s) is earlier than the start time (%s).\nThis makes no sense.\nMaybe it helps if you use the long format to specify the stop time ("2012-01-10 00:15")?',$task->stop,$task->start);
+        exit;
+    }
     $task->save($self->home);
     
     move($self->home->file('current')->stringify,$self->home->file('previous')->stringify);
