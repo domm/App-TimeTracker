@@ -46,7 +46,7 @@ sub cmd_stop {
 
     $task->stop($self->at || now());
     if ($task->stop < $task->start) {
-        say sprintf ('The stop time you specified (%s) is earlier than the start time (%s).\nThis makes no sense.\nMaybe it helps if you use the long format to specify the stop time ("2012-01-10 00:15")?',$task->stop,$task->start);
+        say sprintf (qq{The stop time you specified (%s) is earlier than the start time (%s).\nThis makes no sense.\nMaybe it helps if you use the long format to specify the stop time ("2012-01-10 00:15")?},$task->stop,$task->start);
         exit;
     }
     $task->save($self->home);
