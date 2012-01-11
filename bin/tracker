@@ -33,7 +33,7 @@ B<Tip:> Use C<tracker plugins> to list all installed plugins. Read more about ea
 
 =head1 INSTALLATION
 
-App::TimeTracker is a L<Perl|http://perl.org> application, and thus requires a rencent Perl (>= 5.10). It also reuses a lot of code from L<CPAN|http://cpan.org>.
+App::TimeTracker is a L<Perl|http://perl.org> application, and thus requires a recent Perl (>= 5.10). It also reuses a lot of code from L<CPAN|http://cpan.org>.
 
 =head2 From CPAN
 
