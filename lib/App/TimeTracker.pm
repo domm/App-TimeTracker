@@ -50,12 +50,14 @@ coerce 'TT::DateTime'
         }
         when(/^ $YEAR_RE [-.]? $MONTH_RE [-.]? $DAY_RE $/x) { # "2010-02-26"
             $dt->set(year => $+{year}, month=>$+{month}, day=>$+{day});
+            $dt->truncate(to=>'day');
         }
         when(/^ $YEAR_RE [-.]? $MONTH_RE [-.]? $DAY_RE \s+ $HOUR_RE : $MINUTE_RE $/x) { # "2010-02-26 12:34"
             $dt->set(year => $+{year}, month=>$+{month}, day=>$+{day}, hour=>$+{hour}, minute=>$+{minute});
         }
         when(/^ $DAY_RE [-.]? $MONTH_RE [-.]? $YEAR_RE $/x) { # "26-02-2010"
             $dt->set(year => $+{year}, month=>$+{month}, day=>$+{day});
+            $dt->truncate(to=>'day');
         }
         when(/^ $DAY_RE [-.]? $MONTH_RE [-.]? $YEAR_RE \s $HOUR_RE : $MINUTE_RE $/x) { # "26-02-2010 12:34"
             $dt->set(year => $+{year}, month=>$+{month}, day=>$+{day}, hour=>$+{hour}, minute=>$+{minute});
