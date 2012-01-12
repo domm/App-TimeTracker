@@ -37,7 +37,7 @@ diag("Test initial bug report");
 }
 
 { # stop
-    my $test_date = DateTime->new(year=>2012,month=>1,day=>10,hour=>'00',minute=>3);
+    my $test_date = DateTime->new(year=>2012,month=>1,day=>10,hour=>'00',minute=>3,time_zone=>'local');
     Test::MockTime::set_fixed_time($test_date->epoch);
 
     @ARGV=('stop');
@@ -71,7 +71,7 @@ diag("Test de facto bug");
 }
 
 { # stop
-    my $test_date = DateTime->new(year=>2012,month=>1,day=>8,hour=>23,minute=>45);
+    my $test_date = DateTime->new(year=>2012,month=>1,day=>8,hour=>23,minute=>45,time_zone=>'local');
     Test::MockTime::set_fixed_time($test_date->epoch);
 
     @ARGV=('stop');
@@ -86,7 +86,7 @@ diag("Test de facto bug");
 }
 
 { # stop again, with long --at
-    my $test_date = DateTime->new(year=>2012,month=>1,day=>8,hour=>23,minute=>45);
+    my $test_date = DateTime->new(year=>2012,month=>1,day=>8,hour=>23,minute=>45,time_zone=>'local');
     Test::MockTime::set_fixed_time($test_date->epoch);
 
     @ARGV=('stop');
