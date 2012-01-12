@@ -15,6 +15,7 @@ $tmp->subdir('some_project')->mkpath;
 $tmp->subdir('other_project')->mkpath;
 my $p = App::TimeTracker::Proto->new(home=>$home);
 my $now = DateTime->now;
+$now->set_time_zone('local');
 my $basetf = $now->ymd('').'-';
 my $tracker_dir = $home->subdir($now->year,sprintf("%02d",$now->month));
 
@@ -58,7 +59,6 @@ my $c1 = $p->load_config($tmp->subdir(qw(some_project)));
     my $class = $p->setup_class($c1);
     my $t = $class->name->new(home=>$home, config=>$c1, _current_project=>'some_project');
     trap {$t->cmd_current };
-
 }
 
 { # stop
@@ -122,10 +122,15 @@ my $c2 = $p->load_config($tmp->subdir(qw(other_project)));
     my $t = $class->name->new(home=>$home, config=>$c2, _current_project=>'other_project',at=>'14:45');
     trap {$t->cmd_stop };
     like($trap->stdout,qr/00:15:00.*other_project/,'stop: output');
-
 }
 
-
-
+{ # version
+    @ARGV=('version');
+    my $version = App::TimeTracker->VERSION;
+    my $class = $p->setup_class($c1);
+    my $t = $class->name->new(home=>$home, config=>$c2);
+    trap {$t->cmd_version };
+    like($trap->stdout,qr/$version/,'version: output');
+}
 
 done_testing();

@@ -308,6 +308,12 @@ sub cmd_plugins {
     say "Installed plugins:\n  ".join(', ',@hits);
 }
 
+sub cmd_version {
+    my $self = shift;
+    say "This is App::TimeTracker, version ".App::TimeTracker->VERSION;
+    exit;
+}
+
 sub cmd_commands {
     my $self = shift;
     
