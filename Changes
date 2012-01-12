@@ -1,5 +1,16 @@
 Revision history for App::TimeTracker
 
+2.017   2012-01-12T22:59:32+0100
+    - finally fixed rt.cpan.org #73859:
+      During DateTime coercion for --at new DateTime objects
+      were initiated without setting time_zone => 'local'
+      That's added now (and tested), so hopefully the bug IS squashed
+    - new command: version
+      prints out the current version
+    - add suggestion for better --at if stop<start
+      (suggested by Ruslan Zakirov)
+
+
 2.016   2012-01-10T23:08:20+0100
     - fixed rt.cpan.org #73859 reported by Ruslan Zakirov:
       stop now aborts if the stop time is earlier than the start
