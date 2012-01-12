@@ -46,7 +46,19 @@ sub cmd_stop {
 
     $task->stop($self->at || now());
     if ($task->stop < $task->start) {
-        say sprintf (qq{The stop time you specified (%s) is earlier than the start time (%s).\nThis makes no sense.\nMaybe it helps if you use the long format to specify the stop time ("2012-01-10 00:15")?},$task->stop,$task->start);
+        say sprintf (qq{The stop time you specified (%s) is earlier than the start time (%s).\nThis makes no sense.},$task->stop,$task->start);
+
+        my $what_you_ment = $task->stop->clone;
+        for (1..5) {
+            $what_you_ment->add(days=>1);
+            last if $what_you_ment > $task->start
+        }
+        if ($what_you_ment ne $task->start) {
+            say "Maybe you wanted to do:\ntracker stop --at '".$what_you_ment->strftime('%Y-%m-%d %H:%M')."'";
+        }
+        else {
+            say "Maybe it helps if you use the long format to specify the stop time ('2012-01-10 00:15')?";
+        }
         exit;
     }
     $task->save($self->home);
