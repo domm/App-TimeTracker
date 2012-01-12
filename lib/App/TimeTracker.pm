@@ -43,7 +43,7 @@ coerce 'TT::DateTime'
     my $raw = $_;
     my $dt = DateTime->now;
     $dt->set_time_zone('local');
-
+    $dt->set(second=>0);
     given ($raw) {
         when(/^ $HOUR_RE : $MINUTE_RE $/x) { # "13:42"
             $dt->set(hour=>$+{hour}, minute=>$+{minute});
