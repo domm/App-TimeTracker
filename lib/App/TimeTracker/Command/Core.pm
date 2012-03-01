@@ -198,6 +198,7 @@ sub cmd_report {
         my $task = App::TimeTracker::Data::Task->load($file->stringify);
         my $time = $task->seconds // $task->_build_seconds;
         my $project = $task->project;
+        my $description = $task->description;
 
         if ($time >= 60*60*8) {
             say "Found dubious trackfile: ".$file->stringify;
@@ -212,7 +213,13 @@ sub cmd_report {
             my $tags = $task->tags;
             if (@$tags) {
                 foreach my $tag ( @$tags ) {
-                    $report->{$project}{$tag} += $time;
+                    $report->{$project}{$tag}{time} += $time;
+                    $report->{$project}{$tag}{desc} //= '';
+
+                    if ($description) {
+                        $report->{$project}{$tag}{desc} .= $description."\n"
+                            if index($report->{$project}{$tag}{desc}, $description) == -1;
+                    }
                 }
             }
             else {
@@ -247,14 +254,17 @@ sub _print_report_tree {
     my $data = $report->{$project};
     return unless $data->{'_total'};
 
-    my $format="%- 20s % 12s\n";
+    my $format="%- 20s % 12s".($self->detail ? '    %s' : '')."\n";
 
-    printf( $padding.$format, substr($project,0,20), $self->beautify_seconds( delete $data->{'_total'} ) );
+    printf( $padding.$format, substr($project,0,20), $self->beautify_seconds( delete $data->{'_total'} ), '' );
     if ( $self->detail ) {
-        printf( $padding.$tagpadding.$format, 'untagged', $self->beautify_seconds( delete $data->{'_untagged'} ) ) if $data->{'_untagged'};
+        printf( $padding.$tagpadding.$format, 'untagged', $self->beautify_seconds( delete $data->{'_untagged'} ), '' ) if $data->{'_untagged'};
         foreach my $tag ( sort { $data->{$b} <=> $data->{$a} } keys %{ $data } ) {
-            my $time = $data->{$tag};
-            printf( $padding.$tagpadding.$format, $tag, $self->beautify_seconds($time) );
+            my $time = $data->{$tag}{time};
+            my $desc = $data->{$tag}{desc};
+            $desc =~ s/\s+$//;
+            $desc =~ s/\v/, /g;
+            printf( $padding.$tagpadding.$format, $tag, $self->beautify_seconds($time), $desc );
         }
     }
     foreach my $child (keys %{$projects->{$project}{children}}) {
