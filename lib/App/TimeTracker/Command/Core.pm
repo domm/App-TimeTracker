@@ -259,7 +259,7 @@ sub _print_report_tree {
     printf( $padding.$format, substr($project,0,20), $self->beautify_seconds( delete $data->{'_total'} ), '' );
     if ( $self->detail ) {
         printf( $padding.$tagpadding.$format, 'untagged', $self->beautify_seconds( delete $data->{'_untagged'} ), '' ) if $data->{'_untagged'};
-        foreach my $tag ( sort { $data->{$b} <=> $data->{$a} } keys %{ $data } ) {
+        foreach my $tag ( sort { $data->{$b}->{time} <=> $data->{$a}->{time} } keys %{ $data } ) {
             my $time = $data->{$tag}{time};
             my $desc = $data->{$tag}{desc};
             $desc =~ s/\s+$//;
