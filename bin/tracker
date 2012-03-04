@@ -4,6 +4,8 @@ use strict;
 use warnings;
 use App::TimeTracker::Proto;
 
+binmode(STDOUT, ":utf8");
+
 my $app = App::TimeTracker::Proto->new->run;
 
 # ABSTRACT: run App::TimeTracker
