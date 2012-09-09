@@ -11,6 +11,7 @@ use App::TimeTracker::Data::Task;
 use DateTime;
 use Moose;
 use Moose::Util::TypeConstraints;
+use Path::Class qw();
 use Path::Class::Iterator;
 use MooseX::Storage::Format::JSONpm;
 use JSON::XS;
@@ -218,6 +219,16 @@ sub project_tree {
     my $depth;
     while (($depth++ < 30) && (my ($project,$location) = each %$projects)) {
         $tree{$project} //= {parent=>undef,childs=>{}};
+        # check config file for parent
+        if (-e $location) {
+            my $this_config = decode_json(Path::Class::file($location)->slurp);
+            if (my $parent = $this_config->{parent}) {
+                $tree{$project}->{parent} = $parent;
+                $tree{$parent}->{children}{$project}=1;
+                next;
+            }
+        }
+        # check path for parent
         my @parts = Path::Class::file($location)->parent->parent->dir_list;
         foreach my $dir (@parts) {
             if (my $parent = $projects->{$dir}) {
