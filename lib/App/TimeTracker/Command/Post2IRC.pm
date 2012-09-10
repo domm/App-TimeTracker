@@ -7,7 +7,7 @@ use 5.010;
 
 use Moose::Role;
 use LWP::UserAgent;
-use Digest::SHA1 qw(sha1_hex);
+use Digest::SHA qw(sha1_hex);
 use URI::Escape;
 use App::TimeTracker::Utils qw(error_message);
 
@@ -89,7 +89,7 @@ The hostname of the server C<Bot::FromHTTP> is running on. Might also contain a 
 
 A shared secret used to calculate the authentification token. The token is calculated like this:
 
-  my $token = Digest::SHA1::sha1_hex($message, $secret);
+  my $token = Digest::SHA::sha1_hex($message, $secret);
 
 =head1 NEW COMMANDS
 
