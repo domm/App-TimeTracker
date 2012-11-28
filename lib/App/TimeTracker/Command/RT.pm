@@ -69,14 +69,11 @@ before ['cmd_start','cmd_continue'] => sub {
     return unless $self->has_rt;
 
     my $ticketname='RT'.$self->rt;
-    my $ticket;
-    unless ($self->rt_client) {
-        $self->insert_tag('RT'.$self->rt);
-    }
-    else {
-        $ticket = $self->rt_ticket;
+    $self->insert_tag($ticketname);
 
-        $self->insert_tag($ticketname);
+    my $ticket;
+    if ($self->rt_client) {
+        $ticket = $self->rt_ticket;
         if (defined $ticket) {
             $self->description($ticket->subject);
         }
