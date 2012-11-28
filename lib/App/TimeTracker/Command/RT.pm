@@ -75,7 +75,7 @@ before ['cmd_start','cmd_continue'] => sub {
     if ($self->rt_client) {
         $ticket = $self->rt_ticket;
         if (defined $ticket) {
-            $self->description($ticket->subject);
+            $self->description($self->safe_ticket_subject($ticket->subject));
         }
     }
 
