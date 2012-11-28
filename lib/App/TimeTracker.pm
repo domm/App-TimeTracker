@@ -213,7 +213,8 @@ sub project_tree {
     my $self = shift;
     my $file = $self->home->file('projects.json');
     return unless -e $file && -s $file;
-    my $projects = decode_json($file->slurp);
+    my $decoder = JSON::XS->new->utf8->pretty->relaxed;
+    my $projects = $decoder->decode(scalar $file->slurp);
 
     my %tree;
     my $depth;
@@ -221,7 +222,7 @@ sub project_tree {
         $tree{$project} //= {parent=>undef,childs=>{}};
         # check config file for parent
         if (-e $location) {
-            my $this_config = decode_json(Path::Class::file($location)->slurp);
+            my $this_config = $decoder->decode(scalar Path::Class::file($location)->slurp);
             if (my $parent = $this_config->{parent}) {
                 $tree{$project}->{parent} = $parent;
                 $tree{$parent}->{children}{$project}=1;
