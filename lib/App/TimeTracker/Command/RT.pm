@@ -69,14 +69,11 @@ before ['cmd_start','cmd_continue'] => sub {
     return unless $self->has_rt;
 
     my $ticketname='RT'.$self->rt;
-    my $ticket;
-    unless ($self->rt_client) {
-        $self->insert_tag('RT'.$self->rt);
-    }
-    else {
-        $ticket = $self->rt_ticket;
+    $self->insert_tag($ticketname);
 
-        $self->insert_tag($ticketname);
+    my $ticket;
+    if ($self->rt_client) {
+        $ticket = $self->rt_ticket;
         if (defined $ticket) {
             $self->description($ticket->subject);
         }
@@ -85,13 +82,7 @@ before ['cmd_start','cmd_continue'] => sub {
     if ($self->meta->does_role('App::TimeTracker::Command::Git')) {
         my $branch = $ticketname;
         if ( $ticket ) {
-            my $subject = $ticket->subject;
-            $subject = NFKD($subject);
-            $subject =~ s/\p{NonspacingMark}//g;
-            $subject=~s/\W/_/g;
-            $subject=~s/_+/_/g;
-            $subject=~s/^_//;
-            $subject=~s/_$//;
+            my $subject = $self->safe_ticket_subject($ticket->subject);
             $branch .= '_'.$subject;
         }
         $self->branch($branch) unless $self->branch;
@@ -164,6 +155,18 @@ sub App::TimeTracker::Data::Task::rt_id {
         next unless $tag =~ /^RT(\d+)/;
         return $1;
     }
+}
+
+sub safe_ticket_subject {
+    my ($self, $subject) = @_;
+
+    $subject = NFKD($subject);
+    $subject =~ s/\p{NonspacingMark}//g;
+    $subject=~s/\W/_/g;
+    $subject=~s/_+/_/g;
+    $subject=~s/^_//;
+    $subject=~s/_$//;
+    return $subject;
 }
 
 no Moose::Role;

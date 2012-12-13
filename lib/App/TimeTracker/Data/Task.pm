@@ -115,7 +115,8 @@ sub storage_location {
 sub description_short {
     my ($self) = @_;
     my $description = $self->description;
-    
+    return unless $description;
+
     $description =~ s/(.{40}[[:alnum:]]*).+$/$1.../;
     $description =~ s/^(.{50}).+$/$1.../;
     $description =~ s/\.{3,}$/.../;
