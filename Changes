@@ -1,5 +1,19 @@
 Revision history for App::TimeTracker
 
+2.018   2012-11-29T11:10:34+0100
+    - use json decoder object (Thomas Klausner)
+    - enable proper posting of correctly decoded utf8 (Thomas Klausner)
+    - moved RT ticket name ascii-isation into method (Thomas Klausner)
+    - honor config value "parent" in project_tree (Thomas Klausner)
+    - dynamic 00-load.t (Thomas Klausner)
+    - squash a warning (cpan-rt75266) (Thomas Klausner)
+    - fix tag sorting (Jozef Kutej)
+    - set tracker script STDOUT to utf8 (Jozef Kutej)
+    - add description to the detail report (Jozef Kutej)
+    - Switch to Digest::SHA (in core since 5.9.3) to reduce external
+      deps (Roland Lammel)
+
+
 2.017   2012-01-12T22:59:32+0100
     - finally fixed rt.cpan.org #73859:
       During DateTime coercion for --at new DateTime objects
