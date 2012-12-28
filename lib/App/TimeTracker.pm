@@ -218,7 +218,7 @@ sub project_tree {
 
     my %tree;
     my $depth;
-    while (($depth++ < 30) && (my ($project,$location) = each %$projects)) {
+    while (my ($project,$location) = each %$projects) {
         $tree{$project} //= {parent=>undef,childs=>{}};
         # check config file for parent
         if (-e $location) {
