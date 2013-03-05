@@ -199,7 +199,6 @@ sub cmd_report {
         my $task = App::TimeTracker::Data::Task->load($file->stringify);
         my $time = $task->seconds // $task->_build_seconds;
         my $project = $task->project;
-        my $description = $task->description;
 
         if ($time >= 60*60*8) {
             say "Found dubious trackfile: ".$file->stringify;
@@ -210,16 +209,17 @@ sub cmd_report {
 
         $report->{$project}{'_total'} += $time;
 
-        if ( $self->detail ) {
-            my $tags = $task->tags;
+        if (my $level = $self->detail ) {
+            my $detail = $task->get_detail($level);
+            my $tags = $detail->{tags};
             if (@$tags) {
                 foreach my $tag ( @$tags ) {
                     $report->{$project}{$tag}{time} += $time;
                     $report->{$project}{$tag}{desc} //= '';
 
-                    if ($description) {
-                        $report->{$project}{$tag}{desc} .= $description."\n"
-                            if index($report->{$project}{$tag}{desc}, $description) == -1;
+                    if (my $desc = $detail->{desc}) {
+                        $report->{$project}{$tag}{desc} .= $desc."\n"
+                            if index($report->{$project}{$tag}{desc}, $desc) == -1;
                     }
                 }
             }
