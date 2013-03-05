@@ -180,6 +180,19 @@ sub rounded_minutes {
     return $min;
 }
 
+sub get_detail {
+    my ($self, $level) = @_;
+
+    my $detail = {};
+    if ($level eq 'tag' || $level eq 'all') {
+        $detail->{tags} = $self->tags;
+    }
+    if ($level eq 'description'  || $level eq 'all') {
+        $detail->{desc} = $self->description;
+    }
+    return $detail;
+}
+
 __PACKAGE__->meta->make_immutable;
 1;
 
