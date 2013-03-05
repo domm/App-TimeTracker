@@ -6,6 +6,7 @@ use 5.010;
 # ABSTRACT: App::TimeTracker Core commands
 
 use Moose::Role;
+use Moose::Util::TypeConstraints;
 use App::TimeTracker::Utils qw(now pretty_date error_message);
 use File::Copy qw(move);
 use File::Find::Rule;
@@ -417,17 +418,10 @@ sub _load_attribs_report {
     my ($class, $meta) = @_;
     $class->_load_attribs_worked($meta);
     $meta->add_attribute('detail'=>{
-        isa=>'Bool',
+        isa=>enum([qw(tag description all)]),
         is=>'ro',
-        default=>0,
-        documentation=>'Be detailed',
+        documentation=>'Be detailed: [tag|desc|all]',
     });
-#    $meta->add_attribute('verbose'=>{
-#        isa=>'Bool',
-#        is=>'ro',
-#        default=>0,
-#        documentation=>'Be verbose',
-#    });
 }
 
 sub _load_attribs_start {
@@ -664,7 +658,11 @@ The same options as for L<worked>, plus:
 
 =head4 --detail
 
-    ~/perl/Your-Project$ tracker report --last month --detail
+    ~/perl/Your-Project$ tracker report --last month --detail tag
+
+Valid options are: tag, description, all
+
+Will print the tag(s) and/or description.
 
 Also calc sums per tag.
 
