@@ -95,15 +95,22 @@ after 'cmd_start' => sub {
 
     my $ticket = $self->rt_ticket;
 
-    return
-        unless $self->config->{rt}{set_owner_to} && defined $ticket;
+    return unless $ticket;
     try {
-        $ticket->owner($self->config->{rt}{set_owner_to});
-        $ticket->status('open');
+        my $do_store=0;
+        if ($self->config->{rt}{set_owner_to}) {
+            $ticket->owner($self->config->{rt}{set_owner_to});
+            $do_store=1;
+        }
+
+        if (my $status = $self->config->{rt}{set_status}{start}) {
+            $ticket->status($status);
+            $do_store=1;
+        }
         $ticket->store();
     }
     catch {
-        error_message('Could not set RT owner and status: %s',$_);
+        error_message('Could not set RT owner/status: %s',$_);
     };
 };
 

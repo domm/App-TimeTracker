@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use 5.010;
 
-our $VERSION = "2.017";
+our $VERSION = "2.018";
 # ABSTRACT: time tracking for impatient and lazy command line lovers
 
 use App::TimeTracker::Data::Task;
@@ -218,7 +218,7 @@ sub project_tree {
 
     my %tree;
     my $depth;
-    while (($depth++ < 30) && (my ($project,$location) = each %$projects)) {
+    while (my ($project,$location) = each %$projects) {
         $tree{$project} //= {parent=>undef,childs=>{}};
         # check config file for parent
         if (-e $location) {
