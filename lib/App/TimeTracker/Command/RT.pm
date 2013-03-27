@@ -107,7 +107,7 @@ after ['cmd_start','cmd_append'] => sub {
             $ticket->status($status);
             $do_store=1;
         }
-        $ticket->store();
+        $ticket->store() if $do_store;
     }
     catch {
         error_message('Could not set RT owner/status: %s',$_);
