@@ -64,7 +64,7 @@ sub _build_rt_client {
     };
 }
 
-before ['cmd_start','cmd_continue'] => sub {
+before ['cmd_start','cmd_continue','cmd_append'] => sub {
     my $self = shift;
     return unless $self->has_rt;
 
@@ -89,7 +89,7 @@ before ['cmd_start','cmd_continue'] => sub {
     }
 };
 
-after 'cmd_start' => sub {
+after ['cmd_start','cmd_append'] => sub {
     my $self = shift;
     return unless $self->has_rt && $self->rt_client;
 
