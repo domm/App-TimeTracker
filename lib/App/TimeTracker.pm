@@ -28,6 +28,9 @@ with qw(
 
 subtype 'TT::DateTime' => as class_type('DateTime');
 subtype 'TT::RT' => as 'Int';
+# we could subtype TT::Jira as a project and id combo and do a coercion
+# for now just use a string of the form 'project-id' (as used in the Jira URLs)
+subtype 'TT::Jira' => as 'Str';
 subtype 'TT::Duration' => as enum([qw(day week month year)]);
 
 coerce 'TT::RT'
@@ -37,6 +40,12 @@ coerce 'TT::RT'
     $raw=~s/\D//g;
     return $raw;
 };
+
+#coerce 'TT:Jira'
+#    => from 'Str'
+#    => via {
+#        return $_;
+#    };
 
 coerce 'TT::DateTime'
     => from 'Str'
@@ -75,6 +84,9 @@ MooseX::Getopt::OptionTypeMap->add_option_type_to_map(
 );
 MooseX::Getopt::OptionTypeMap->add_option_type_to_map(
     'TT::RT' => '=i',
+);
+MooseX::Getopt::OptionTypeMap->add_option_type_to_map(
+    'TT::Jira' => '=s',
 );
 
 no Moose::Util::TypeConstraints;
