@@ -74,7 +74,7 @@ before ['cmd_start','cmd_continue'] => sub {
     my $ticket;
     if ($self->rt_client) {
         $ticket = $self->rt_ticket;
-        if (defined $ticket) {
+        if (defined $ticket && defined $ticket->subject) {
             $self->description($ticket->subject);
         }
     }
@@ -98,7 +98,7 @@ after 'cmd_start' => sub {
     return unless $ticket;
     try {
         my $do_store=0;
-        if ($self->config->{rt}{set_owner_to}) {
+        if ($self->config->{rt}{set_owner_to} && !$ticket->owner) {
             $ticket->owner($self->config->{rt}{set_owner_to});
             $do_store=1;
         }
