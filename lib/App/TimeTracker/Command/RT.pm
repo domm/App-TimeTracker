@@ -98,7 +98,7 @@ after ['cmd_start','cmd_append'] => sub {
     return unless $ticket;
     try {
         my $do_store=0;
-        if ($self->config->{rt}{set_owner_to} && !$ticket->owner) {
+        if ($self->config->{rt}{set_owner_to} && ($ticket->owner eq 'Nobody')) {
             $ticket->owner($self->config->{rt}{set_owner_to});
             $do_store=1;
         }
