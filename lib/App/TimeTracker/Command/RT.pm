@@ -4,7 +4,7 @@ use warnings;
 use 5.010;
 
 # ABSTRACT: App::TimeTracker RT plugin
-use App::TimeTracker::Utils qw(error_message);
+use App::TimeTracker::Utils qw(error_message warning_message);
 
 use Moose::Role;
 use RT::Client::REST;
@@ -89,7 +89,7 @@ before ['cmd_start','cmd_continue','cmd_append'] => sub {
     }
 };
 
-after ['cmd_start','cmd_append'] => sub {
+after ['cmd_start','cmd_continue','cmd_append'] => sub {
     my $self = shift;
     return unless $self->has_rt && $self->rt_client;
 
@@ -98,12 +98,17 @@ after ['cmd_start','cmd_append'] => sub {
     return unless $ticket;
     try {
         my $do_store=0;
-        if ($self->config->{rt}{set_owner_to}) {
+        if ( $self->config->{rt}{set_owner_to} ) {
+            if ( $ticket->owner() ne $self->config->{rt}{set_owner_to} ) {
+                warning_message( 'Will not steal tickets, please to that via RT Web-UI' );
+                return;
+            }
             $ticket->owner($self->config->{rt}{set_owner_to});
             $do_store=1;
         }
 
-        if (my $status = $self->config->{rt}{set_status}{start}) {
+        my $status = $self->config->{rt}{set_status}{start};
+        if ( $status and $status ne $ticket->status ) {
             $ticket->status($status);
             $do_store=1;
         }
@@ -117,24 +122,48 @@ after ['cmd_start','cmd_append'] => sub {
 after 'cmd_stop' => sub {
     my $self = shift;
     return unless $self->rt_client;
-    return
-        unless $self->config->{rt}{update_time_worked};
-    my $task = $self->_previous_task;
 
-    return
-        unless $task && $task->rounded_minutes > 0;
+    my $task = $self->_previous_task;
+    return unless $task;
+    my $task_rounded_minutes = $task->rounded_minutes;
+    return unless $task_rounded_minutes > 0;
 
     my $ticket = $self->init_rt_ticket($task);
-    unless ($ticket) {
-        say "Last task did not contain a RT ticket id, not updating TimeWorked.";
+    if ( not $ticket ) {
+        say "Last task did not contain a RT ticket id, not updating TimeWorked or Status.";
         return;
     }
 
-    my $worked = $ticket->time_worked || 0;
-    $worked =~s/\D//g;
+    my $do_store=0;
+    if ( $self->config->{rt}{update_time_worked} and $task_rounded_minutes ) {
 
-    $ticket->time_worked( $worked + $task->rounded_minutes );
-    $ticket->store;
+        my $worked = $ticket->time_worked || 0;
+        $worked =~s/\D//g; # RT stores in minutes, API give back a string like "x minutes"
+
+        $ticket->time_worked( $worked + $task_rounded_minutes );
+        $do_store=1;
+    }
+
+    if ( $self->config->{rt}{update_time_left} and $ticket->time_left ) {
+        my $time_left = $ticket->time_left;
+        $time_left =~s/\D//g; # RT stores in minutes, API give back a string like "x minutes"
+        
+        $ticket->time_left( $time_left - $task_rounded_minutes );
+        $do_store=1;
+    }
+
+    if ( my $status = $self->config->{rt}{set_status}{stop} ) {
+        $ticket->status($status);
+        $do_store=1;
+    }
+    return unless $do_store;
+
+    try {
+        $ticket->store;
+    }
+    catch {
+        error_message('Could not update ticket: %s',$_);
+    };
 };
 
 sub init_rt_ticket {
@@ -189,7 +218,7 @@ L<http://bestpractical.com/rt/>.
 
 It can set the description and tags of the current task based on data
 entered into RT, set the owner of the ticket and update the
-time-worked in RT. If you also use the C<Git> plugin, this plugin will
+time-worked as well as time-left in RT. If you also use the C<Git> plugin, this plugin will
 generate very nice branch names based on RT information.
 
 =head1 CONFIGURATION
@@ -220,11 +249,15 @@ Time in seconds to wait for an connection to be established. Default: 300 second
 
 =head3 set_owner_to
 
-If set, set the owner of the current ticket to the specified value during C<start>.
+If set, set the owner of the current ticket to the specified value during C<start> and/or C<stop>.
 
 =head3 update_time_worked
 
-If set, store the time worked on this task also in RT.
+If set, updates the time worked on this task also in RT.
+
+=head3 update_time_left
+
+If set, updates the time left property on this task also in RT using the time worked tracker value.
 
 =head1 NEW COMMANDS
 
@@ -250,9 +283,13 @@ If C<--rt> is set to a valid ticket number:
 
 =item * set the owner of the ticket in RT (if C<set_owner_to> is set in config)
 
+=item * updates the status of the ticket in RT (if C<set_status/start> is set in config)
+
 =back
 
 =head2 stop
 
-If <update_time_worked> is set in config, add the time worked on this task to the ticket.
+If <update_time_worked> is set in config, adds the time worked on this task to the ticket.
+If <update_time_left> is set in config, reduces the time left on this task to the ticket.
+If <set_status/stop> is set in config, updates the status of the ticket
 
