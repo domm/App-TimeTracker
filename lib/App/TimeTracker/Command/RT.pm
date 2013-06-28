@@ -75,7 +75,12 @@ before ['cmd_start','cmd_continue','cmd_append'] => sub {
     if ($self->rt_client) {
         $ticket = $self->rt_ticket;
         if (defined $ticket) {
-            $self->description($ticket->subject);
+            if ( defined $self->description ) {
+                $self->description(sprintf('%s (%s)', $self->description, $ticket->subject));
+            }
+            else {
+                $self->description($ticket->subject);
+            }
         }
     }
 
@@ -275,7 +280,7 @@ If C<--rt> is set to a valid ticket number:
 
 =over
 
-=item * store the tickets subject in the tasks description ("Rev up FluxCompensator!!")
+=item * set or append the ticket subject in the task description ("Rev up FluxCompensator!!")
 
 =item * add the ticket number to the tasks tags ("RT1234")
 
