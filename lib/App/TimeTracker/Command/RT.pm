@@ -157,7 +157,9 @@ after 'cmd_stop' => sub {
         $do_store=1;
     }
 
-    if ( my $status = $self->config->{rt}{set_status}{stop} ) {
+    my $status = $self->config->{rt}{set_status}{stop};
+    # Do not change the configured stop status if it has been changed since starting the ticket
+    if ( defined $status and $ticket->status() eq $self->config->{rt}{set_status}{start} ) {
         $ticket->status($status);
         $do_store=1;
     }
