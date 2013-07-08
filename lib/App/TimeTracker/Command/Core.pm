@@ -672,6 +672,17 @@ Also calc sums per tag.
 
 Lists all found trackfiles and their respective duration before printing out the report.
 
+=head2 list
+
+    ~/perl/Your-Project$ tracker list
+
+Print out a detailed report of what you did in a tabular format including start and stop 
+times.
+
+=head3 Options:
+
+The same options as for L<report>
+
 =head2 init
 
     ~/perl/Your-Project$ tracker init
