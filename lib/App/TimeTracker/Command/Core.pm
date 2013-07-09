@@ -718,7 +718,7 @@ List all installed plugins (i.e. stuff in C<App::TimeTracker::Command::*>)
 
 Recalculates the duration stored in an old trackfile. Might be useful
 after a manual update in a trackfile. Might be unneccessary in the
-future, as soon as task duration is always calculated lazyly.
+future, as soon as task duration is always calculated lazily.
 
 =head3 Options:
 
