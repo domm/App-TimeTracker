@@ -9,34 +9,32 @@ use Moose::Role;
 use Git::Repository;
 
 has 'branch' => (
-    is=>'rw',
-    isa=>'Str', 
-    documentation=>'Git: Branch name',
+    is            => 'rw',
+    isa           => 'Str',
+    documentation => 'Git: Branch name',
 );
 has 'merge' => (
-    is=>'ro',
-    isa=>'Bool', 
-    documentation=>'Git: Merge after stopping'
+    is            => 'ro',
+    isa           => 'Bool',
+    documentation => 'Git: Merge after stopping'
 );
 has 'no_branch' => (
-    is=>'ro',
-    isa=>'Bool', 
-    documentation=>'Git: Do not create a branch',
-    traits    => [ 'Getopt' ],
-    cmd_aliases => [qw/nobranch/],
+    is            => 'ro',
+    isa           => 'Bool',
+    documentation => 'Git: Do not create a branch',
+    traits        => ['Getopt'],
+    cmd_aliases   => [qw/nobranch/],
 );
 has 'repository' => (
-    is=>'ro',
-    isa=>'Maybe[Git::Repository]',
-    lazy_build=>1
+    is         => 'ro',
+    isa        => 'Maybe[Git::Repository]',
+    lazy_build => 1
 );
 
 sub _build_repository {
     my ($self) = @_;
     my $r;
-    eval {
-        $r = Git::Repository->new( work_tree => '.' );
-    };
+    eval { $r = Git::Repository->new( work_tree => '.' ); };
     return $r if $r;
     say "Warning: No git repository found";
     return;
@@ -49,31 +47,32 @@ after 'cmd_start' => sub {
     return unless $self->branch;
     return if $self->no_branch;
 
-    my $r = $self->repository;
-    my $branch = $self->branch;
-    my %branches = map { s/^\s+//; $_=>1 } $r->run('branch');
+    my $r        = $self->repository;
+    my $branch   = $self->branch;
+    my %branches = map { s/^\s+//; $_ => 1 } $r->run('branch');
 
-    if ($branches{'* '.$branch}) {
+    if ( $branches{ '* ' . $branch } ) {
         say "Already on branch $branch";
         return;
     }
 
-    if (!$branches{$branch}) {
-        print $r->command('checkout', '-b', $branch)->stderr->getlines;
+    if ( !$branches{$branch} ) {
+        print $r->command( 'checkout', '-b', $branch )->stderr->getlines;
     }
     else {
-        print $r->command('checkout',$branch)->stderr->getlines;
+        print $r->command( 'checkout', $branch )->stderr->getlines;
     }
 };
 
 after 'cmd_continue' => sub {
     my $self = shift;
-    
+
     return unless $self->repository;
     return unless $self->branch;
     return if $self->no_branch;
-    
-    print $self->repository->command('checkout',$self->branch)->stderr->getlines;
+
+    print $self->repository->command( 'checkout', $self->branch )
+        ->stderr->getlines;
 };
 
 after cmd_stop => sub {
@@ -81,17 +80,18 @@ after cmd_stop => sub {
     return unless $self->repository;
     return unless $self->merge;
 
-    my $r = $self->repository;
-    my $branch = $self->branch;
-    my %branches = map { s/^\s+//; $_=>1 } $r->run('branch');
+    my $r        = $self->repository;
+    my $branch   = $self->branch;
+    my %branches = map { s/^\s+//; $_ => 1 } $r->run('branch');
 
-    unless ($branches{'* '.$branch}) {
+    unless ( $branches{ '* ' . $branch } ) {
         say "Not in branch $branch, won't merge.";
         return;
     }
-    my $tags = join(', ',map { $_->name } @{$self->tags}) || '';
-    $r->command('checkout','master');
-    $r->command("merge",$branch,"--no-ff",'-m',"implemented $branch $tags");
+    my $tags = join( ', ', map { $_->name } @{ $self->tags } ) || '';
+    $r->command( 'checkout', 'master' );
+    $r->command( "merge", $branch, "--no-ff", '-m',
+        "implemented $branch $tags" );
 };
 
 no Moose::Role;

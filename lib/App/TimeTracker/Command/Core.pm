@@ -16,28 +16,30 @@ use Text::Table;
 sub cmd_start {
     my $self = shift;
 
-    unless ($self->has_current_project) {
-        error_message("Could not find project\nUse --project or chdir into the project directory");
+    unless ( $self->has_current_project ) {
+        error_message(
+            "Could not find project\nUse --project or chdir into the project directory"
+        );
         exit;
     }
 
     $self->cmd_stop('no_exit');
 
-    my $task = App::TimeTracker::Data::Task->new({
-        start=>$self->at || now(),
-        project=>$self->project,
-        tags=>$self->tags,
-        description=>$self->description,
-    });
+    my $task = App::TimeTracker::Data::Task->new( {
+            start => $self->at || now(),
+            project     => $self->project,
+            tags        => $self->tags,
+            description => $self->description,
+        } );
     $self->_current_task($task);
 
-    $task->do_start($self->home);
+    $task->do_start( $self->home );
 }
 
 sub cmd_stop {
-    my ($self, $dont_exit) = @_;
+    my ( $self, $dont_exit ) = @_;
 
-    my $task = App::TimeTracker::Data::Task->current($self->home);
+    my $task = App::TimeTracker::Data::Task->current( $self->home );
     unless ($task) {
         return if $dont_exit;
         say "Currently not working on anything";
@@ -45,103 +47,125 @@ sub cmd_stop {
     }
     $self->_previous_task($task);
 
-    $task->stop($self->at || now());
-    if ($task->stop < $task->start) {
-        say sprintf (qq{The stop time you specified (%s) is earlier than the start time (%s).\nThis makes no sense.},$task->stop,$task->start);
+    $task->stop( $self->at || now() );
+    if ( $task->stop < $task->start ) {
+        say sprintf(
+            qq{The stop time you specified (%s) is earlier than the start time (%s).\nThis makes no sense.},
+            $task->stop, $task->start );
 
         my $what_you_ment = $task->stop->clone;
-        for (1..5) {
-            $what_you_ment->add(days=>1);
-            last if $what_you_ment > $task->start
+        for ( 1 .. 5 ) {
+            $what_you_ment->add( days => 1 );
+            last if $what_you_ment > $task->start;
         }
-        if ($what_you_ment ne $task->start) {
-            say "Maybe you wanted to do:\ntracker stop --at '".$what_you_ment->strftime('%Y-%m-%d %H:%M')."'";
+        if ( $what_you_ment ne $task->start ) {
+            say "Maybe you wanted to do:\ntracker stop --at '"
+                . $what_you_ment->strftime('%Y-%m-%d %H:%M') . "'";
         }
         else {
-            say "Maybe it helps if you use the long format to specify the stop time ('2012-01-10 00:15')?";
+            say
+                "Maybe it helps if you use the long format to specify the stop time ('2012-01-10 00:15')?";
         }
         exit;
     }
-    $task->save($self->home);
-    
-    move($self->home->file('current')->stringify,$self->home->file('previous')->stringify);
-    
-    say "Worked ".$task->duration." on ".$task->say_project_tags;
+    $task->save( $self->home );
+
+    move(
+        $self->home->file('current')->stringify,
+        $self->home->file('previous')->stringify
+    );
+
+    say "Worked " . $task->duration . " on " . $task->say_project_tags;
 }
 
 sub cmd_current {
     my $self = shift;
-    
-    if (my $task = App::TimeTracker::Data::Task->current($self->home)) {
-        say "Working ".$task->_calc_duration(now())." on ".$task->say_project_tags;
-        say 'Started at '. pretty_date($task->start);
+
+    if ( my $task = App::TimeTracker::Data::Task->current( $self->home ) ) {
+        say "Working "
+            . $task->_calc_duration( now() ) . " on "
+            . $task->say_project_tags;
+        say 'Started at ' . pretty_date( $task->start );
     }
-    elsif (my $prev = App::TimeTracker::Data::Task->previous($self->home)) {
-        say "Currently not working on anything, but the last thing you worked on was:";
+    elsif ( my $prev = App::TimeTracker::Data::Task->previous( $self->home ) )
+    {
+        say
+            "Currently not working on anything, but the last thing you worked on was:";
         say $prev->say_project_tags;
-        say 'Worked '.$prev->rounded_minutes.' minutes from '.pretty_date($prev->start).' till '.pretty_date($prev->stop);
+        say 'Worked '
+            . $prev->rounded_minutes
+            . ' minutes from '
+            . pretty_date( $prev->start )
+            . ' till '
+            . pretty_date( $prev->stop );
     }
     else {
-        say "Currently not working on anything, and I have no idea what you worked on earlier...";
+        say
+            "Currently not working on anything, and I have no idea what you worked on earlier...";
     }
 }
 
 sub cmd_append {
     my $self = shift;
 
-    if (my $task = App::TimeTracker::Data::Task->current($self->home)) {
+    if ( my $task = App::TimeTracker::Data::Task->current( $self->home ) ) {
         say "Cannot 'append', you're actually already working on :"
             . $task->say_project_tags . "\n";
     }
-    elsif (my $prev = App::TimeTracker::Data::Task->previous($self->home)) {
+    elsif ( my $prev = App::TimeTracker::Data::Task->previous( $self->home ) )
+    {
 
-        my $task = App::TimeTracker::Data::Task->new({
-            start=>$prev->stop,
-            project => $self->project,
-            tags=>$self->tags,
-        });
+        my $task = App::TimeTracker::Data::Task->new( {
+                start   => $prev->stop,
+                project => $self->project,
+                tags    => $self->tags,
+            } );
         $self->_current_task($task);
-        $task->do_start($self->home);
+        $task->do_start( $self->home );
     }
     else {
-        say "Currently not working on anything and I have no idea what you've been doing.";
+        say
+            "Currently not working on anything and I have no idea what you've been doing.";
     }
 }
 
 sub cmd_continue {
     my $self = shift;
 
-    if (my $task = App::TimeTracker::Data::Task->current($self->home)) {
-        say "Cannot 'continue', you're working on something:\n".$task->say_project_tags;
+    if ( my $task = App::TimeTracker::Data::Task->current( $self->home ) ) {
+        say "Cannot 'continue', you're working on something:\n"
+            . $task->say_project_tags;
     }
-    elsif (my $prev = App::TimeTracker::Data::Task->previous($self->home)) {
-        my $task = App::TimeTracker::Data::Task->new({
-            start=>$self->at || now(),
-            project=>$prev->project,
-            tags=>$prev->tags,
-        });
+    elsif ( my $prev = App::TimeTracker::Data::Task->previous( $self->home ) )
+    {
+        my $task = App::TimeTracker::Data::Task->new( {
+                start => $self->at || now(),
+                project => $prev->project,
+                tags    => $prev->tags,
+            } );
         $self->_current_task($task);
-        $task->do_start($self->home);
+        $task->do_start( $self->home );
     }
     else {
-        say "Currently not working on anything, and I have no idea what you worked on earlier...";
+        say
+            "Currently not working on anything, and I have no idea what you worked on earlier...";
     }
 }
 
 sub cmd_worked {
     my $self = shift;
 
-    my @files = $self->find_task_files({
-        from     => $self->from,
-        to       => $self->to,
-        projects => $self->fprojects,
-        tags     => $self->ftags,
-    });
+    my @files = $self->find_task_files( {
+            from     => $self->from,
+            to       => $self->to,
+            projects => $self->fprojects,
+            tags     => $self->ftags,
+        } );
 
-    my $total=0;
-    foreach my $file ( @files ) {
-        my $task = App::TimeTracker::Data::Task->load($file->stringify);
-        $total+=$task->seconds // $task->_build_seconds;
+    my $total = 0;
+    foreach my $file (@files) {
+        my $task = App::TimeTracker::Data::Task->load( $file->stringify );
+        $total += $task->seconds // $task->_build_seconds;
     }
 
     say $self->beautify_seconds($total);
@@ -150,81 +174,95 @@ sub cmd_worked {
 sub cmd_list {
     my $self = shift;
 
-    my @files = $self->find_task_files({
-        from     => $self->from,
-        to       => $self->to,
-        projects => $self->fprojects,
-        tags     => $self->ftags,
-    });
+    my @files = $self->find_task_files( {
+            from     => $self->from,
+            to       => $self->to,
+            projects => $self->fprojects,
+            tags     => $self->ftags,
+        } );
 
-    my $s=\' | ';
+    my $s     = \' | ';
     my $table = Text::Table->new(
-        "Project", $s, "Tag", $s, "Duration", $s, "Start", $s, "Stop", ($self->detail ? ( $s, "Seconds", $s, "Description", $s, "File"):()),
+        "Project",
+        $s, "Tag", $s,
+        "Duration",
+        $s, "Start", $s, "Stop",
+        (   $self->detail
+            ? ( $s, "Seconds", $s, "Description", $s, "File" )
+            : ()
+        ),
     );
 
-    foreach my $file ( @files ) {
-        my $task = App::TimeTracker::Data::Task->load($file->stringify);
+    foreach my $file (@files) {
+        my $task = App::TimeTracker::Data::Task->load( $file->stringify );
         my $time = $task->seconds // $task->_build_seconds;
 
         $table->add(
             $task->project,
-            join(', ',@{$task->tags}),
+            join( ', ', @{ $task->tags } ),
             $task->duration || 'working',
-            pretty_date($task->start),
-            pretty_date($task->stop),
-            ($self->detail ? ($time,$task->description_short,$file->stringify) : ()),
+            pretty_date( $task->start ),
+            pretty_date( $task->stop ),
+            (   $self->detail
+                ? ( $time, $task->description_short, $file->stringify )
+                : ()
+            ),
         );
     }
 
     print $table->title;
-    print $table->rule('-','+');
+    print $table->rule( '-', '+' );
     print $table->body;
 }
 
 sub cmd_report {
     my $self = shift;
 
-    my @files = $self->find_task_files({
-        from     => $self->from,
-        to       => $self->to,
-        projects => $self->fprojects,
-        tags     => $self->ftags,
-    });
+    my @files = $self->find_task_files( {
+            from     => $self->from,
+            to       => $self->to,
+            projects => $self->fprojects,
+            tags     => $self->ftags,
+        } );
 
-    my $total = 0;
-    my $report={};
-    my $format="%- 20s % 12s\n";
+    my $total  = 0;
+    my $report = {};
+    my $format = "%- 20s % 12s\n";
 
-    foreach my $file ( @files ) {
-        my $task = App::TimeTracker::Data::Task->load($file->stringify);
-        my $time = $task->seconds // $task->_build_seconds;
+    foreach my $file (@files) {
+        my $task    = App::TimeTracker::Data::Task->load( $file->stringify );
+        my $time    = $task->seconds // $task->_build_seconds;
         my $project = $task->project;
 
-        if ($time >= 60*60*8) {
-            say "Found dubious trackfile: ".$file->stringify;
-            say "  Are you sure you worked ".$self->beautify_seconds($time)." on one task?";
+        if ( $time >= 60 * 60 * 8 ) {
+            say "Found dubious trackfile: " . $file->stringify;
+            say "  Are you sure you worked "
+                . $self->beautify_seconds($time)
+                . " on one task?";
         }
 
-        $total+=$time;
+        $total += $time;
 
         $report->{$project}{'_total'} += $time;
 
-        if (my $level = $self->detail ) {
+        if ( my $level = $self->detail ) {
             my $detail = $task->get_detail($level);
-            my $tags = $detail->{tags};
+            my $tags   = $detail->{tags};
             if (@$tags) {
                 # Only use the first assigned tag to calculate the aggregated times and use it
                 # as tag key.
-                # Otherwise the same trackfiles would be counted multiple times and the 
+                # Otherwise the same trackfiles would be counted multiple times and the
                 # aggregated sums would not match up.
-                $report->{$project}{$tags->[0]}{time} += $time;
+                $report->{$project}{ $tags->[0] }{time} += $time;
 
-                foreach my $tag ( @$tags ) {
-                    $report->{$project}{$tags->[0]}{desc} //= '';
+                foreach my $tag (@$tags) {
+                    $report->{$project}{ $tags->[0] }{desc} //= '';
 
-                    if (my $desc = $detail->{desc}) {
-                        $report->{$project}{$tags->[0]}{desc} .= $desc."\n"
-                            if index($report->{$project}{$tags->[0]}{desc}, $desc) == -1;
+                    if ( my $desc = $detail->{desc} ) {
+                        $report->{$project}{ $tags->[0] }{desc} .= $desc
+                            . "\n"
+                            if index( $report->{$project}{ $tags->[0] }{desc},
+                            $desc ) == -1;
                     }
                 }
             }
@@ -236,64 +274,77 @@ sub cmd_report {
 
     my $projects = $self->project_tree;
 
-    foreach my $project (sort keys %$report) {
+    foreach my $project ( sort keys %$report ) {
         my $parent = $projects->{$project}{parent};
         while ($parent) {
-            $report->{$parent}{'_total'}+=$report->{$project}{'_total'} || 0;
+            $report->{$parent}{'_total'} += $report->{$project}{'_total'}
+                || 0;
             $parent = $projects->{$parent}{parent};
         }
     }
 
     $self->_say_current_report_interval;
-    my $padding='';
-    my $tagpadding='   ';
-    foreach my $project (sort keys %$report) {
+    my $padding    = '';
+    my $tagpadding = '   ';
+    foreach my $project ( sort keys %$report ) {
         next if $projects->{$project}{parent};
-        $self->_print_report_tree($report, $projects, $project, $padding, $tagpadding);
+        $self->_print_report_tree( $report, $projects, $project, $padding,
+            $tagpadding );
     }
 
     printf( $format, 'total', $self->beautify_seconds($total) );
 }
 
 sub _print_report_tree {
-    my ($self, $report, $projects, $project, $padding, $tagpadding ) = @_;
+    my ( $self, $report, $projects, $project, $padding, $tagpadding ) = @_;
     my $data = $report->{$project};
     return unless $data->{'_total'};
 
-    my $format="%- 20s % 12s".($self->detail ? '    %s' : '')."\n";
+    my $format = "%- 20s % 12s" . ( $self->detail ? '    %s' : '' ) . "\n";
 
-    printf( $padding.$format, substr($project,0,20), $self->beautify_seconds( delete $data->{'_total'} ), '' );
+    printf( $padding. $format,
+        substr( $project, 0, 20 ),
+        $self->beautify_seconds( delete $data->{'_total'} ), ''
+    );
     if ( $self->detail ) {
-        printf( $padding.$tagpadding.$format, 'untagged', $self->beautify_seconds( delete $data->{'_untagged'} ), '' ) if $data->{'_untagged'};
-        foreach my $tag ( sort { $data->{$b}->{time} <=> $data->{$a}->{time} } keys %{ $data } ) {
+        printf( $padding. $tagpadding . $format,
+            'untagged',
+            $self->beautify_seconds( delete $data->{'_untagged'} ), '' )
+            if $data->{'_untagged'};
+        foreach my $tag ( sort { $data->{$b}->{time} <=> $data->{$a}->{time} }
+            keys %{$data} )
+        {
             my $time = $data->{$tag}{time};
             my $desc = $data->{$tag}{desc};
             $desc =~ s/\s+$//;
             $desc =~ s/\v/, /g;
-            printf( $padding.$tagpadding.$format, $tag, $self->beautify_seconds($time), $desc );
+            printf( $padding. $tagpadding . $format,
+                $tag, $self->beautify_seconds($time), $desc );
         }
     }
-    foreach my $child (sort keys %{$projects->{$project}{children}}) {
-        $self->_print_report_tree($report, $projects, $child, $padding.'   ', $tagpadding);
+    foreach my $child ( sort keys %{ $projects->{$project}{children} } ) {
+        $self->_print_report_tree( $report, $projects, $child,
+            $padding . '   ', $tagpadding );
     }
 }
 
 sub cmd_recalc_trackfile {
     my $self = shift;
     my $file = $self->trackfile;
-    unless (-e $file) {
+    unless ( -e $file ) {
         $file =~ /(?<year>\d\d\d\d)(?<month>\d\d)\d\d-\d{6}_\w+\.trc/;
-        if ($+{year} && $+{month}) {
-            $file = $self->home->file($+{year},$+{month},$file)->stringify;
-            unless (-e $file) {
-                error_message("Cannot find file %s",$self->trackfile);
+        if ( $+{year} && $+{month} ) {
+            $file
+                = $self->home->file( $+{year}, $+{month}, $file )->stringify;
+            unless ( -e $file ) {
+                error_message( "Cannot find file %s", $self->trackfile );
                 exit;
             }
         }
     }
 
     my $task = App::TimeTracker::Data::Task->load($file);
-    $task->save($self->home);
+    $task->save( $self->home );
     say "recalced $file";
 }
 
@@ -303,16 +354,18 @@ sub cmd_show_config {
 }
 
 sub cmd_init {
-    my ($self, $cwd) = @_;
+    my ( $self, $cwd ) = @_;
     $cwd ||= Path::Class::Dir->new->absolute;
-    if (-e $cwd->file('.tracker.json')) {
-        error_message("This directory is already set up.\nTry 'tracker show_config' to see the current aggregated config.");
+    if ( -e $cwd->file('.tracker.json') ) {
+        error_message(
+            "This directory is already set up.\nTry 'tracker show_config' to see the current aggregated config."
+        );
         exit;
     }
 
-    my @dirs = $cwd->dir_list;
+    my @dirs    = $cwd->dir_list;
     my $project = $dirs[-1];
-    my $fh = $cwd->file('.tracker.json')->openw;
+    my $fh      = $cwd->file('.tracker.json')->openw;
     say $fh <<EOCONFIG;
 {
     "project":"$project"
@@ -324,38 +377,41 @@ EOCONFIG
 sub cmd_plugins {
     my $self = shift;
 
-    my $base = Path::Class::file($INC{'App/TimeTracker/Command/Core.pm'})->parent;
+    my $base = Path::Class::file( $INC{'App/TimeTracker/Command/Core.pm'} )
+        ->parent;
     my @hits;
-    while (my $file = $base->next) {
+    while ( my $file = $base->next ) {
         next unless -f $file;
         next if $file->basename eq 'Core.pm';
         my $plugin = $file->basename;
-        $plugin =~s/\.pm$//;
-        push(@hits, $plugin);
+        $plugin =~ s/\.pm$//;
+        push( @hits, $plugin );
     }
-    say "Installed plugins:\n  ".join(', ',@hits);
+    say "Installed plugins:\n  " . join( ', ', @hits );
 }
 
 sub cmd_version {
     my $self = shift;
-    say "This is App::TimeTracker, version ".App::TimeTracker->VERSION;
+    say "This is App::TimeTracker, version " . App::TimeTracker->VERSION;
     exit;
 }
 
 sub cmd_commands {
     my $self = shift;
-    
+
     my @commands;
-    foreach my $method ($self->meta->get_all_method_names) {
+    foreach my $method ( $self->meta->get_all_method_names ) {
         next unless $method =~ /^cmd_/;
         $method =~ s/^cmd_//;
-        push(@commands,$method);
+        push( @commands, $method );
     }
 
-    if ($self->can('autocomplete')
-        && $self->autocomplete) {
-        say join(' ',@commands);
-    } else {
+    if (   $self->can('autocomplete')
+        && $self->autocomplete )
+    {
+        say join( ' ', @commands );
+    }
+    else {
         say "Available commands:";
         foreach my $command (@commands) {
             say "\t$command";
@@ -365,89 +421,104 @@ sub cmd_commands {
 }
 
 sub _load_attribs_worked {
-    my ($class, $meta) = @_;
-    $meta->add_attribute('from'=>{
-        isa=>'TT::DateTime',
-        is=>'ro',
-        coerce=>1,
-        lazy_build=>1,
-        #cmd_aliases => [qw/start/],
-    });
-    $meta->add_attribute('to'=>{
-        isa=>'TT::DateTime',
-        is=>'ro',
-        coerce=>1,
-        #cmd_aliases => [qw/end/],
-        lazy_build=>1,
-    });
-    $meta->add_attribute('this'=>{
-        isa=>'TT::Duration',
-        is=>'ro',
-    });
-    $meta->add_attribute('last'=>{
-        isa=>'TT::Duration',
-        is=>'ro',
-    });
-    $meta->add_attribute('fprojects'=>{
-        isa=>'ArrayRef',
-        is=>'ro',
-        documentation=>'Filter by project',
-    });
-    $meta->add_attribute('ftags'=>{
-        isa=>'ArrayRef',
-        is=>'ro',
-        documentation=>'Filter by tag',
-    });
+    my ( $class, $meta ) = @_;
+    $meta->add_attribute(
+        'from' => {
+            isa        => 'TT::DateTime',
+            is         => 'ro',
+            coerce     => 1,
+            lazy_build => 1,
+            #cmd_aliases => [qw/start/],
+        } );
+    $meta->add_attribute(
+        'to' => {
+            isa    => 'TT::DateTime',
+            is     => 'ro',
+            coerce => 1,
+            #cmd_aliases => [qw/end/],
+            lazy_build => 1,
+        } );
+    $meta->add_attribute(
+        'this' => {
+            isa => 'TT::Duration',
+            is  => 'ro',
+        } );
+    $meta->add_attribute(
+        'last' => {
+            isa => 'TT::Duration',
+            is  => 'ro',
+        } );
+    $meta->add_attribute(
+        'fprojects' => {
+            isa           => 'ArrayRef',
+            is            => 'ro',
+            documentation => 'Filter by project',
+        } );
+    $meta->add_attribute(
+        'ftags' => {
+            isa           => 'ArrayRef',
+            is            => 'ro',
+            documentation => 'Filter by tag',
+        } );
 
 }
+
 sub _load_attribs_commands {
-    my ($class, $meta) = @_;
-    $meta->add_attribute('autocomplete'=>{
-        isa=>'Bool',
-        is=>'ro',
-        default=>0,
-        documentation=>'Output for autocomplete',
-    });
+    my ( $class, $meta ) = @_;
+    $meta->add_attribute(
+        'autocomplete' => {
+            isa           => 'Bool',
+            is            => 'ro',
+            default       => 0,
+            documentation => 'Output for autocomplete',
+        } );
 }
+
 sub _load_attribs_list {
-    my ($class, $meta) = @_;
+    my ( $class, $meta ) = @_;
     $class->_load_attribs_worked($meta);
-    $meta->add_attribute('detail'=>{
-        isa=>'Bool',
-        is=>'ro',
-        default=>0,
-        documentation=>'Be detailed',
-    });
+    $meta->add_attribute(
+        'detail' => {
+            isa           => 'Bool',
+            is            => 'ro',
+            default       => 0,
+            documentation => 'Be detailed',
+        } );
 }
+
 sub _load_attribs_report {
-    my ($class, $meta) = @_;
+    my ( $class, $meta ) = @_;
     $class->_load_attribs_worked($meta);
-    $meta->add_attribute('detail'=>{
-        isa=>enum([qw(tag description all)]),
-        is=>'ro',
-        documentation=>'Be detailed: [tag|desc|all]',
-    });
+    $meta->add_attribute(
+        'detail' => {
+            isa => enum( [qw(tag description all)] ),
+            is => 'ro',
+            documentation => 'Be detailed: [tag|desc|all]',
+        } );
 }
 
 sub _load_attribs_start {
-    my ($class, $meta) = @_;
-    $meta->add_attribute('at'=>{
-        isa=>'TT::DateTime',
-        is=>'ro',
-        coerce=>1,
-        documentation=>'Start at',
-    });
-    $meta->add_attribute('project'=>{
-        isa=>'Str',
-        is=>'ro',
-        documentation=>'Project name',
-        lazy_build=>1,
-    });
-    $meta->add_attribute('description'=>{
-        isa=>'Str',
-        is=>'rw',
-        documentation=>'Description',
-    });
+    my ( $class, $meta ) = @_;
+    $meta->add_attribute(
+        'at' => {
+            isa           => 'TT::DateTime',
+            is            => 'ro',
+            coerce        => 1,
+            documentation => 'Start at',
+        } );
+    $meta->add_attribute(
+        'project' => {
+            isa           => 'Str',
+            is            => 'ro',
+            documentation => 'Project name',
+            lazy_build    => 1,
+        } );
+    $meta->add_attribute(
+        'description' => {
+            isa           => 'Str',
+            is            => 'rw',
+            documentation => 'Description',
+        } );
 }
 
 sub _build_project {
@@ -455,39 +526,39 @@ sub _build_project {
     return $self->_current_project;
 }
 
-*_load_attribs_append = \&_load_attribs_start;
+*_load_attribs_append   = \&_load_attribs_start;
 *_load_attribs_continue = \&_load_attribs_start;
-*_load_attribs_stop = \&_load_attribs_start;
+*_load_attribs_stop     = \&_load_attribs_start;
 
 sub _load_attribs_recalc_trackfile {
-    my ($class, $meta) = @_;
-    $meta->add_attribute('trackfile'=>{
-        isa=>'Str',
-        is=>'ro',
-        required=>1,
-    });
+    my ( $class, $meta ) = @_;
+    $meta->add_attribute(
+        'trackfile' => {
+            isa      => 'Str',
+            is       => 'ro',
+            required => 1,
+        } );
 }
 
 sub _build_from {
     my $self = shift;
-    if (my $last = $self->last) {
-        return now()->truncate( to => $last)->subtract( $last.'s' => 1 );
+    if ( my $last = $self->last ) {
+        return now()->truncate( to => $last )->subtract( $last . 's' => 1 );
     }
-    elsif (my $this = $self->this) {
-        return now()->truncate( to => $this);
+    elsif ( my $this = $self->this ) {
+        return now()->truncate( to => $this );
     }
     else {
-        return now()->truncate( to => 'month');
+        return now()->truncate( to => 'month' );
     }
 }
 
 sub _build_to {
     my $self = shift;
-    
-    if (my $date = $self->this || $self->last) {
-        return $self->from->clone
-        ->add( $date.'s' => 1 )
-        ->subtract( seconds => 1);
+
+    if ( my $date = $self->this || $self->last ) {
+        return $self->from->clone->add( $date . 's' => 1 )
+            ->subtract( seconds => 1 );
     }
     else {
         return now();
@@ -496,7 +567,7 @@ sub _build_to {
 
 sub _say_current_report_interval {
     my $self = shift;
-    printf ("From %s to %s you worked on:\n",$self->from,$self->to);
+    printf( "From %s to %s you worked on:\n", $self->from, $self->to );
 }
 
 no Moose::Role;

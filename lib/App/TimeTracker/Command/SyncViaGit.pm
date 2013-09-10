@@ -14,20 +14,20 @@ sub cmd_sync {
 
     my $r = Git::Repository->new( work_tree => $self->home );
 
-    my @new = $r->run('ls-files' =>'-om','--exclude-standard');
+    my @new = $r->run( 'ls-files' => '-om', '--exclude-standard' );
     foreach my $changed (@new) {
-        $r->run(add=>$changed);
+        $r->run( add => $changed );
     }
 
-    my @del = $r->run('ls-files' =>'-d','--exclude-standard');
+    my @del = $r->run( 'ls-files' => '-d', '--exclude-standard' );
     foreach my $to_del (@del) {
-        $r->run(rm=>$to_del);
+        $r->run( rm => $to_del );
     }
 
-    $r->run(commit => '-m','synced on '.now());
+    $r->run( commit => '-m', 'synced on ' . now() );
 
     foreach my $cmd (qw(pull push)) {
-        my $c = $r->command( $cmd );
+        my $c = $r->command($cmd);
         print $c->stderr->getlines;
         $c->close;
     }
