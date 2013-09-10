@@ -13,45 +13,52 @@ use App::TimeTracker::Utils qw(error_message);
 use Encode;
 
 has 'irc_quiet' => (
-    is=>'ro',
-    isa=>'Bool',
-    documentation=>'IRC: Do not post to IRC',
-    cmd_aliases => [qw/ircquiet/],
-    traits    => [ 'Getopt' ],
+    is            => 'ro',
+    isa           => 'Bool',
+    documentation => 'IRC: Do not post to IRC',
+    cmd_aliases   => [qw/ircquiet/],
+    traits        => ['Getopt'],
 );
 
-after ['cmd_start','cmd_continue'] => sub {
+after [ 'cmd_start', 'cmd_continue' ] => sub {
     my $self = shift;
     return if $self->irc_quiet;
     my $task = $self->_current_task;
-    $self->_post_to_irc(start => $task);
+    $self->_post_to_irc( start => $task );
 };
 
 after 'cmd_stop' => sub {
     my $self = shift;
     return if $self->irc_quiet;
     return unless $self->_current_command eq 'cmd_stop';
-    my $task = App::TimeTracker::Data::Task->previous($self->home);
-    $self->_post_to_irc(stop => $task);
+    my $task = App::TimeTracker::Data::Task->previous( $self->home );
+    $self->_post_to_irc( stop => $task );
 };
 
 sub _post_to_irc {
-    my ($self, $status, $task) = @_;
+    my ( $self, $status, $task ) = @_;
     my $cfg = $self->config->{post2irc};
     return unless $cfg;
 
-    my $ua = LWP::UserAgent->new(timeout=>3);
-    my $message = $task->user 
-        . ( $status eq 'start' ? ' is now' : ' stopped' ) 
+    my $ua = LWP::UserAgent->new( timeout => 3 );
+    my $message
+        = $task->user
+        . ( $status eq 'start' ? ' is now' : ' stopped' )
         . ' working on '
         . $task->say_project_tags;
     $message = decode_utf8($message);
-    my $token = sha1_hex($message, $cfg->{secret});
+    my $token = sha1_hex( $message, $cfg->{secret} );
 
-    my $url = $cfg->{host}.'?message='.uri_escape_utf8($message).'&token='.$token;
+    my $url
+        = $cfg->{host}
+        . '?message='
+        . uri_escape_utf8($message)
+        . '&token='
+        . $token;
     my $res = $ua->get($url);
-    unless ($res->is_success) {
-        error_message('Could not post to IRC status via %s: %s',$url,$res->status_line);
+    unless ( $res->is_success ) {
+        error_message( 'Could not post to IRC status via %s: %s',
+            $url, $res->status_line );
     }
 }
 

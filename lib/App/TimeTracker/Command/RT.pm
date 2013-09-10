@@ -13,36 +13,36 @@ use Try::Tiny;
 use Unicode::Normalize;
 
 has 'rt' => (
-    is=>'rw',
-    isa=>'TT::RT',
-    coerce=>1,
-    documentation=>'RT: Ticket number',
-    predicate => 'has_rt'
+    is            => 'rw',
+    isa           => 'TT::RT',
+    coerce        => 1,
+    documentation => 'RT: Ticket number',
+    predicate     => 'has_rt'
 );
 has 'rt_client' => (
-    is=>'ro',
-    isa=>'Maybe[RT::Client::REST]',
-    lazy_build=>1,
-    traits => [ 'NoGetopt' ],
-    predicate => 'has_rt_client'
+    is         => 'ro',
+    isa        => 'Maybe[RT::Client::REST]',
+    lazy_build => 1,
+    traits     => ['NoGetopt'],
+    predicate  => 'has_rt_client'
 );
 has 'rt_ticket' => (
-    is=>'ro',
-    isa=>'Maybe[RT::Client::REST::Ticket]',
-    lazy_build=>1,
-    traits => [ 'NoGetopt' ],
+    is         => 'ro',
+    isa        => 'Maybe[RT::Client::REST::Ticket]',
+    lazy_build => 1,
+    traits     => ['NoGetopt'],
 );
 
 sub _build_rt_ticket {
     my ($self) = @_;
 
-    if (my $ticket = $self->init_rt_ticket($self->_current_task)) {
-        return $ticket
+    if ( my $ticket = $self->init_rt_ticket( $self->_current_task ) ) {
+        return $ticket;
     }
 }
 
 sub _build_rt_client {
-    my $self = shift;
+    my $self   = shift;
     my $config = $self->config->{rt};
 
     unless ($config) {
@@ -55,7 +55,9 @@ sub _build_rt_client {
             server  => $config->{server},
             timeout => $config->{timeout},
         );
-        $client->login( username => $config->{username}, password => $config->{password} );
+        $client->login(
+            username => $config->{username},
+            password => $config->{password} );
         return $client;
     }
     catch {
@@ -64,37 +66,40 @@ sub _build_rt_client {
     };
 }
 
-before ['cmd_start','cmd_continue','cmd_append'] => sub {
+before [ 'cmd_start', 'cmd_continue', 'cmd_append' ] => sub {
     my $self = shift;
     return unless $self->has_rt;
 
-    my $ticketname='RT'.$self->rt;
+    my $ticketname = 'RT' . $self->rt;
     $self->insert_tag($ticketname);
 
     my $ticket;
-    if ($self->rt_client) {
+    if ( $self->rt_client ) {
         $ticket = $self->rt_ticket;
-        if (defined $ticket) {
+        if ( defined $ticket ) {
             if ( defined $self->description ) {
-                $self->description(sprintf('%s (%s)', $self->description, $ticket->subject));
+                $self->description(
+                    sprintf(
+                        '%s (%s)', $self->description, $ticket->subject
+                    ) );
             }
             else {
-                $self->description($ticket->subject);
+                $self->description( $ticket->subject );
             }
         }
     }
 
-    if ($self->meta->does_role('App::TimeTracker::Command::Git')) {
+    if ( $self->meta->does_role('App::TimeTracker::Command::Git') ) {
         my $branch = $ticketname;
-        if ( $ticket ) {
-            my $subject = $self->safe_ticket_subject($ticket->subject);
-            $branch .= '_'.$subject;
+        if ($ticket) {
+            my $subject = $self->safe_ticket_subject( $ticket->subject );
+            $branch .= '_' . $subject;
         }
         $self->branch($branch) unless $self->branch;
     }
 };
 
-after ['cmd_start','cmd_continue','cmd_append'] => sub {
+after [ 'cmd_start', 'cmd_continue', 'cmd_append' ] => sub {
     my $self = shift;
     return unless $self->has_rt && $self->rt_client;
 
@@ -102,25 +107,28 @@ after ['cmd_start','cmd_continue','cmd_append'] => sub {
 
     return unless $ticket;
     try {
-        my $do_store=0;
+        my $do_store = 0;
         if ( $self->config->{rt}{set_owner_to} ) {
-            if ( $ticket->owner() ne 'Nobody' and $ticket->owner() ne $self->config->{rt}{set_owner_to} ) {
-                warning_message( 'Will not steal tickets, please do that via RT Web-UI' );
+            if (    $ticket->owner() ne 'Nobody'
+                and $ticket->owner() ne $self->config->{rt}{set_owner_to} )
+            {
+                warning_message(
+                    'Will not steal tickets, please do that via RT Web-UI');
                 return;
             }
-            $ticket->owner($self->config->{rt}{set_owner_to});
-            $do_store=1;
+            $ticket->owner( $self->config->{rt}{set_owner_to} );
+            $do_store = 1;
         }
 
         my $status = $self->config->{rt}{set_status}{start};
         if ( $status and $status ne $ticket->status ) {
             $ticket->status($status);
-            $do_store=1;
+            $do_store = 1;
         }
         $ticket->store() if $do_store;
     }
     catch {
-        error_message('Could not set RT owner/status: %s',$_);
+        error_message( 'Could not set RT owner/status: %s', $_ );
     };
 };
 
@@ -135,33 +143,38 @@ after 'cmd_stop' => sub {
 
     my $ticket = $self->init_rt_ticket($task);
     if ( not $ticket ) {
-        say "Last task did not contain a RT ticket id, not updating TimeWorked or Status.";
+        say
+            "Last task did not contain a RT ticket id, not updating TimeWorked or Status.";
         return;
     }
 
-    my $do_store=0;
+    my $do_store = 0;
     if ( $self->config->{rt}{update_time_worked} and $task_rounded_minutes ) {
 
         my $worked = $ticket->time_worked || 0;
-        $worked =~s/\D//g; # RT stores in minutes, API give back a string like "x minutes"
+        $worked =~ s/\D//g
+            ;  # RT stores in minutes, API give back a string like "x minutes"
 
         $ticket->time_worked( $worked + $task_rounded_minutes );
-        $do_store=1;
+        $do_store = 1;
     }
 
     if ( $self->config->{rt}{update_time_left} and $ticket->time_left ) {
         my $time_left = $ticket->time_left;
-        $time_left =~s/\D//g; # RT stores in minutes, API give back a string like "x minutes"
-        
+        $time_left =~ s/\D//g
+            ;  # RT stores in minutes, API give back a string like "x minutes"
+
         $ticket->time_left( $time_left - $task_rounded_minutes );
-        $do_store=1;
+        $do_store = 1;
     }
 
     my $status = $self->config->{rt}{set_status}{stop};
     # Do not change the configured stop status if it has been changed since starting the ticket
-    if ( defined $status and $ticket->status() eq $self->config->{rt}{set_status}{start} ) {
+    if ( defined $status
+        and $ticket->status() eq $self->config->{rt}{set_status}{start} )
+    {
         $ticket->status($status);
-        $do_store=1;
+        $do_store = 1;
     }
     return unless $do_store;
 
@@ -169,24 +182,24 @@ after 'cmd_stop' => sub {
         $ticket->store;
     }
     catch {
-        error_message('Could not update ticket: %s',$_);
+        error_message( 'Could not update ticket: %s', $_ );
     };
 };
 
 sub init_rt_ticket {
-    my ($self, $task) = @_;
+    my ( $self, $task ) = @_;
     my $id;
     if ($task) {
         $id = $task->rt_id;
     }
-    elsif ($self->rt) {
+    elsif ( $self->rt ) {
         $id = $self->rt;
     }
     return unless $id;
 
     my $rt_ticket = RT::Client::REST::Ticket->new(
-        rt  => $self->rt_client,
-        id  => $id,
+        rt => $self->rt_client,
+        id => $id,
     );
     $rt_ticket->retrieve;
     return $rt_ticket;
@@ -194,21 +207,21 @@ sub init_rt_ticket {
 
 sub App::TimeTracker::Data::Task::rt_id {
     my $self = shift;
-    foreach my $tag (@{$self->tags}) {
+    foreach my $tag ( @{ $self->tags } ) {
         next unless $tag =~ /^RT(\d+)/;
         return $1;
     }
 }
 
 sub safe_ticket_subject {
-    my ($self, $subject) = @_;
+    my ( $self, $subject ) = @_;
 
     $subject = NFKD($subject);
     $subject =~ s/\p{NonspacingMark}//g;
-    $subject=~s/\W/_/g;
-    $subject=~s/_+/_/g;
-    $subject=~s/^_//;
-    $subject=~s/_$//;
+    $subject =~ s/\W/_/g;
+    $subject =~ s/_+/_/g;
+    $subject =~ s/^_//;
+    $subject =~ s/_$//;
     return $subject;
 }
 
