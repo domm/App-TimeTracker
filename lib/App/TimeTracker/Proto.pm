@@ -122,13 +122,12 @@ sub setup_class {
 }
 
 sub load_config {
-    my ($self, $dir) = @_;
+    my ($self, $dir, $project) = @_;
     $dir ||= Path::Class::Dir->new->absolute;
     my $config={};
     my @used_config_files;
     my $cfl = $self->config_file_locations;
 
-    my $project;
     my $projects = $self->slurp_projects;
     my $opt_parser = Getopt::Long::Parser->new( config => [ qw( no_auto_help pass_through ) ] );
     $opt_parser->getoptions( "project=s" => \$project );
