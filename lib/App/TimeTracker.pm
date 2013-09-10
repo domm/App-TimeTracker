@@ -198,9 +198,9 @@ sub find_task_files {
             next if $time > $cmp_to;
         }
 
-        if ( $projects && $name ) {
-            next unless ( $name =~ /^$projects$/i );
-        }
+        if ( $projects ) {
+            next unless ( $name =~ m/$projects/i );
+        } 
 
         if ($tags) {
             my $raw_content = $file->slurp;
