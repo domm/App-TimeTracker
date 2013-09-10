@@ -236,7 +236,7 @@ sub project_tree {
         # check path for parent
         my @parts = Path::Class::file($location)->parent->parent->dir_list;
         foreach my $dir (@parts) {
-            if (my $parent = $projects->{$dir}) {
+            if ($project ne $dir and my $parent = $projects->{$dir}) {
                 $tree{$project}->{parent} = $dir;
                 $tree{$dir}->{children}{$project}=1;
             }

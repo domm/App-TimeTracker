@@ -213,13 +213,18 @@ sub cmd_report {
             my $detail = $task->get_detail($level);
             my $tags = $detail->{tags};
             if (@$tags) {
+                # Only use the first assigned tag to calculate the aggregated times and use it
+                # as tag key.
+                # Otherwise the same trackfiles would be counted multiple times and the 
+                # aggregated sums would not match up.
+                $report->{$project}{$tags->[0]}{time} += $time;
+
                 foreach my $tag ( @$tags ) {
-                    $report->{$project}{$tag}{time} += $time;
-                    $report->{$project}{$tag}{desc} //= '';
+                    $report->{$project}{$tags->[0]}{desc} //= '';
 
                     if (my $desc = $detail->{desc}) {
-                        $report->{$project}{$tag}{desc} .= $desc."\n"
-                            if index($report->{$project}{$tag}{desc}, $desc) == -1;
+                        $report->{$project}{$tags->[0]}{desc} .= $desc."\n"
+                            if index($report->{$project}{$tags->[0]}{desc}, $desc) == -1;
                     }
                 }
             }
@@ -231,7 +236,7 @@ sub cmd_report {
 
     my $projects = $self->project_tree;
 
-    foreach my $project (keys %$report) {
+    foreach my $project (sort keys %$report) {
         my $parent = $projects->{$project}{parent};
         while ($parent) {
             $report->{$parent}{'_total'}+=$report->{$project}{'_total'} || 0;
@@ -242,7 +247,7 @@ sub cmd_report {
     $self->_say_current_report_interval;
     my $padding='';
     my $tagpadding='   ';
-    foreach my $project (keys %$report) {
+    foreach my $project (sort keys %$report) {
         next if $projects->{$project}{parent};
         $self->_print_report_tree($report, $projects, $project, $padding, $tagpadding);
     }
@@ -268,7 +273,7 @@ sub _print_report_tree {
             printf( $padding.$tagpadding.$format, $tag, $self->beautify_seconds($time), $desc );
         }
     }
-    foreach my $child (keys %{$projects->{$project}{children}}) {
+    foreach my $child (sort keys %{$projects->{$project}{children}}) {
         $self->_print_report_tree($report, $projects, $child, $padding.'   ', $tagpadding);
     }
 }
@@ -672,6 +677,17 @@ Also calc sums per tag.
 
 Lists all found trackfiles and their respective duration before printing out the report.
 
+=head2 list
+
+    ~/perl/Your-Project$ tracker list
+
+Print out a detailed report of what you did in a tabular format including start and stop 
+times.
+
+=head3 Options:
+
+The same options as for L<report>
+
 =head2 init
 
     ~/perl/Your-Project$ tracker init
@@ -702,7 +718,7 @@ List all installed plugins (i.e. stuff in C<App::TimeTracker::Command::*>)
 
 Recalculates the duration stored in an old trackfile. Might be useful
 after a manual update in a trackfile. Might be unneccessary in the
-future, as soon as task duration is always calculated lazyly.
+future, as soon as task duration is always calculated lazily.
 
 =head3 Options:
 

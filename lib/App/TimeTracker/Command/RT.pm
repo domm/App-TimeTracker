@@ -104,8 +104,8 @@ after ['cmd_start','cmd_continue','cmd_append'] => sub {
     try {
         my $do_store=0;
         if ( $self->config->{rt}{set_owner_to} ) {
-            if ( $ticket->owner() ne $self->config->{rt}{set_owner_to} ) {
-                warning_message( 'Will not steal tickets, please to that via RT Web-UI' );
+            if ( $ticket->owner() ne 'Nobody' and $ticket->owner() ne $self->config->{rt}{set_owner_to} ) {
+                warning_message( 'Will not steal tickets, please do that via RT Web-UI' );
                 return;
             }
             $ticket->owner($self->config->{rt}{set_owner_to});
@@ -157,7 +157,9 @@ after 'cmd_stop' => sub {
         $do_store=1;
     }
 
-    if ( my $status = $self->config->{rt}{set_status}{stop} ) {
+    my $status = $self->config->{rt}{set_status}{stop};
+    # Do not change the configured stop status if it has been changed since starting the ticket
+    if ( defined $status and $ticket->status() eq $self->config->{rt}{set_status}{start} ) {
         $ticket->status($status);
         $do_store=1;
     }
