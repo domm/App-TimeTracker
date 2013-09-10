@@ -27,7 +27,7 @@ sub _build_home {
     my ($self, $home) = @_;
 
     $home ||=
-        Path::Class::Dir->new( File::HomeDir->my_home, '.TimeTracker' );
+        Path::Class::Dir->new( $ENV{TRACKER_HOME} || (File::HomeDir->my_home, '.TimeTracker' ));
     unless (-d $home) {
         $home->mkpath;
         $self->_write_config_file_locations({});
