@@ -35,13 +35,26 @@ sub cmd_start {
 }
 
 sub cmd_stop {
-    my ($self, $dont_exit) = @_;
+    my ($self, $dont_exit, $dont_reproto) = @_;
 
     my $task = App::TimeTracker::Data::Task->current($self->home);
     unless ($task) {
         return if $dont_exit;
         say "Currently not working on anything";
         exit;
+    }
+    unless ($dont_reproto) {
+        my $new_proto = App::TimeTracker::Proto->new();
+        my $config = $new_proto->load_config(undef, $task->project);
+        my $class = $new_proto->setup_class($config);
+        my $new_self = $class->name->new_with_options( {
+                home            => $self->home,
+                config          => $config,
+                _current_project=> $task->project,
+            } );
+        $new_self->_current_command('cmd_stop');
+        $new_self->cmd_stop($dont_exit, 1);
+        return;
     }
     $self->_previous_task($task);
 
