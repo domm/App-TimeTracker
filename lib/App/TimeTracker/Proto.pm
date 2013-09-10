@@ -27,8 +27,9 @@ has 'home' => (
 sub _build_home {
     my ( $self, $home ) = @_;
 
-    $home ||= Path::Class::Dir->new( File::HomeDir->my_home, '.TimeTracker' );
-    unless ( -d $home ) {
+    $home ||=
+        Path::Class::Dir->new( $ENV{TRACKER_HOME} || (File::HomeDir->my_home, '.TimeTracker' ));
+    unless (-d $home) {
         $home->mkpath;
         $self->_write_config_file_locations( {} );
         my $fh = $self->global_config_file->openw;
@@ -131,7 +132,7 @@ sub setup_class {
 }
 
 sub load_config {
-    my ( $self, $dir ) = @_;
+    my ($self, $dir, $project) = @_;
     $dir ||= Path::Class::Dir->new->absolute;
     my $config = {};
     my @used_config_files;
