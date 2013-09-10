@@ -41,10 +41,14 @@ coerce 'TT::RT'
 coerce 'TT::DateTime'
     => from 'Str'
     => via {
+
     my $raw = $_;
     my $dt = DateTime->now;
     $dt->set_time_zone('local');
     $dt->set(second=>0);
+
+    no warnings;  # for given and perl 5.18
+
     given ($raw) {
         when(/^ $HOUR_RE : $MINUTE_RE $/x) { # "13:42"
             $dt->set(hour=>$+{hour}, minute=>$+{minute});
@@ -197,7 +201,7 @@ sub find_task_files {
             next if $time > $cmp_to;
         }
 
-        next if $projects && ! ($name ~~ /$projects/i);
+        next if $projects and $name !~ /$projects/i;
 
         if ($tags) {
             my $raw_content = $file->slurp;
