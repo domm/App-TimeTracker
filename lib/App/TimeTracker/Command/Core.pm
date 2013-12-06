@@ -23,7 +23,7 @@ sub cmd_start {
         exit;
     }
 
-    $self->cmd_stop('no_exit');
+    $self->_do_stop('no_exit');
 
     my $task = App::TimeTracker::Data::Task->new( {
             start => $self->at || now(),
@@ -37,8 +37,12 @@ sub cmd_start {
 }
 
 sub cmd_stop {
-    my ($self, $dont_exit, $dont_reproto) = @_;
+    my $self = shift;
+    $self->_do_stop;
+}
 
+sub _do_stop {
+    my ($self, $dont_exit, $dont_reproto) = @_;
     my $task = App::TimeTracker::Data::Task->current( $self->home );
     unless ($task) {
         return if $dont_exit;
@@ -55,7 +59,7 @@ sub cmd_stop {
                 _current_project=> $task->project,
             } );
         $new_self->_current_command('cmd_stop');
-        $new_self->cmd_stop($dont_exit, 1);
+        $new_self->_do_stop($dont_exit, 1);
         return;
     }
     $self->_previous_task($task);
