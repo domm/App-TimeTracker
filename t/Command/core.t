@@ -10,7 +10,7 @@ use testlib::FakeHomeDir;
 use App::TimeTracker::Proto;
 
 my $tmp = testlib::Fixtures::setup_tempdir;
-my $home = $tmp->subdir('TimeTracker');
+my $home = $tmp->subdir('.TimeTracker');
 $tmp->subdir('some_project')->mkpath;
 $tmp->subdir('other_project')->mkpath;
 my $p = App::TimeTracker::Proto->new(home=>$home);
@@ -23,8 +23,8 @@ my $tracker_dir = $home->subdir($now->year,sprintf("%02d",$now->month));
     @ARGV=('init');
     my $class = $p->setup_class({});
 
-    file_not_exists_ok($home->file('projects.json'));
-    file_not_exists_ok($home->file('tracker.json'));
+    file_exists_ok($home->file('projects.json'));
+    file_exists_ok($home->file('tracker.json'));
     file_not_exists_ok($tmp->file('some_project','.tracker.json'));
     file_not_exists_ok($tmp->file('other_project','.tracker.json'));
 
