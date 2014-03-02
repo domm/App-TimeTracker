@@ -22,8 +22,7 @@ sub cmd_start {
         );
         exit;
     }
-
-    $self->cmd_stop('no_exit');
+    $self->cmd_stop('no_exit','reproto');
 
     my $task = App::TimeTracker::Data::Task->new( {
             start => $self->at || now(),
@@ -37,7 +36,7 @@ sub cmd_start {
 }
 
 sub cmd_stop {
-    my ($self, $dont_exit, $dont_reproto) = @_;
+    my ($self, $dont_exit, $reproto) = @_;
 
     my $task = App::TimeTracker::Data::Task->current( $self->home );
     unless ($task) {
@@ -45,7 +44,7 @@ sub cmd_stop {
         say "Currently not working on anything";
         exit;
     }
-    unless ($dont_reproto) {
+    if ($reproto) {
         my $new_proto = App::TimeTracker::Proto->new();
         my $config = $new_proto->load_config(undef, $task->project);
         my $class = $new_proto->setup_class($config);
@@ -55,7 +54,7 @@ sub cmd_stop {
                 _current_project=> $task->project,
             } );
         $new_self->_current_command('cmd_stop');
-        $new_self->cmd_stop($dont_exit, 1);
+        $new_self->cmd_stop($dont_exit);
         return;
     }
     $self->_previous_task($task);
