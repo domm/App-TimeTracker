@@ -1,5 +1,38 @@
 Revision history for App::TimeTracker
 
+2.019   2014-03-02T14:43:45+0100
+    - init: store new project in projects.json (Thomas Klausner)
+    - set correct stop time when doing start (Thomas Klausner)
+    - find_task_files performance optimization (Lukas Rampa)
+    - in cmd_stop, generate a new dynamic class based on the stopped config,
+      and use an instance of that class to stop (implementing github
+      issue #8) (Thomas Klausner)
+    - set tracker home via ENV (Thomas Klausner)
+    - remove given() { when () } :( (Klaus Ita)
+    - silence experimental warnings for perl 5.18 (Yanick Champoux)
+    - Fixed spelling error (jenkings build hook test commit) (Michael Kröll)
+    - Only use the first assigned tag to calculate the aggregated times and
+      use it as tag key. (Michael Kröll)
+    - Prevent creating circular parent-child project relations (Michael Kröll)
+    - Documented tracker list command (Michael Kröll)
+    - Do not change the configured stop status if it has been changed since
+      starting the ticket (Michael Kröll)
+    - Allow to steal tickets from Nobody (Michael Kröll)
+    - Append and not replace task description with ticket subject if a
+      description is passed to the task (useful for micro-tasks part of a
+      ticket) (Michael Kröll)
+    - Support setting of RT status on stop and reducing value of time-left
+      ticket property (Michael Kröll)
+    - RT: Only update the ticket if we made changes locally (Thomas Sibley)
+    - RT: Treat "append" the same as "start" since it is logically
+      equivalent (Thomas Sibley)
+    - only report description if --detail desc is set (Thomas Klausner)
+    - --detail now takes args (Thomas Klausner)
+    - new option to define what RT status to set on tracker start
+      (Thomas Klausner)
+    - Small typo fix in bin/tracker (Nelo Onyiah)
+
+
 2.018   2012-11-29T11:10:34+0100
     - use json decoder object (Thomas Klausner)
     - enable proper posting of correctly decoded utf8 (Thomas Klausner)
