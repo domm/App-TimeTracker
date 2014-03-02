@@ -384,6 +384,15 @@ sub cmd_init {
     "project":"$project"
 }
 EOCONFIG
+
+    my $projects_file = $self->home->file('projects.json');
+    my $coder  = JSON::XS->new->utf8->pretty->relaxed;
+    if (-e $projects_file) {
+        my $projects = $coder->decode( scalar $projects_file->slurp );
+        $projects->{$project} = $cwd->file('.tracker.json')->absolute->stringify;
+        $projects_file->spew($coder->encode($projects));
+    }
+
     say "Set up this directory for time-tracking via file .tracker.json";
 }
 
