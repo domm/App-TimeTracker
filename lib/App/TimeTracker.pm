@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use 5.010;
 
-our $VERSION = "2.018";
+our $VERSION = "2.019";
 # ABSTRACT: time tracking for impatient and lazy command line lovers
 
 use App::TimeTracker::Data::Task;
@@ -175,6 +175,7 @@ sub beautify_seconds {
 sub find_task_files {
     my ( $self, $args ) = @_;
 
+    my $root = $self->home;
     my ( $cmp_from, $cmp_to );
 
     if ( my $from = $args->{from} ) {
@@ -182,7 +183,15 @@ sub find_task_files {
         $to->set( hour => 23, minute => 59, second => 59 ) unless $to->hour;
         $cmp_from = $from->strftime("%Y%m%d%H%M%S");
         $cmp_to   = $to->strftime("%Y%m%d%H%M%S");
+
+        if ( $from->year == $to->year ) {
+            $root = $root->subdir( $from->year );
+            if ( $from->month == $to->month ) {
+                $root = $root->subdir( $from->strftime("%m") );
+            }
+        }
     }
+
     my $projects;
     if ( $args->{projects} ) {
         $projects = join( '|', map { s/-/./g; $_ } @{ $args->{projects} } );
@@ -193,9 +202,10 @@ sub find_task_files {
     }
 
     my @found;
-    my $iterator = Path::Class::Iterator->new( root => $self->home, );
-    until ( $iterator->done ) {
+    my $iterator = Path::Class::Iterator->new( root => $root, );
+    until ( !$iterator || $iterator->done ) {
         my $file = $iterator->next;
+
         next unless -f $file;
         my $name = $file->basename;
         next unless $name =~ /\.trc$/;
