@@ -50,7 +50,7 @@ sub cmd_stop {
         my $class = $new_proto->setup_class($config);
         my $new_self = $class->name->new_with_options( {
                 home            => $self->home,
-                at              => $self->at,
+                at              => $self->at || now(),
                 config          => $config,
                 _current_project=> $task->project,
             } );
