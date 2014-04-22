@@ -149,7 +149,7 @@ sub load_config {
             $dir = Path::Class::Dir->new($project_config);
         }
         else {
-            say "Unkown project: $project";
+            say "Unknown project: $project";
             $self->project($project);
             $dir = Path::Class::Dir->new( '/ttfake', $project );
         }

@@ -22,8 +22,7 @@ sub cmd_start {
         );
         exit;
     }
-
-    $self->_do_stop('no_exit');
+    $self->cmd_stop('no_exit','reproto');
 
     my $task = App::TimeTracker::Data::Task->new( {
             start => $self->at || now(),
@@ -37,29 +36,26 @@ sub cmd_start {
 }
 
 sub cmd_stop {
-    my $self = shift;
-    $self->_do_stop;
-}
+    my ($self, $dont_exit, $reproto) = @_;
 
-sub _do_stop {
-    my ($self, $dont_exit, $dont_reproto) = @_;
     my $task = App::TimeTracker::Data::Task->current( $self->home );
     unless ($task) {
         return if $dont_exit;
         say "Currently not working on anything";
         exit;
     }
-    unless ($dont_reproto) {
+    if ($reproto) {
         my $new_proto = App::TimeTracker::Proto->new();
         my $config = $new_proto->load_config(undef, $task->project);
         my $class = $new_proto->setup_class($config);
         my $new_self = $class->name->new_with_options( {
                 home            => $self->home,
+                at              => $self->at || now(),
                 config          => $config,
                 _current_project=> $task->project,
             } );
         $new_self->_current_command('cmd_stop');
-        $new_self->_do_stop($dont_exit, 1);
+        $new_self->cmd_stop($dont_exit);
         return;
     }
     $self->_previous_task($task);
@@ -388,6 +384,15 @@ sub cmd_init {
     "project":"$project"
 }
 EOCONFIG
+
+    my $projects_file = $self->home->file('projects.json');
+    my $coder  = JSON::XS->new->utf8->pretty->relaxed;
+    if (-e $projects_file) {
+        my $projects = $coder->decode( scalar $projects_file->slurp );
+        $projects->{$project} = $cwd->file('.tracker.json')->absolute->stringify;
+        $projects_file->spew($coder->encode($projects));
+    }
+
     say "Set up this directory for time-tracking via file .tracker.json";
 }
 

@@ -43,11 +43,11 @@ sub pretty_date {
     }
     else {
         my $now = now();
-        my $yeseterday = now()->subtract( days => 1 );
+        my $yesterday = now()->subtract( days => 1 );
         if ( $date->dmy eq $now->dmy ) {
             return $date->hms(':');
         }
-        elsif ( $date->dmy eq $yeseterday->dmy ) {
+        elsif ( $date->dmy eq $yesterday->dmy ) {
             return 'yesterday ' . $date->hms(':');
         }
         else {
