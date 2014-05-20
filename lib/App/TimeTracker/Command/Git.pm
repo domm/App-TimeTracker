@@ -94,8 +94,19 @@ after cmd_stop => sub {
         "implemented $branch $tags" );
 };
 
+sub safe_branch_name {
+    my ($self, $name ) = @_;
+    $name =~ s/\W/_/g;
+    $name =~ s/_+/_/g;
+    $name =~ s/^_//;
+    $name =~ s/_$//;
+    return $name
+}
+
 no Moose::Role;
 1;
+
+
 
 __END__
 
