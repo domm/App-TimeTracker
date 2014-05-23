@@ -46,7 +46,6 @@ sub _post_to_irc {
         . ( $status eq 'start' ? ' is now' : ' stopped' )
         . ' working on '
         . $task->say_project_tags;
-    $message = decode_utf8($message);
     my $token = sha1_hex( $message, $cfg->{secret} );
 
     my $url
