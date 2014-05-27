@@ -46,8 +46,9 @@ sub _post_to_irc {
         . ( $status eq 'start' ? ' is now' : ' stopped' )
         . ' working on '
         . $task->say_project_tags;
-    $message = decode_utf8($message);
-    my $token = sha1_hex( $message, $cfg->{secret} );
+    # Use bytes for creating the digest, otherwise we'll get into trouble
+    # https://rt.cpan.org/Public/Bug/Display.html?id=93139
+    my $token = sha1_hex( encode_utf8($message), $cfg->{secret} );
 
     my $url
         = $cfg->{host}
