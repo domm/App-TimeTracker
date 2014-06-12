@@ -1,5 +1,13 @@
 Revision history for App::TimeTracker
 
+2.020   2014-05-27T15:28:40+0200
+    - Use bytes for creating the token digest, otherwise we'll get into trouble (Michael Kröll)
+    - Message already is utf-8 characters at that point, do not double-encode (Michael Kröll)
+    - aded safe_branch_name (Thomas Klausner)
+    - fixed typo (David Schmidt)
+    - set current time when stopping via start & reprotoing (Thomas Klausner)
+
+
 2.019   2014-03-02T14:43:45+0100
     - init: store new project in projects.json (Thomas Klausner)
     - set correct stop time when doing start (Thomas Klausner)

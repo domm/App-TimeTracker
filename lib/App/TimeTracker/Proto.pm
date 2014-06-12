@@ -178,7 +178,6 @@ WALKUP: while ( $try++ < 30 ) {
         if ( my $parent = $this_config->{'parent'} ) {
             if ( $projects->{$parent} ) {
                 $dir = Path::Class::file( $projects->{$parent} )->parent;
-                say $dir;
             }
             else {
                 $dir = $dir->parent;
