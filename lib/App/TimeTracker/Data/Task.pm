@@ -13,7 +13,7 @@ use User::pwent;
 
 use MooseX::Storage;
 with Storage(
-    format => [ JSONpm => { json_opts => { pretty => 1 } } ],
+    format => [ JSONpm => { json_opts => { pretty => 1, canonical => 1 } } ],
     io     => "File",
 );
 
