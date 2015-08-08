@@ -274,5 +274,7 @@ Backend for the C<tracker> command. See L<tracker> and/or C<perldoc tracker> for
 
 =head1 CONTRIBUTORS
 
-Maros Kollar C<< <maros@cpan.org> >>, Klaus Ita C<< <klaus@worstofall.com> >>
+Maros Kollar, Klaus Ita, Yanick Champoux, Lukas Rampa, David Schmidt,
+Michael Kröll, Thomas Sibley, Nelo Onyiah, Jozef Kutej, Roland Lammel,
+Ruslan Zakirov, Kartik Thakore, Tokuhiro Matsuno
 
