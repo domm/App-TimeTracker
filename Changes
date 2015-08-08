@@ -1,5 +1,10 @@
 Revision history for App::TimeTracker
 
+2.021	2015-08-08T20:46:51
+    - attribute all contributors (Thomas Klausner)
+    - output the JSON in its canonical form (Yanick Champoux)
+
+
 2.020   2014-05-27T15:28:40+0200
     - Use bytes for creating the token digest, otherwise we'll get into trouble (Michael Kröll)
     - Message already is utf-8 characters at that point, do not double-encode (Michael Kröll)
