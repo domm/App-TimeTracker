@@ -3,7 +3,11 @@ use strict;
 use warnings;
 use 5.010;
 
+<<<<<<< HEAD
 our $VERSION = "2.019";
+=======
+our $VERSION = "2.021";
+>>>>>>> bumped version
 # ABSTRACT: time tracking for impatient and lazy command line lovers
 
 use App::TimeTracker::Data::Task;
