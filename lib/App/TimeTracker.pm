@@ -199,7 +199,7 @@ sub find_task_files {
 
     my $children;
     if ($args->{parent}) {
-        my @kids;
+        my @kids = $args->{parent};
         $self->all_childs_of($args->{parent},\@kids);
         $children = join( '|', map { s/-/./g; $_ } @kids );
     }
