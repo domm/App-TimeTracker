@@ -236,6 +236,7 @@ sub cmd_report {
             to       => $self->to,
             projects => $self->fprojects,
             tags     => $self->ftags,
+            parent   => $self->fparent,
         } );
 
     my $total  = 0;
@@ -481,6 +482,12 @@ sub _load_attribs_worked {
             isa           => 'ArrayRef',
             is            => 'ro',
             documentation => 'Filter by tag',
+        } );
+    $meta->add_attribute(
+        'fparent' => {
+            isa           => 'Str',
+            is            => 'ro',
+            documentation => 'Filter by parent (get all children)',
         } );
 
 }

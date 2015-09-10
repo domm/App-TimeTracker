@@ -200,6 +200,14 @@ sub find_task_files {
     if ( $args->{projects} ) {
         $projects = join( '|', map { s/-/./g; $_ } @{ $args->{projects} } );
     }
+
+    my $children;
+    if ($args->{parent}) {
+        my @kids;
+        $self->all_childs_of($args->{parent},\@kids);
+        $children = join( '|', map { s/-/./g; $_ } @kids );
+    }
+
     my $tags;
     if ( $args->{tags} ) {
         $tags = join( '|', @{ $args->{tags} } );
@@ -225,6 +233,10 @@ sub find_task_files {
             next unless ( $name =~ m/$projects/i );
         }
 
+        if ($children) {
+            next unless ( $name =~ m/$children/i );
+        }
+
         if ($tags) {
             my $raw_content = $file->slurp;
             next unless $raw_content =~ /$tags/i;
@@ -245,7 +257,7 @@ sub project_tree {
     my %tree;
     my $depth;
     while ( my ( $project, $location ) = each %$projects ) {
-        $tree{$project} //= { parent => undef, childs => {} };
+        $tree{$project} //= { parent => undef, children => {} };
         # check config file for parent
         if ( -e $location ) {
             my $this_config = $decoder->decode(
@@ -266,6 +278,22 @@ sub project_tree {
         }
     }
     return \%tree;
+}
+
+sub all_childs_of {
+    my ($self, $parent, $collector) = @_;
+
+    my $tree = $self->project_tree;
+    my $this = $tree->{$parent};
+
+    my @kids = keys %{$this->{children}};
+
+    if (@kids) {
+        push(@$collector, @kids);
+        foreach my $kid (@kids) {
+            $self->all_childs_of($kid, $collector);
+        }
+    }
 }
 
 1;
