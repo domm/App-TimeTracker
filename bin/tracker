@@ -111,7 +111,7 @@ parameters.
 The main config file lives in a directory named F<.TimeTracker>
 located in your home directory (as defined by L<File::HomeDir>). All
 other config files inherit from this file. You can, for example, use
-this file to define plugins you always want to use
+this file to define plugins you always want to use.
 
 =head3 List of projects: ~/.TimeTracker/projects.json
 
@@ -142,14 +142,14 @@ If you hit C<start> in F<~/job/>, only F<~/job/.tracker.json> and
 C<~/.TimeTracker/tracker.json> will be used.
 
 This allows you to have global default settings, different default
-setting for different jobs, and fine tuned settings for each project.
+settings for different jobs, and fine tuned settings for each project.
 Of course you can have as many levels of configs as you want.
 
 B<Tip:> Use C<tracker show_config> to dump the current configuration.
 
 =head2 Using a different tree
 
-Sometime you do not want to arrange your projects in the hierarchical way
+Sometimes you do not want to arrange your projects in the hierarchical way
 expected by App::TimeTracker:
 
   ~/perl/App-TimeTracker/.tracker.json
@@ -187,7 +187,7 @@ And here's the relevant output of C<tracker show_config>:
 
 Call C<tracker init> to set up a directory for time-tracking. C<tracker
 init> will create a config file called F<.tracker.json> in your current
-directory. Use this file to load plugins for this projects and/or override
+directory. Use this file to load plugins for this project and/or override
 and amend the configuration inherited from parent projects.
 
 See L<Configuration> for more information on how to configure C<tracker> for
@@ -195,7 +195,7 @@ your project(s).
 
 =head2 Basic Usage
 
-Call C<tracker start> when you start working on some project, and C<tracker
+Call C<tracker start> when you start working on a project, and C<tracker
 stop> when you're done:
 
   ~/work/some_project$ tracker start
@@ -218,12 +218,12 @@ To see how long you worked, use C<tracker report>:
 
 =head2 Advanced Usage with git, RT and IRC
 
-By using some Plugins we can make C<tracker> a much more powerful tool.
+By using some plugins we can make C<tracker> a much more powerful tool.
 Let's use the C<git>, C<RT> and C<Post2IRC> plugins for maximum laziness.
 
-The first step is to add some setting to the tracker config file to your
-project directory. Or add those settings to a config file in a parent
-directory, see L<Configuration> for more information on that.
+The first step is to add a setting to the tracker config file in your
+project directory. Or you could add those settings to a config file in a
+parent directory, see L<Configuration> for more information about that.
 
   ~/revdev/Some-Project$ cat .tracker.json
   {
@@ -254,7 +254,7 @@ C<tracker start>:
   Switched to a new branch 'RT1234_flux_capacitor_needs_more_jigawatts'
 
 While this output might not seem very impressive, a lot of things have
-happend:
+happened:
 
 =over
 
@@ -291,7 +291,7 @@ Which does the following:
 =back
 
 Even if those steps only shave off a few minutes per ticket, those are still
-a few minutes you don't have to spend on doing boring, repetitive task
+a few minutes you don't have to spend on doing boring, repetitive tasks
 (which one tends to forget / repress).
 
 =head2 Tracking Files
@@ -300,15 +300,15 @@ Each time you C<start> a new task, a so-called C<tracking file> will be
 created. This file contains all information regarding the task you're
 currently working on (provided by L<App::TimeTracker::Data::Task>,
 serialized to JSON via L<MooseX::Storage>). If you call C<stop>, the current
-time is stored into the C<tracking file> and the time spend working on this
+time is stored into the C<tracking file> and the time spent working on this
 task is calculated (and also stored).
 
 All C<tracking files> are plain text files containing JSON. It is very
 easy to synchronize them on different machines, using anything from
-rsync to version control systems. Or you just can use the
+rsync to version control systems. Or you can just use the
 C<SyncViaGit> plugin!
 
-C<tracking files> are stored in F<~/.TimeTracker> in a directory
+C<Tracking files> are stored in F<~/.TimeTracker> in a directory
 hierarchy consisting of the current year and the current month. This
 makes it easy (easier..) to find a specific C<tracking file> in case
 you need to make some manual corrections (an interface for easier
@@ -334,13 +334,13 @@ a bug, please feel free to L<fork|http://help.github.com/fork-a-repo/> the
 repo and send us L<pull requests|http://help.github.com/send-pull-requests/>
 to merge your changes.
 
-To report a bug, please do not use the C<< issues >> feature from github.
-Use RT instead.
+To report a bug, please B<do not> use the C<< issues >> feature from github;
+use RT instead.
 
 =head2 CPAN
 
 App::TimeTracker is distributed via L<CPAN|http://cpan.org/>, the
-Comprehensive Perl Archive Network. Here are a few different views into the
+Comprehensive Perl Archive Network. Here are a few different views of
 CPAN, offering slightly different features:
 
 =over
