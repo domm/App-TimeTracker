@@ -17,7 +17,7 @@ __END__
 
   ~/perl/Some-Project$ tracker start
   Started working on Some-Project at 09:03:41
-  
+
   ~/perl/Some-Project$ tracker stop
   Worked 00:07:42 on Some-Project
 
@@ -174,9 +174,9 @@ Call C<tracker start> when you start working on some project, and C<tracker stop
 
   ~/work/some_project$ tracker start
   Started working on some_project at 13:06:20
-  
+
   ~/work/some_project$ hack .. hack .. hack
-  
+
   ~/work/some_project$ tracker stop
   Worked 01:43:07 on some_project
 
