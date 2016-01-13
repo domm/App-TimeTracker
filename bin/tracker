@@ -28,11 +28,11 @@ allows you to easily track and report the time you spend on various
 jobs, projects, tasks etc from the commandline.
 
 Custom commands or adaptions to your workflow can be implemented via
-an "interesting" set of L<Moose>-powered plug-ins. You can configure
-different sets of plug-ins for different jobs or projects.
+an "interesting" set of L<Moose>-powered plugins. You can configure
+different sets of plugins for different jobs or projects.
 
 B<Tip:> Use C<tracker plugins> to list all installed plugins. Read more
-about each plug-in in C<App::TimeTracker::Command::PLUGIN-NAME>.
+about each plugin in C<App::TimeTracker::Command::PLUGIN-NAME>.
 
 =head1 INSTALLATION
 
@@ -306,7 +306,7 @@ task is calculated (and also stored).
 All C<tracking files> are plain text files containing JSON. It is very
 easy to synchronize them on different machines, using anything from
 rsync to version control systems. Or you just can use the
-C<SyncViaGit> plug-in!
+C<SyncViaGit> plugin!
 
 C<tracking files> are stored in F<~/.TimeTracker> in a directory
 hierarchy consisting of the current year and the current month. This
