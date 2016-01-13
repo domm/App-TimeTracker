@@ -31,15 +31,20 @@ Custom commands or adaptions to your workflow can be implemented via
 an "interesting" set of L<Moose>-powered plug-ins. You can configure
 different sets of plug-ins for different jobs or projects.
 
-B<Tip:> Use C<tracker plugins> to list all installed plugins. Read more about each plug-in in C<App::TimeTracker::Command::PLUGIN-NAME>.
+B<Tip:> Use C<tracker plugins> to list all installed plugins. Read more
+about each plug-in in C<App::TimeTracker::Command::PLUGIN-NAME>.
 
 =head1 INSTALLATION
 
-App::TimeTracker is a L<Perl|http://perl.org> application, and thus requires a recent Perl (>= 5.10). It also reuses a lot of code from L<CPAN|http://cpan.org>.
+App::TimeTracker is a L<Perl|http://perl.org> application, and thus requires
+a recent Perl (>= 5.10). It also reuses a lot of code from
+L<CPAN|http://cpan.org>.
 
 =head2 From CPAN
 
-The easiest way to install the current stable version of App::TimeTracker is via L<CPAN|http://cpan.org>. There are several different CPAN clients available:
+The easiest way to install the current stable version of App::TimeTracker is
+via L<CPAN|http://cpan.org>. There are several different CPAN clients
+available:
 
 =head3 cpanminus
 
@@ -53,7 +58,8 @@ The new and shiny CPAN client!
   Successfully installed App-TimeTracker-2.009
   1 distribution installed
 
-If you don't have C<cpanminus> installed yet, L<install it right now|http://search.cpan.org/dist/App-cpanminus/lib/App/cpanminus.pm#INSTALLATION>:
+If you don't have C<cpanminus> installed yet, L<install it right
+now|http://search.cpan.org/dist/App-cpanminus/lib/App/cpanminus.pm#INSTALLATION>:
 
   ~$ curl -L http://cpanmin.us | perl - --sudo App::cpanminus
 
@@ -71,7 +77,8 @@ CPAN.pm is available on ancient Perls, and feels a bit ancient, too.
 
 =head2 From a tarball or git checkout
 
-To install App::TimeTracker from a tarball or a git checkout, do the usual CPAN module install dance:
+To install App::TimeTracker from a tarball or a git checkout, do the usual
+CPAN module install dance:
 
   ~/perl/App-TimeTracker$ perl Build.PL
   ~/perl/App-TimeTracker$ ./Build
@@ -80,15 +87,22 @@ To install App::TimeTracker from a tarball or a git checkout, do the usual CPAN 
 
 =head1 CONFIGURATION
 
-App::TimeTracker uses a bunch of config files in JSON format. The config files valid for a specific instance of C<tracker> are collected by walking the directory tree up from the current working directory, and merging all F<.tracker.json> files that are found, plus the main config file F<~/.TimeTracker/tracker.json>.
+App::TimeTracker uses a bunch of config files in JSON format. The config
+files valid for a specific instance of C<tracker> are collected by walking
+the directory tree up from the current working directory, and merging all
+F<.tracker.json> files that are found, plus the main config file
+F<~/.TimeTracker/tracker.json>.
 
-You can use this tree of config files to define general settings, per
-job settings and per project settings, while always reusing the
-configuration defined in the parent. I.e. the config settings sort of override the values defined further up in the tree.
+You can use this tree of config files to define general settings, per job
+settings and per project settings, while always reusing the configuration
+defined in the parent. I.e. the config settings sort of override the values
+defined further up in the tree.
 
-Anytime you call C<tracker>, we look up from your current directory until we find the first C<.tracker.json> file. This file marks the current project.
+Anytime you call C<tracker>, we look up from your current directory until we
+find the first C<.tracker.json> file. This file marks the current project.
 
-See App::TimeTracker::Command::Core and the various plugins for valid config parameters.
+See App::TimeTracker::Command::Core and the various plugins for valid config
+parameters.
 
 =head2 The different config files
 
@@ -124,7 +138,8 @@ If you hit C<start> in F<~/job/project/>, all three of those config
 files will be merged and the resulting hash will be used as the
 current configuration.
 
-If you hit C<start> in F<~/job/>, only F<~/job/.tracker.json> and C<~/.TimeTracker/tracker.json> will be used.
+If you hit C<start> in F<~/job/>, only F<~/job/.tracker.json> and
+C<~/.TimeTracker/tracker.json> will be used.
 
 This allows you to have global default settings, different default
 setting for different jobs, and fine tuned settings for each project.
@@ -134,16 +149,22 @@ B<Tip:> Use C<tracker show_config> to dump the current configuration.
 
 =head2 Using a different tree
 
-Sometime you do not want to arrange your projects in the hierarchical way expected by App::TimeTracker:
+Sometime you do not want to arrange your projects in the hierarchical way
+expected by App::TimeTracker:
 
   ~/perl/App-TimeTracker/.tracker.json
   ~/perl/App-TimeTracker-Gtk2TrayIcon/.tracker.json
 
-Both C<App-TimeTracker> and C<App-TimeTracker-Gtk2TrayIcon> live in the same directory and thus would be considered seperate projects. But I want C<App-TimeTracker-Gtk2TrayIcon> to be a sub-project of C<App-TimeTracker>, without having to change the directory structure.
+Both C<App-TimeTracker> and C<App-TimeTracker-Gtk2TrayIcon> live in the same
+directory and thus would be considered seperate projects. But I want
+C<App-TimeTracker-Gtk2TrayIcon> to be a sub-project of C<App-TimeTracker>,
+without having to change the directory structure.
 
 The solution: C<parent>
 
-In any config file you can define a key called C<parent>. If this key is defined, the config-walker will use that project as the parent, and ignore the directory structure:
+In any config file you can define a key called C<parent>. If this key is
+defined, the config-walker will use that project as the parent, and ignore
+the directory structure:
 
   ~/perl/App-TimeTracker-Gtk2TrayIcon$ cat .tracker.json
   {
@@ -164,13 +185,18 @@ And here's the relevant output of C<tracker show_config>:
 
 =head2 Initial Setup
 
-Call C<tracker init> to set up a directory for time-tracking. C<tracker init> will create a config file called F<.tracker.json> in your current directory. Use this file to load plugins for this projects and/or override and amend the configuration inherited from parent projects.
+Call C<tracker init> to set up a directory for time-tracking. C<tracker
+init> will create a config file called F<.tracker.json> in your current
+directory. Use this file to load plugins for this projects and/or override
+and amend the configuration inherited from parent projects.
 
-See L<Configuration> for more information on how to configure C<tracker> for your project(s).
+See L<Configuration> for more information on how to configure C<tracker> for
+your project(s).
 
 =head2 Basic Usage
 
-Call C<tracker start> when you start working on some project, and C<tracker stop> when you're done:
+Call C<tracker start> when you start working on some project, and C<tracker
+stop> when you're done:
 
   ~/work/some_project$ tracker start
   Started working on some_project at 13:06:20
@@ -192,9 +218,12 @@ To see how long you worked, use C<tracker report>:
 
 =head2 Advanced Usage with git, RT and IRC
 
-By using some Plugins we can make C<tracker> a much more powerful tool. Let's use the C<git>, C<RT> and C<Post2IRC> plugins for maximum lazyness.
+By using some Plugins we can make C<tracker> a much more powerful tool.
+Let's use the C<git>, C<RT> and C<Post2IRC> plugins for maximum lazyness.
 
-The first step is to add some setting to the tracker config file to your project directory. Or add those settings to a config file in a parent directory, see L<Configuration> for more information on that.
+The first step is to add some setting to the tracker config file to your
+project directory. Or add those settings to a config file in a parent
+directory, see L<Configuration> for more information on that.
 
   ~/revdev/Some-Project$ cat .tracker.json
   {
@@ -217,21 +246,25 @@ The first step is to add some setting to the tracker config file to your project
     }
   }
 
-After setting everything up, we can do a simple (but sligtly amended) C<tracker start>:
+After setting everything up, we can do a simple (but sligtly amended)
+C<tracker start>:
 
   ~/revdev/Some-Project$ tracker start --rt 1234
   Started working on SomeProject (RT1234) flux capacitor needs more jigawatts at 15:32
   Switched to a new branch 'RT1234_flux_capacitor_needs_more_jigawatts'
 
-While this output might not seem very impressive, a lot of things have happend:
+While this output might not seem very impressive, a lot of things have
+happend:
 
 =over
 
-=item * A new local git branch (based on the name of the RT ticket 1234) has been set up and checked out.
+=item * A new local git branch (based on the name of the RT ticket 1234) has
+        been set up and checked out.
 
 =item * You have been assigned the owner of this ticket in RT.
 
-=item * A message has been posted in the internal IRC channel, informing your colleagues that you're now working on this ticket.
+=item * A message has been posted in the internal IRC channel, informing
+        your colleagues that you're now working on this ticket.
 
 =item * And of course we now keep track of the time!
 
@@ -252,18 +285,22 @@ Which does the following:
 
 =item * Post a message to IRC.
 
-=item * C<git checkout master; git merge $branch> is not performed, but you could enable this by using the command line flag C<--merge>.
+=item * C<git checkout master; git merge $branch> is not performed, but you
+        could enable this by using the command line flag C<--merge>.
 
 =back
 
-Even if those steps only shave off a few minutes per ticket, those are still a few minutes you don't have to spend on doing boring, repetative task (which one tends to forget / repress).
+Even if those steps only shave off a few minutes per ticket, those are still
+a few minutes you don't have to spend on doing boring, repetative task
+(which one tends to forget / repress).
 
 =head2 Tracking Files
 
-Each time you C<start> a new task, a so-called C<tracking file> will
-be created. This file contains all information regarding the task
-you're currently working on (provided by L<App::TimeTracker::Data::Task>, serialized to JSON via L<MooseX::Storage>). If you call C<stop>, the current time is
-stored into the C<tracking file> and the time spend working on this
+Each time you C<start> a new task, a so-called C<tracking file> will be
+created. This file contains all information regarding the task you're
+currently working on (provided by L<App::TimeTracker::Data::Task>,
+serialized to JSON via L<MooseX::Storage>). If you call C<stop>, the current
+time is stored into the C<tracking file> and the time spend working on this
 task is calculated (and also stored).
 
 All C<tracking files> are plain text files containing JSON. It is very
@@ -285,19 +322,26 @@ F<20110811-090437_App_TimeTracker.trc>.
 
 =head2 git
 
-We use C<< git >> for version control and maintain a public repository on L<github|http://github.com>.
+We use C<< git >> for version control and maintain a public repository on
+L<github|http://github.com>.
 
 You can find the latest version of App::TimeTracker here:
 
 L<https://github.com/domm/App-TimeTracker>
 
-If you want to work on App::TimeTracker, add a feature, add a plugin or fix a bug, please feel free to L<fork|http://help.github.com/fork-a-repo/> the repo and send us L<pull requests|http://help.github.com/send-pull-requests/> to merge your changes.
+If you want to work on App::TimeTracker, add a feature, add a plugin or fix
+a bug, please feel free to L<fork|http://help.github.com/fork-a-repo/> the
+repo and send us L<pull requests|http://help.github.com/send-pull-requests/>
+to merge your changes.
 
-To report a bug, please do not use the C<< issues >> feature from github. Use RT instead.
+To report a bug, please do not use the C<< issues >> feature from github.
+Use RT instead.
 
 =head2 CPAN
 
-App::TimeTracker is distributed via L<CPAN|http://cpan.org/>, the Comprehensive Perl Archive Network. Here are a few different views into the CPAN, offering slightly different features:
+App::TimeTracker is distributed via L<CPAN|http://cpan.org/>, the
+Comprehensive Perl Archive Network. Here are a few different views into the
+CPAN, offering slightly different features:
 
 =over
 
@@ -309,10 +353,10 @@ App::TimeTracker is distributed via L<CPAN|http://cpan.org/>, the Comprehensive 
 
 =head1 Viewing and reporting Bugs
 
-We use L<rt.cpan.org|http://rt.cpan.org> (thank you L<BestPractical|http://rt.bestpractical.com>) for bug reporting. Please do not use the C<issues> feature of github! We pay no attention to those...
+We use L<rt.cpan.org|http://rt.cpan.org> (thank you
+L<BestPractical|http://rt.bestpractical.com>) for bug reporting. Please do
+not use the C<issues> feature of github! We pay no attention to those...
 
 Please use this URL to view and report bugs:
 
 L<https://rt.cpan.org/Public/Dist/Display.html?Name=App-TimeTracker>
-
-
