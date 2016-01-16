@@ -1,5 +1,17 @@
 Revision history for App::TimeTracker
 
+2.022   2016-01-16T16:18:37
+    - remove some warnings (github issue #16 reported by David Provost) (Thomas Klausner)
+    - Add link tags to App::TimeTracker instances in POD (Paul Cochrane)
+    - Improve tracker POD slightly (Paul Cochrane)
+    - Fix typos in POD (Paul Cochrane)
+    - Use the word "plugin" consistently (Paul Cochrane)
+    - Wrap POD text more consistently (Paul Cochrane)
+    - Remove trailing whitespace (Paul Cochrane)
+    - --fparent: include parent in list of project (Thomas Klausner)
+    - add fparent option to report (Thomas Klausner)
+
+
 2.021	2015-08-08T20:46:51
     - attribute all contributors (Thomas Klausner)
     - output the JSON in its canonical form (Yanick Champoux)
