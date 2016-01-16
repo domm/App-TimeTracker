@@ -314,16 +314,16 @@ sub _print_report_tree {
     my $data = $report->{$project};
     return unless $data->{'_total'};
 
-    my $format = "%- 20s % 12s" . ( $self->detail ? '    %s' : '' ) . "\n";
+    my $format = "%- 20s % 12s\n";# . ( $self->detail ? '    %s' : '%s' ) . "\n";
 
     printf( $padding. $format,
         substr( $project, 0, 20 ),
-        $self->beautify_seconds( delete $data->{'_total'} ), ''
+        $self->beautify_seconds( delete $data->{'_total'} )
     );
     if ( $self->detail ) {
         printf( $padding. $tagpadding . $format,
             'untagged',
-            $self->beautify_seconds( delete $data->{'_untagged'} ), '' )
+            $self->beautify_seconds( delete $data->{'_untagged'} ) )
             if $data->{'_untagged'};
         foreach my $tag ( sort { $data->{$b}->{time} <=> $data->{$a}->{time} }
             keys %{$data} )
@@ -332,7 +332,7 @@ sub _print_report_tree {
             my $desc = $data->{$tag}{desc};
             $desc =~ s/\s+$//;
             $desc =~ s/\v/, /g;
-            printf( $padding. $tagpadding . $format,
+            printf( $padding. $tagpadding . $format . '    %s',
                 $tag, $self->beautify_seconds($time), $desc );
         }
     }
