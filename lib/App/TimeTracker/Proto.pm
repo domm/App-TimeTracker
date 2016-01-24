@@ -79,17 +79,28 @@ sub _build_json_decoder {
 sub run {
     my $self = shift;
 
-    my $config = $self->load_config;
-    my $class  = $self->setup_class($config);
+    try {
+        my $config = $self->load_config;
+        my $class  = $self->setup_class($config);
 
-    $class->name->new_with_options( {
-            home   => $self->home,
-            config => $config,
-            (   $self->has_project
-                ? ( _current_project => $self->project )
-                : ()
-            ),
-        } )->run;
+        $class->name->new_with_options( {
+                home   => $self->home,
+                config => $config,
+                (   $self->has_project
+                    ? ( _current_project => $self->project )
+                    : ()
+                ),
+            } )->run;
+    }
+    catch {
+        my $e = $_;
+        if ( blessed $e && $e->can('message') ) {
+            warn $e->message, "\n";
+        }
+        else {
+            warn "$e\n";
+        }
+    }
 }
 
 sub setup_class {
