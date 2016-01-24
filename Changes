@@ -1,5 +1,10 @@
 Revision history for App::TimeTracker
 
+2.023   2016-01-24T21:20:58
+    - pack run into eval so we can get nicer error messages (Thomas Klausner)
+    - pass current config to load_attrib (Thomas Klausner)
+
+
 2.022   2016-01-16T16:18:37
     - remove some warnings (github issue #16 reported by David Provost) (Thomas Klausner)
     - Add link tags to App::TimeTracker instances in POD (Paul Cochrane)
