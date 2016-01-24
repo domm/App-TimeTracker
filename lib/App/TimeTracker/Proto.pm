@@ -133,7 +133,7 @@ sub setup_class {
     if (   $load_attribs_for_command
         && $class->has_method($load_attribs_for_command) )
     {
-        $class->name->$load_attribs_for_command($class);
+        $class->name->$load_attribs_for_command($class, $config);
     }
     $class->make_immutable();
     return $class;
