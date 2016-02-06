@@ -190,7 +190,7 @@ init> will create a config file called F<.tracker.json> in your current
 directory. Use this file to load plugins for this project and/or override
 and amend the configuration inherited from parent projects.
 
-See L<Configuration> for more information on how to configure C<tracker> for
+See L<Configuration|/CONFIGURATION> for more information on how to configure C<tracker> for
 your project(s).
 
 =head2 Basic Usage
@@ -223,7 +223,7 @@ Let's use the C<git>, C<RT> and C<Post2IRC> plugins for maximum laziness.
 
 The first step is to add a setting to the tracker config file in your
 project directory. Or you could add those settings to a config file in a
-parent directory, see L<Configuration> for more information about that.
+parent directory, see L<Configuration|/CONFIGURATION> for more information about that.
 
   ~/revdev/Some-Project$ cat .tracker.json
   {
