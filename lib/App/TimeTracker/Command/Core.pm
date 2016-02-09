@@ -205,11 +205,11 @@ sub cmd_list {
             : ()
         ),
     );
-
+my $total=0;
     foreach my $file (@files) {
         my $task = App::TimeTracker::Data::Task->load( $file->stringify );
         my $time = $task->seconds // $task->_build_seconds;
-
+        $total+=$time;
         $table->add(
             $task->project,
             join( ', ', @{ $task->tags } ),
@@ -226,6 +226,7 @@ sub cmd_list {
     print $table->title;
     print $table->rule( '-', '+' );
     print $table->body;
+    say "total ".$self->beautify_seconds($total);
 }
 
 sub cmd_report {
@@ -242,6 +243,7 @@ sub cmd_report {
     my $total  = 0;
     my $report = {};
     my $format = "%- 20s % 12s\n";
+    my $projects = $self->project_tree;
 
     foreach my $file (@files) {
         my $task    = App::TimeTracker::Data::Task->load( $file->stringify );
@@ -258,6 +260,9 @@ sub cmd_report {
         $total += $time;
 
         $report->{$project}{'_total'} += $time;
+        if (my $parent = $projects->{$project}->{parent}) {
+            $report->{$parent}{'_total'}=0;
+        }
 
         if ( my $level = $self->detail ) {
             my $detail = $task->get_detail($level);
@@ -286,16 +291,30 @@ sub cmd_report {
         }
     }
 
-    my $projects = $self->project_tree;
 
     foreach my $project ( sort keys %$report ) {
-        my $parent = $projects->{$project}{parent};
-        while ($parent) {
-            $report->{$parent}{'_total'} += $report->{$project}{'_total'}
-                || 0;
-            $parent = $projects->{$parent}{parent};
-        }
+        say "$project" . $report->{$project}{'_total'};
+        $self->_recurse_add_kids_time($project, $report, $projects, 1);
+        say "result $project" . $report->{$project}{'_total'};
+
+        #        my $children = $projects->{$project}{children};
+        #foreach my $kid (keys %$children) {
+        #    say "add $kid to $project";
+
+
+        #}
     }
+
+    #    foreach my $project ( sort keys %$report ) {
+    #        my $parent = $projects->{$project}{parent};
+    #        while ($parent) {
+    #            say "add $project to $parent";
+    #            $report->{$parent}{'_total'} += $report->{$project}{'_total'}
+    #                || 0;
+    #            undef $parent;
+    #                #$parent = $projects->{$parent}{parent};
+    #        }
+    #    }
 
     $self->_say_current_report_interval;
     my $padding    = '';
@@ -308,6 +327,28 @@ sub cmd_report {
 
     printf( $format, 'total', $self->beautify_seconds($total) );
 }
+
+sub _recurse_add_kids_time {
+    my ($self, $node, $report, $projects, $level) = @_;
+    my $children = $projects->{$node}{children};
+    if (keys %$children) {
+        say (("  "x $level)."add kids of $node");
+        my $sum=0;
+        foreach my $kid (keys %$children) {
+            my $time = $self->_recurse_add_kids_time($kid, $report, $projects, $level + 1);
+            $sum+=$time;
+            say (("  " x $level)."added $kid $time = $sum");
+        }
+        $projects->{$node}{'_total'} = $sum;
+        say  (("  "x $level)."kid sum = $sum");
+        return $sum;
+    }
+    else {
+        say  (("  "x $level). $node ." no kids, return own value ".($report->{$node}{'_total'} || 0));
+        return $report->{$node}{'_total'} || 0;
+    }
+}
+
 
 sub _print_report_tree {
     my ( $self, $report, $projects, $project, $padding, $tagpadding ) = @_;
