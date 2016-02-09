@@ -678,7 +678,7 @@ Example:
     
 =head3 Options:
 
-same as L<start>
+same as L<start|/start>
 
 =head2 append 
 
@@ -703,7 +703,7 @@ Example:
 
 =head3 Options:
 
-same as L<start>
+same as L<start|/start>
 
 =head2 current
 
@@ -759,7 +759,7 @@ summed up per project (and optionally per tag)
 
 =head3 Options:
 
-The same options as for L<worked>, plus:
+The same options as for L<worked|/worked>, plus:
 
 =head4 --detail
 
@@ -786,7 +786,7 @@ times.
 
 =head3 Options:
 
-The same options as for L<report>
+The same options as for L<report|/report>
 
 =head2 init
 
@@ -826,7 +826,7 @@ future, as soon as task duration is always calculated lazily.
 
 Only the name of the trackfile is required, but you can also pass in
 the absolute path to the file. Broken trackfiles are sometimes
-reported during L<report>.
+reported during L<report|/report>.
 
 =head2 commands
 
