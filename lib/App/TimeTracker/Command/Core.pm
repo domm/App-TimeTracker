@@ -304,7 +304,7 @@ sub cmd_report {
 
     $self->_say_current_report_interval;
     my $padding    = '';
-    my $tagpadding = '   ';
+    my $tagpadding = '     ';
     foreach my $project ( sort keys %top_nodes ) {
         $self->_print_report_tree( $report, $projects, $project, $padding,
             $tagpadding );
@@ -331,26 +331,32 @@ sub _print_report_tree {
     $sum += $data->{'_kids'} if $data->{'_kids'};
     return unless $sum;
 
-    my $format = "%- 20s % 12s\n";# . ( $self->detail ? '    %s' : '%s' ) . "\n";
+    my $format = "%- 20s % 12s";
 
-    printf( $padding. $format,
+    say sprintf( $padding. $format,
         substr( $project, 0, 20 ),
         $self->beautify_seconds( $sum )
     );
     if ( $self->detail ) {
-        printf( $padding. $tagpadding . $format,
+        say sprintf( $padding. $tagpadding . $format,
             'untagged',
             $self->beautify_seconds( delete $data->{'_untagged'} ) )
             if $data->{'_untagged'};
+
         foreach my $tag ( sort { $data->{$b}->{time} <=> $data->{$a}->{time} }
-            keys %{$data} )
+            grep {/^[^_]/} keys %{$data} )
         {
             my $time = $data->{$tag}{time};
-            my $desc = $data->{$tag}{desc};
-            $desc =~ s/\s+$//;
-            $desc =~ s/\v/, /g;
-            printf( $padding. $tagpadding . $format . '    %s',
-                $tag, $self->beautify_seconds($time), $desc );
+            if (my $desc = $data->{$tag}{desc}) {
+                $desc =~ s/\s+$//;
+                $desc =~ s/\v/, /g;
+                say sprintf( $padding. $tagpadding . $format.'   %s',
+                    $tag, $self->beautify_seconds($time), $desc );
+            }
+            else {
+                say sprintf( $padding. $tagpadding . $format,
+                    $tag, $self->beautify_seconds($time) );
+            }
         }
     }
     foreach my $child ( sort keys %{ $projects->{$project}{children} } ) {
