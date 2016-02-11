@@ -173,6 +173,7 @@ sub cmd_worked {
             to       => $self->to,
             projects => $self->fprojects,
             tags     => $self->ftags,
+            parent   => $self->fparent,
         } );
 
     my $total = 0;
@@ -192,6 +193,7 @@ sub cmd_list {
             to       => $self->to,
             projects => $self->fprojects,
             tags     => $self->ftags,
+            parent   => $self->fparent,
         } );
 
     my $s     = \' | ';
@@ -312,11 +314,11 @@ sub cmd_report {
 }
 
 sub _get_ancestors {
-    my ($self, $report, $projects, $node, $ancestors) = @_;
+    my ( $self, $report, $projects, $node, $ancestors ) = @_;
     my $parent = $projects->{$node}{parent};
     if ($parent) {
-        unshift(@$ancestors, $parent);
-        $self->_get_ancestors($report, $projects, $parent, $ancestors);
+        unshift( @$ancestors, $parent );
+        $self->_get_ancestors( $report, $projects, $parent, $ancestors );
     }
 }
 
