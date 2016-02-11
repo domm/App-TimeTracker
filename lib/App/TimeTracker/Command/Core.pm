@@ -266,7 +266,7 @@ sub cmd_report {
         if ( my $level = $self->detail ) {
             my $detail = $task->get_detail($level);
             my $tags   = $detail->{tags};
-            if (@$tags) {
+            if ($tags && @$tags) {
                 # Only use the first assigned tag to calculate the aggregated times and use it
                 # as tag key.
                 # Otherwise the same trackfiles would be counted multiple times and the
@@ -337,7 +337,7 @@ sub _print_report_tree {
         substr( $project, 0, 20 ),
         $self->beautify_seconds( $sum )
     );
-    if ( $self->detail ) {
+    if ( my $detail = $self->detail ) {
         say sprintf( $padding. $tagpadding . $format,
             'untagged',
             $self->beautify_seconds( delete $data->{'_untagged'} ) )
@@ -347,13 +347,15 @@ sub _print_report_tree {
             grep {/^[^_]/} keys %{$data} )
         {
             my $time = $data->{$tag}{time};
-            if (my $desc = $data->{$tag}{desc}) {
+
+            if ($detail eq 'description') {
+                my $desc = $data->{$tag}{desc} || 'no desc';
                 $desc =~ s/\s+$//;
                 $desc =~ s/\v/, /g;
                 say sprintf( $padding. $tagpadding . $format.'   %s',
                     $tag, $self->beautify_seconds($time), $desc );
             }
-            else {
+            elsif ($detail eq 'tags') {
                 say sprintf( $padding. $tagpadding . $format,
                     $tag, $self->beautify_seconds($time) );
             }
@@ -543,9 +545,9 @@ sub _load_attribs_report {
     $class->_load_attribs_worked($meta);
     $meta->add_attribute(
         'detail' => {
-            isa => enum( [qw(tag description all)] ),
+            isa => enum( [qw(tag description)] ),
             is => 'ro',
-            documentation => 'Be detailed: [tag|desc|all]',
+            documentation => 'Be detailed: [tag|description]',
         } );
 }
 
@@ -788,7 +790,7 @@ The same options as for L<worked>, plus:
 
     ~/perl/Your-Project$ tracker report --last month --detail tag
 
-Valid options are: tag, description, all
+Valid options are: tag, description
 
 Will print the tag(s) and/or description.
 
