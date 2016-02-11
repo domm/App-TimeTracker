@@ -273,6 +273,7 @@ sub project_tree {
             }
         }
     }
+
     return \%tree;
 }
 

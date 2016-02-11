@@ -188,10 +188,10 @@ sub get_detail {
     my ( $self, $level ) = @_;
 
     my $detail = {};
-    if ( $level eq 'tag' || $level eq 'all' ) {
+    if ( $level eq 'tag' || $level eq 'description' ) {
         $detail->{tags} = $self->tags;
     }
-    if ( $level eq 'description' || $level eq 'all' ) {
+    if ( $level eq 'description' ) {
         $detail->{desc} = $self->description;
     }
     return $detail;

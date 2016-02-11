@@ -173,6 +173,7 @@ sub cmd_worked {
             to       => $self->to,
             projects => $self->fprojects,
             tags     => $self->ftags,
+            parent   => $self->fparent,
         } );
 
     my $total = 0;
@@ -192,6 +193,7 @@ sub cmd_list {
             to       => $self->to,
             projects => $self->fprojects,
             tags     => $self->ftags,
+            parent   => $self->fparent,
         } );
 
     my $s     = \' | ';
@@ -205,11 +207,11 @@ sub cmd_list {
             : ()
         ),
     );
-
+my $total=0;
     foreach my $file (@files) {
         my $task = App::TimeTracker::Data::Task->load( $file->stringify );
         my $time = $task->seconds // $task->_build_seconds;
-
+        $total+=$time;
         $table->add(
             $task->project,
             join( ', ', @{ $task->tags } ),
@@ -226,6 +228,7 @@ sub cmd_list {
     print $table->title;
     print $table->rule( '-', '+' );
     print $table->body;
+    say "total ".$self->beautify_seconds($total);
 }
 
 sub cmd_report {
@@ -242,6 +245,7 @@ sub cmd_report {
     my $total  = 0;
     my $report = {};
     my $format = "%- 20s % 12s\n";
+    my $projects = $self->project_tree;
 
     foreach my $file (@files) {
         my $task    = App::TimeTracker::Data::Task->load( $file->stringify );
@@ -262,7 +266,7 @@ sub cmd_report {
         if ( my $level = $self->detail ) {
             my $detail = $task->get_detail($level);
             my $tags   = $detail->{tags};
-            if (@$tags) {
+            if ($tags && @$tags) {
                 # Only use the first assigned tag to calculate the aggregated times and use it
                 # as tag key.
                 # Otherwise the same trackfiles would be counted multiple times and the
@@ -286,22 +290,22 @@ sub cmd_report {
         }
     }
 
-    my $projects = $self->project_tree;
-
+    # sum child-time to all ancestors
+    my %top_nodes;
     foreach my $project ( sort keys %$report ) {
-        my $parent = $projects->{$project}{parent};
-        while ($parent) {
-            $report->{$parent}{'_total'} += $report->{$project}{'_total'}
-                || 0;
-            $parent = $projects->{$parent}{parent};
+        my @ancestors;
+        $self->_get_ancestors($report, $projects, $project, \@ancestors);
+        my $time = $report->{$project}{'_total'} || 0;
+        foreach my $ancestor (@ancestors) {
+            $report->{$ancestor}{'_kids'} += $time;
         }
+        $top_nodes{$ancestors[0]}++ if @ancestors;
     }
 
     $self->_say_current_report_interval;
     my $padding    = '';
-    my $tagpadding = '   ';
-    foreach my $project ( sort keys %$report ) {
-        next if $projects->{$project}{parent};
+    my $tagpadding = '     ';
+    foreach my $project ( sort keys %top_nodes ) {
         $self->_print_report_tree( $report, $projects, $project, $padding,
             $tagpadding );
     }
@@ -309,31 +313,52 @@ sub cmd_report {
     printf( $format, 'total', $self->beautify_seconds($total) );
 }
 
+sub _get_ancestors {
+    my ( $self, $report, $projects, $node, $ancestors ) = @_;
+    my $parent = $projects->{$node}{parent};
+    if ($parent) {
+        unshift( @$ancestors, $parent );
+        $self->_get_ancestors( $report, $projects, $parent, $ancestors );
+    }
+}
+
 sub _print_report_tree {
     my ( $self, $report, $projects, $project, $padding, $tagpadding ) = @_;
     my $data = $report->{$project};
-    return unless $data->{'_total'};
 
-    my $format = "%- 20s % 12s\n";# . ( $self->detail ? '    %s' : '%s' ) . "\n";
+    my $sum = 0;
+    $sum += $data->{'_total'} if $data->{'_total'};
+    $sum += $data->{'_kids'} if $data->{'_kids'};
+    return unless $sum;
 
-    printf( $padding. $format,
+    my $format = "%- 20s % 12s";
+
+    say sprintf( $padding. $format,
         substr( $project, 0, 20 ),
-        $self->beautify_seconds( delete $data->{'_total'} )
+        $self->beautify_seconds( $sum )
     );
-    if ( $self->detail ) {
-        printf( $padding. $tagpadding . $format,
+    if ( my $detail = $self->detail ) {
+        say sprintf( $padding. $tagpadding . $format,
             'untagged',
             $self->beautify_seconds( delete $data->{'_untagged'} ) )
             if $data->{'_untagged'};
+
         foreach my $tag ( sort { $data->{$b}->{time} <=> $data->{$a}->{time} }
-            keys %{$data} )
+            grep {/^[^_]/} keys %{$data} )
         {
             my $time = $data->{$tag}{time};
-            my $desc = $data->{$tag}{desc};
-            $desc =~ s/\s+$//;
-            $desc =~ s/\v/, /g;
-            printf( $padding. $tagpadding . $format . '    %s',
-                $tag, $self->beautify_seconds($time), $desc );
+
+            if ($detail eq 'description') {
+                my $desc = $data->{$tag}{desc} || 'no desc';
+                $desc =~ s/\s+$//;
+                $desc =~ s/\v/, /g;
+                say sprintf( $padding. $tagpadding . $format.'   %s',
+                    $tag, $self->beautify_seconds($time), $desc );
+            }
+            elsif ($detail eq 'tags') {
+                say sprintf( $padding. $tagpadding . $format,
+                    $tag, $self->beautify_seconds($time) );
+            }
         }
     }
     foreach my $child ( sort keys %{ $projects->{$project}{children} } ) {
@@ -520,9 +545,9 @@ sub _load_attribs_report {
     $class->_load_attribs_worked($meta);
     $meta->add_attribute(
         'detail' => {
-            isa => enum( [qw(tag description all)] ),
+            isa => enum( [qw(tag description)] ),
             is => 'ro',
-            documentation => 'Be detailed: [tag|desc|all]',
+            documentation => 'Be detailed: [tag|description]',
         } );
 }
 
@@ -765,7 +790,7 @@ The same options as for L<worked>, plus:
 
     ~/perl/Your-Project$ tracker report --last month --detail tag
 
-Valid options are: tag, description, all
+Valid options are: tag, description
 
 Will print the tag(s) and/or description.
 
