@@ -1,5 +1,12 @@
 Revision history for App::TimeTracker
 
+2.024   2016-02-11T10:39:11
+    - report: fix --detail option (Thomas Klausner)
+    - list/worked: support --fparent (Thomas Klausner)
+    - report: fix accumulation of child times in deep trees (Thomas Klausner)
+    - Fixed broken links in the pod (Mohammad S Anwar)
+
+
 2.023   2016-01-24T21:20:58
     - pack run into eval so we can get nicer error messages (Thomas Klausner)
     - pass current config to load_attrib (Thomas Klausner)
