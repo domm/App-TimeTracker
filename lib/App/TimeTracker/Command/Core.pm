@@ -289,6 +289,7 @@ sub cmd_report {
     }
 
     # sum child-time to all ancestors
+    my %top_nodes;
     foreach my $project ( sort keys %$report ) {
         my @ancestors;
         $self->_get_ancestors($report, $projects, $project, \@ancestors);
@@ -296,13 +297,13 @@ sub cmd_report {
         foreach my $ancestor (@ancestors) {
             $report->{$ancestor}{'_kids'} += $time;
         }
+        $top_nodes{$ancestors[0]}++ if @ancestors;
     }
 
     $self->_say_current_report_interval;
     my $padding    = '';
     my $tagpadding = '   ';
-    foreach my $project ( sort keys %$report ) {
-        next if $projects->{$project}{parent};
+    foreach my $project ( sort keys %top_nodes ) {
         $self->_print_report_tree( $report, $projects, $project, $padding,
             $tagpadding );
     }
