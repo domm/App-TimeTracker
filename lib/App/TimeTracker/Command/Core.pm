@@ -355,7 +355,7 @@ sub _print_report_tree {
                 say sprintf( $padding. $tagpadding . $format.'   %s',
                     $tag, $self->beautify_seconds($time), $desc );
             }
-            elsif ($detail eq 'tags') {
+            elsif ($detail eq 'tag') {
                 say sprintf( $padding. $tagpadding . $format,
                     $tag, $self->beautify_seconds($time) );
             }
