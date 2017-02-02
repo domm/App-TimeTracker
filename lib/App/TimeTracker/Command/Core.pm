@@ -217,7 +217,7 @@ sub cmd_list {
             pretty_date( $task->start ),
             pretty_date( $task->stop ),
             (   $self->detail
-                ? ( $time, $task->description_short, $file->stringify )
+                ? ( $time, ($task->description_short || ''), $file->stringify )
                 : ()
             ),
         );
