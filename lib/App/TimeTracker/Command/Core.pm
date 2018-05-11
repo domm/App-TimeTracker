@@ -219,7 +219,7 @@ my $total=0;
             pretty_date( $task->start ),
             pretty_date( $task->stop ),
             (   $self->detail
-                ? ( $time, $task->description_short, $file->stringify )
+                ? ( $time, $task->description_short // '', $file->stringify )
                 : ()
             ),
         );
@@ -692,20 +692,20 @@ Example:
 
     ~$ tracker start --project ExplainContinue --tag testing
     Started working on ExplainContinue (testing) at 12:42
-    
+
     # ... time passes, it's now 13:17
     ~$ tracker stop
     Worked 00:35:00 on ExplainContinue
-    
+
     # back from lunch at 13:58
     ~$ tracker continue
     Started working on ExplainContinue (testing) at 13:58
-    
+
 =head3 Options:
 
 same as L<start|/start>
 
-=head2 append 
+=head2 append
 
     ~/perl/Your-Project$ tracker append
 
@@ -715,11 +715,11 @@ Example:
 
     ~$ tracker start --project ExplainAppend --tag RT1234
     Started working on ExplainAppend (RT1234) at 14:23
-    
+
     # ... time passes (14:46)
     ~$ tracker stop
     Worked 00:23:00 on ExplainAppend (RT1234)
-    
+
     # start working on new ticket
     # ...
     # but forgot to hit start (14:53)
@@ -806,7 +806,7 @@ Lists all found trackfiles and their respective duration before printing out the
 
     ~/perl/Your-Project$ tracker list
 
-Print out a detailed report of what you did in a tabular format including start and stop 
+Print out a detailed report of what you did in a tabular format including start and stop
 times.
 
 =head3 Options:
