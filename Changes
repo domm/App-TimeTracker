@@ -1,5 +1,9 @@
 Revision history for App::TimeTracker
 
+2.025
+    - Fix spacing in lists without description (Klaus Ita)
+
+
 2.024   2016-02-11T10:39:11
     - report: fix --detail option (Thomas Klausner)
     - list/worked: support --fparent (Thomas Klausner)
