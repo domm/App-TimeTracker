@@ -19,9 +19,11 @@ has 'dt' => (
 
 package main;
 
+local $ENV{TZ} = 'UTC';
+
 my $now = DateTime->now;
 $now->set_time_zone('local');
-my $date = DateTime->new(year=>2012,month=>2,day=>26,time_zone=>'local');
+my $date = DateTime->new(year=>2012,month=>2,day=>26,time_zone=>'UTC');
 
 foreach my $test (
     ['12:34',$now->clone->set(hour=>12,minute=>34,second=>0)],

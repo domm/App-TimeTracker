@@ -8,6 +8,7 @@ use testlib::Fixtures;
 use DateTime;
 use App::TimeTracker;
 my $tmp = testlib::Fixtures::setup_tempdir;
+local $ENV{TZ} = 'UTC';
 
 my %BASE = ( home=>$tmp, config=>{} );
 

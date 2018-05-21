@@ -7,6 +7,7 @@ use Test::Most;
 use testlib::Fixtures;
 use DateTime;
 use App::TimeTracker;
+local $ENV{TZ} = 'UTC';
 
 my $tmp = testlib::Fixtures->setup_2011_05;
 my $t = App::TimeTracker->new(home=>$tmp,config=>{});

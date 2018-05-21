@@ -8,6 +8,7 @@ use Test::Trap;
 use Test::File;
 use testlib::FakeHomeDir;
 use App::TimeTracker::Proto;
+local $ENV{TZ} = 'UTC';
 
 my $tmp = testlib::Fixtures::setup_tempdir;
 my $home = $tmp->subdir('.TimeTracker');
