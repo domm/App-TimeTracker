@@ -7,6 +7,7 @@ use Test::Most;
 use IO::Capture::Stdout;
 use testlib::Fixtures;
 use App::TimeTracker::Data::Task;
+local $ENV{TZ} = 'UTC';
 
 my $capture = IO::Capture::Stdout->new();
 my $tmp = testlib::Fixtures::setup_tempdir;

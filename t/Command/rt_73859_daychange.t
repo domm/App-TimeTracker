@@ -11,6 +11,7 @@ use Test::File;
 use testlib::FakeHomeDir;
 use App::TimeTracker::Proto;
 use DateTime;
+local $ENV{TZ} = 'UTC';
 
 my $tmp = testlib::Fixtures::setup_tempdir;
 my $home = $tmp->subdir('TimeTracker');
