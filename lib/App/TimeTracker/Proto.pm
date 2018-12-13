@@ -222,7 +222,7 @@ sub _write_config_file_locations {
 sub slurp_config {
     my ( $self, $file ) = @_;
     try {
-        my $content = $file->slurp( iomode => '<:encoding(UTF-8)' );
+        my $content = $file->slurp();
         return $self->json_decoder->decode($content);
     }
     catch {
