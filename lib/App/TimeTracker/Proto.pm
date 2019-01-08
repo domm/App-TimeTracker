@@ -60,7 +60,15 @@ sub _build_config_file_locations {
     my $self = shift;
     my $file = $self->home->file('projects.json');
     if ( -e $file && -s $file ) {
-        return decode_json( $file->slurp );
+        my $decoded_json;
+        try {
+            $decoded_json = decode_json( $file->slurp );
+        }
+        catch {
+            error_message( "Could not json decode '%s'.\nError: '%s'", $file, $_ );
+            exit 1;
+        };
+        return $decoded_json;
     }
     else {
         return {};
@@ -224,7 +232,7 @@ sub _write_config_file_locations {
 sub slurp_config {
     my ( $self, $file ) = @_;
     try {
-        my $content = $file->slurp( iomode => '<:encoding(UTF-8)' );
+        my $content = $file->slurp();
         return $self->json_decoder->decode($content);
     }
     catch {
