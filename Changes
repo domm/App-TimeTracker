@@ -1,6 +1,11 @@
 Revision history for App::TimeTracker
 
-2.025
+2.026   2019-03-12T10:57:58
+    - Parsing/Encoding of config files (pepl)
+    - explicitly set TZ in some tests, as reported in RT125360 (Thomas Klausner)
+
+
+2.025   2018-05-13
     - Fix spacing in lists without description (Klaus Ita)
 
 
