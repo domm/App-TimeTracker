@@ -22,7 +22,7 @@ sub cmd_start {
         );
         exit;
     }
-    $self->cmd_stop('no_exit','reproto');
+    $self->cmd_stop('no_exit');
 
     my $task = App::TimeTracker::Data::Task->new( {
             start => $self->at || now(),
@@ -36,7 +36,7 @@ sub cmd_start {
 }
 
 sub cmd_stop {
-    my ($self, $dont_exit, $reproto) = @_;
+    my ($self, $dont_exit) = @_;
 
     my $task = App::TimeTracker::Data::Task->current( $self->home );
     unless ($task) {
@@ -44,23 +44,21 @@ sub cmd_stop {
         say "Currently not working on anything";
         exit;
     }
-    if ($reproto) {
-        my $new_proto = App::TimeTracker::Proto->new();
-        my $config = $new_proto->load_config(undef, $task->project);
-        my $class = $new_proto->setup_class($config);
-        my $new_self = $class->name->new_with_options( {
-                home            => $self->home,
-                at              => $self->at || now(),
-                config          => $config,
-                _current_project=> $task->project,
-            } );
-        $new_self->_current_command('cmd_stop');
-        $new_self->cmd_stop($dont_exit);
-        return;
-    }
-    $self->_previous_task($task);
 
-    $task->stop( $self->at || now() );
+    my $proto = App::TimeTracker::Proto->new();
+    my $config = $proto->load_config(undef, $task->project);
+
+    my $class = $proto->setup_class($config, 'stop');
+    my $stop_self = $class->name->new_with_options( {
+            home            => $self->home,
+            at              => $self->at || now(),
+            config          => $config,
+            _current_project=> $task->project,
+        } );
+    $stop_self->_current_command('cmd_stop');
+    $stop_self->_previous_task($task);
+
+    $task->stop( $stop_self->at || now() );
     if ( $task->stop < $task->start ) {
         say sprintf(
             qq{The stop time you specified (%s) is earlier than the start time (%s).\nThis makes no sense.},
@@ -81,11 +79,11 @@ sub cmd_stop {
         }
         exit;
     }
-    $task->save( $self->home );
+    $task->save( $stop_self->home );
 
     move(
-        $self->home->file('current')->stringify,
-        $self->home->file('previous')->stringify
+        $stop_self->home->file('current')->stringify,
+        $stop_self->home->file('previous')->stringify
     );
 
     say "Worked " . $task->duration . " on " . $task->say_project_tags;
