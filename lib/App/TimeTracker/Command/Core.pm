@@ -49,7 +49,7 @@ sub cmd_stop {
     my $config = $proto->load_config(undef, $task->project);
 
     my $class = $proto->setup_class($config, 'stop');
-    my $stop_self = $class->name->new_with_options( {
+    my $stop_self = $class->name->new( {
             home            => $self->home,
             at              => $self->at || now(),
             config          => $config,
