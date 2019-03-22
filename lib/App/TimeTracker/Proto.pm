@@ -112,7 +112,7 @@ sub run {
 }
 
 sub setup_class {
-    my ( $self, $config ) = @_;
+    my ( $self, $config, $command ) = @_;
 
     # unique plugins
     $config->{plugins} ||= [];
@@ -135,7 +135,7 @@ sub setup_class {
     }
 
     my $load_attribs_for_command;
-    foreach (@ARGV) {
+    foreach ( $command ? $command : @ARGV) {
         if ( defined $commands{$_} ) {
             $load_attribs_for_command = '_load_attribs_' . $_;
             last;
