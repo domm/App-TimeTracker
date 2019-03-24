@@ -14,10 +14,15 @@ use DateTime;
 local $ENV{TZ} = 'UTC';
 
 my $tmp = testlib::Fixtures::setup_tempdir;
-my $home = $tmp->subdir('TimeTracker');
-$tmp->subdir('rt73859')->mkpath;
-my $p = App::TimeTracker::Proto->new(home=>$home);
+my $home = $tmp->subdir('.TimeTracker');
+my $prjdir = $tmp->subdir('rt73859');
+$home->mkpath;
+$prjdir->mkpath;
+$home->file('projects.json')->spew(iomode => '>:encoding(UTF-8)','{"rt73859":"'.$prjdir.'"}'."\n");
+$prjdir->file('.tracker.json')->spew(iomode => '>:encoding(UTF-8)','{}'."\n");
 
+my $p = App::TimeTracker::Proto->new(home=>$home, project=>'rt73859');
+$p->load_config($home,'rt73859');
 my $tracker_dir = $home->subdir('2012','01');
 my $c = { project=>'rt73859'};
 
@@ -32,7 +37,6 @@ diag("Test initial bug report");
     my $class = $p->setup_class($c);
     my $t = $class->name->new(home=>$home, config=>$c, _current_project=>'rt73859',at=>'23:30');
     trap {$t->cmd_start };
-
     is($trap->stdout,"Started working on rt73859 at 23:30:00\n",'start: output');
     file_not_empty_ok($tracker_dir->file('20120109-233000_rt73859.trc'),'tracker file exists');
 }
