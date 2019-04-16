@@ -57,6 +57,8 @@ sub cmd_stop {
         } );
     $stop_self->_current_command('cmd_stop');
     $stop_self->_previous_task($task);
+    # Store in original self too (for plugin usage)
+    $self->_previous_task($task);
 
     $task->stop( $stop_self->at || now() );
     if ( $task->stop < $task->start ) {
