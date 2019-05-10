@@ -1,5 +1,9 @@
 Revision history for App::TimeTracker
 
+2.028	2019-05-10T16:01:11
+   - Fixed previous task no longer being available for plugins (Michael Kröll)
+
+
 2.027   2019-03-24T20:24:46
     - report if not in a dir containing a project (Thomas Klausner)
     - "stop" no always and properly uses the context of the stopped project (Thomas Klausner)
