@@ -63,12 +63,6 @@ now|http://search.cpan.org/dist/App-cpanminus/lib/App/cpanminus.pm#INSTALLATION>
 
   ~$ curl -L http://cpanmin.us | perl - --sudo App::cpanminus
 
-=head3 CPANPLUS
-
-CPANPLUS comes preinstalled with recent Perls (5.10 and newer).
-
-  cpanp i App::TimeTracker
-
 =head3 CPAN.pm
 
 CPAN.pm is available on ancient Perls, and feels a bit ancient, too.
@@ -219,7 +213,7 @@ To see how long you worked, use C<tracker report>:
 =head2 Advanced Usage with git, RT and IRC
 
 By using some plugins we can make C<tracker> a much more powerful tool.
-Let's use the C<git>, C<RT> and C<Post2IRC> plugins for maximum laziness.
+Let's use the C<git>, C<RT> and C<TellRemote> plugins for maximum laziness.
 
 The first step is to add a setting to the tracker config file in your
 project directory. Or you could add those settings to a config file in a
@@ -230,9 +224,9 @@ parent directory, see L<Configuration|/CONFIGURATION> for more information about
     "plugins" : [
       "Git",
       "RT",
-      "Post2IRC",
+      "TellRemote",
     ],
-    "post2irc" : {
+    "tell_remote" : {
       "secret" : "bai0uKiw",
       "host" : "http://devbox.vpn.somewhere.com/"
     },

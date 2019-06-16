@@ -4,34 +4,22 @@
    },
    "vienna.pm" : {
       "plugins" : [
-         "RT"
       ],
       "parent" : "default"
    },
    "default" : {
       "plugins" : [
          "SyncViaGit"
-      ],
-      "rt" : {
-         "set_owner_to" : "domm"
-      }
+      ]
    },
    "CPANTS" : {
-      "parent" : "vienna.pm",
-      "rt" : {
-         "set_owner_to" : null
-      }
+      "parent" : "vienna.pm"
    },
    "App-TimeTracker" : {
       "plugins" : [
          "Git",
-         "SyncViaGit",
-         "RT",
-         "Post2IRC"
+         "SyncViaGit"
       ],
-      "parent" : "perl",
-      "rt" : {
-         "update_time_worked" : "1"
-      }
+      "parent" : "perl"
    }
 }
