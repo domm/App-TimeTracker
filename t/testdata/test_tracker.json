@@ -9,10 +9,6 @@
       "parent" : "default"
    },
    "default" : {
-      "post2irc" : {
-         "secret" : "12345",
-         "host" : "http://irc.example.com/"
-      },
       "plugins" : [
          "SyncViaGit"
       ],
