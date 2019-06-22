@@ -97,6 +97,17 @@ CPAN module install dance:
   ~/perl/App-TimeTracker$ ./Build test
   ~/perl/App-TimeTracker$ ./Build install  # might require sudo
 
+=head1 SETUP
+
+The first time you run C<tracker>, it will create the directory
+C<~/.TimeTracker> and generate an empty C<tracker.json> core config
+file there.
+
+In the root directory of the project you want to track time for, do
+C<tracker init>. This will set up this directory for time-tracking.
+See below for more information on the config files and the mergin of
+config files.
+
 =head1 CONFIGURATION
 
 L<App::TimeTracker> uses a bunch of config files in JSON format. The config
