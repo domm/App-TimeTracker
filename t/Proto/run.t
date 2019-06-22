@@ -5,12 +5,14 @@ use lib qw(t);
 
 use Test::Most;
 use Test::Trap;
-use testlib::FakeHomeDir;
+use testlib::Fixtures;
 use App::TimeTracker::Proto;
 
-my $p = App::TimeTracker::Proto->new;
+my $testdir = testlib::Fixtures::setup_tree('tree1');
+chdir($testdir);
+my $p = App::TimeTracker::Proto->new(home=>$testdir);
 
-trap { 
+trap {
     $p->run;
 };
 
