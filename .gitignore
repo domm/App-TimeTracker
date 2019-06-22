@@ -6,6 +6,7 @@ Makefile
 Makefile.old
 Build
 _build*
+.build*
 pm_to_blib*
 *.tar.gz
 App-TimeTracker-*
