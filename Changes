@@ -1,5 +1,13 @@
 Revision history for App::TimeTracker
 
+3.000-TODO
+    - remove RT, now a standalone dist "App-TimeTracker-RT"
+    - removed Post2IRC, now a standalone dist called "App-TimeTracker-TellRemote"
+    - removed Git & SyncViaGit, now a standalone dist called 'App-TimeTracker-Git'
+    - removed Overtime (bad API, not documented or used AFAIK)
+    - removed TextNotify (not sure it still works, cannot test without a mac)
+
+
 2.028	2019-05-10T16:01:11
    - Fixed previous task no longer being available for plugins (Michael Kröll)
 
