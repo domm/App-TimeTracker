@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use 5.010;
 
-our $VERSION = "3.000";
+our $VERSION = "3.001";
 # ABSTRACT: time tracking for impatient and lazy command line lovers
 
 use App::TimeTracker::Data::Task;
@@ -303,8 +303,5 @@ Backend for the C<tracker> command. See L<tracker|https://metacpan.org/pod/distr
 
 =head1 CONTRIBUTORS
 
-Maros Kollar, Klaus Ita, Yanick Champoux, Lukas Rampa, David Schmidt,
-Michael Kröll, Thomas Sibley, Nelo Onyiah, Jozef Kutej, Roland Lammel,
-Ruslan Zakirov, Kartik Thakore, Tokuhiro Matsuno, Paul Cochrane, David Provost,
-Mohammad S Anwar
+Maros Kollar, Klaus Ita, Yanick Champoux, Lukas Rampa, David Schmidt, Michael Kröll, Thomas Sibley, Nelo Onyiah, Jozef Kutej, Roland Lammel, Ruslan Zakirov, Kartik Thakore, Tokuhiro Matsuno, Paul Cochrane, David Provost, Mohammad S Anwar, Håkon Hægland
 

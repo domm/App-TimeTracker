@@ -1,6 +1,10 @@
 Revision history for App::TimeTracker
 
-3.000-TODO
+3.001   2019-11-01T15:50:11
+    - fix link in POD documentation. (Håkon Hægland)
+
+
+3.000   2019-06-22
     - remove RT, now a standalone dist "App-TimeTracker-RT"
     - removed Post2IRC, now a standalone dist called "App-TimeTracker-TellRemote"
     - removed Git & SyncViaGit, now a standalone dist called 'App-TimeTracker-Git'
