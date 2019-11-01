@@ -299,7 +299,7 @@ __END__
 
 =head1 SYNOPSIS
 
-Backend for the C<tracker> command. See L<tracker> and/or C<perldoc tracker> for details.
+Backend for the C<tracker> command. See L<tracker|https://metacpan.org/pod/release/DOMM/App-TimeTracker-3.000/bin/tracker> and/or C<perldoc tracker> for details.
 
 =head1 CONTRIBUTORS
 
