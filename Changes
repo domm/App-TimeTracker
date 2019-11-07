@@ -1,5 +1,10 @@
 Revision history for App::TimeTracker
 
+3.002   2019-11-07T12:33:55
+    - fix a bug in tracker report (Jozef Kutej)
+    - fix PODNAME for tracker_bash_autocomplete, which properly fixes the POD link (Håkon Hægland)
+
+
 3.001   2019-11-01T15:50:11
     - fix link in POD documentation. (Håkon Hægland)
 

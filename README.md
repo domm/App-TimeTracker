@@ -4,11 +4,11 @@ App::TimeTracker - time tracking for impatient and lazy command line lovers
 
 # VERSION
 
-version 3.001
+version 3.002
 
 # SYNOPSIS
 
-Backend for the `tracker` command. See [tracker](https://metacpan.org/pod/distribution/App-TimeTracker/bin/tracker) and/or `perldoc tracker` for details.
+Backend for the `tracker` command. See [tracker](https://metacpan.org/pod/tracker) and/or `perldoc tracker` for details.
 
 # CONTRIBUTORS
 
