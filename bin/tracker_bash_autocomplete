@@ -1,5 +1,5 @@
 # ABSTRACT: tracker bash autocomplete
-# PODNAME: tracker bash autocomplete
+# PODNAME: tracker_bash_autocomplete
 
 _tracker() 
 {
