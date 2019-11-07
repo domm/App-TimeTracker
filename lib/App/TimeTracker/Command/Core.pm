@@ -300,6 +300,7 @@ sub cmd_report {
             $report->{$ancestor}{'_kids'} += $time;
         }
         $top_nodes{$ancestors[0]}++ if @ancestors;
+        $top_nodes{$project}++ if !@ancestors;
     }
 
     $self->_say_current_report_interval;
