@@ -25,7 +25,7 @@ __END__
 
 C<tracker> is the front end script to L<App::TimeTracker>. C<tracker>
 allows you to easily track and report the time you spend on various
-jobs, projects, tasks etc from the commandline.
+jobs, projects, tasks etc from the command line.
 
 Custom commands or adaptations to your workflow can be implemented via
 an "interesting" set of L<Moose>-powered plugins. You can configure
@@ -105,7 +105,7 @@ file there.
 
 In the root directory of the project you want to track time for, do
 C<tracker init>. This will set up this directory for time-tracking.
-See below for more information on the config files and the mergin of
+See below for more information on the config files and the merging of
 config files.
 
 =head1 CONFIGURATION
@@ -118,7 +118,7 @@ F<~/.TimeTracker/tracker.json>.
 
 You can use this tree of config files to define general settings, per job
 settings and per project settings, while always reusing the configuration
-defined in the parent. I.e. the config settings sort of override the values
+defined in the parent. i.e. the config settings sort of override the values
 defined further up in the tree.
 
 Any time you call C<tracker>, we look up from your current directory until we
