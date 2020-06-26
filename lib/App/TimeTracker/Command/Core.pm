@@ -751,11 +751,11 @@ some projects.
 
 =head4 --from TT::DateTime [REQUIRED (or use --this/--last)]
 
-Begin of reporting iterval, defaults to first day of current month.
+Begin of reporting interval, defaults to first day of current month.
 
 =head4 --to TT::DateTime [REQUIRED (or use --this/--last)]
 
-End of reporting iterval, default to DateTime->now.
+End of reporting interval, default to DateTime->now.
 
 =head4 --this [day, week, month, year]
 
@@ -843,7 +843,7 @@ List all installed plugins (i.e. stuff in C<App::TimeTracker::Command::*>)
     ~/perl/Your-Project$ tracker recalc_trackfile --trackfile 20110808-232327_App_TimeTracker.trc
 
 Recalculates the duration stored in an old trackfile. Might be useful
-after a manual update in a trackfile. Might be unneccessary in the
+after a manual update in a trackfile. Might be unnecessary in the
 future, as soon as task duration is always calculated lazily.
 
 =head3 Options:
