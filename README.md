@@ -20,7 +20,7 @@ Thomas Klausner <domm@cpan.org>
 
 # COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2011 - 2019 by Thomas Klausner.
+This software is copyright (c) 2011 - 2020 by Thomas Klausner.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
