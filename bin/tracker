@@ -25,7 +25,7 @@ __END__
 
 C<tracker> is the front end script to L<App::TimeTracker>. C<tracker>
 allows you to easily track and report the time you spend on various
-jobs, projects, tasks etc from the command line.
+jobs, projects, tasks etc. from the command line.
 
 Custom commands or adaptations to your workflow can be implemented via
 an "interesting" set of L<Moose>-powered plugins. You can configure
