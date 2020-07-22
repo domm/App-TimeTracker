@@ -38,7 +38,7 @@ about each plugin in C<App::TimeTracker::Command::PLUGIN-NAME>.
 
 Up to version 2.028 a lot of plugins where included in the main distribution
 C<App-TimeTracker>. To make installation easier and faster, all non-core
-command plugins have been moved into distinct, standalone distribution.
+command plugins have been moved into distinct, standalone distributions.
 
 The following plugins are affected:
 
