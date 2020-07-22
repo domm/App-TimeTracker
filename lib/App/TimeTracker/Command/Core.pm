@@ -207,7 +207,7 @@ sub cmd_list {
             : ()
         ),
     );
-my $total=0;
+    my $total=0;
     foreach my $file (@files) {
         my $task = App::TimeTracker::Data::Task->load( $file->stringify );
         my $time = $task->seconds // $task->_build_seconds;
