@@ -264,5 +264,4 @@ __END__
 
 =head1 DESCRIPTION
 
-ugly internal stuff, see upcoming YAPC::Europe 2011 talk...
-
+Ugly internal stuff, see L<YAPC::Europe 2011 talk...|https://domm.plix.at/talks/2011_riga_app_timetracker/>
