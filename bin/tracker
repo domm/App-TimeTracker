@@ -89,15 +89,35 @@ CPAN.pm is available on ancient Perls, and feels a bit ancient, too.
 
   cpan App::TimeTracker
 
-=head2 From a tarball or git checkout
+=head2 From a tarball
 
-To install L<App::TimeTracker> from a tarball or a git checkout, do the usual
-CPAN module install dance:
+To install L<App::TimeTracker> from a tarball, do the usual CPAN module
+install dance:
 
   ~/perl/App-TimeTracker$ perl Build.PL
   ~/perl/App-TimeTracker$ ./Build
   ~/perl/App-TimeTracker$ ./Build test
   ~/perl/App-TimeTracker$ ./Build install  # might require sudo
+
+=head2 From a git checkout
+
+Clone the repository if you have not already done so, and enter the
+C<App-TimeTracker> directory:
+
+  ~$ git clone git@github.com:domm/App-TimeTracker.git
+  ~$ cd App-TimeTracker
+
+C<App-TimeTracker> uses L<Dist::Zilla> to build, test and install the code,
+hence this must be installed first, e.g. with C<cpanm>:
+
+  ~/path/to/App-Tracker$ cpanm Dist::Zilla
+
+Now install the distribution's dependencies, test and install in the usual
+manner for C<Dist::Zilla> projects:
+
+  ~/path/to/App-Tracker$ dzil listdeps --missing | cpanm
+  ~/path/to/App-Tracker$ dzil test
+  ~/path/to/App-Tracker$ dzil install
 
 =head1 SETUP
 
