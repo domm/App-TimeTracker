@@ -66,14 +66,14 @@ sub cmd_stop {
             qq{The stop time you specified (%s) is earlier than the start time (%s).\nThis makes no sense.},
             $task->stop, $task->start );
 
-        my $what_you_ment = $task->stop->clone;
+        my $what_you_meant = $task->stop->clone;
         for ( 1 .. 5 ) {
-            $what_you_ment->add( days => 1 );
-            last if $what_you_ment > $task->start;
+            $what_you_meant->add( days => 1 );
+            last if $what_you_meant > $task->start;
         }
-        if ( $what_you_ment ne $task->start ) {
+        if ( $what_you_meant ne $task->start ) {
             say "Maybe you wanted to do:\ntracker stop --at '"
-                . $what_you_ment->strftime('%Y-%m-%d %H:%M') . "'";
+                . $what_you_meant->strftime('%Y-%m-%d %H:%M') . "'";
         }
         else {
             say
