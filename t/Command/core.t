@@ -60,6 +60,8 @@ my $c1 = $p->load_config($tmp->subdir(qw(some_project)));
     my $class = $p->setup_class($c1);
     my $t = $class->name->new(home=>$home, config=>$c1, _current_project=>'some_project');
     trap {$t->cmd_current };
+    like($trap->stdout, qr/^Working \d{2}:\d{2}:\d{2} on some_project/, 'current project is some_project');
+    like($trap->stdout, qr/Started at 14:00:00/, 'project start time is correct');
 }
 
 { # stop
