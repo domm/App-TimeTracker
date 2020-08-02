@@ -200,7 +200,7 @@ Revision history for App::TimeTracker
 2.008  2011-08-09T15:30:53+0200
     - this is going to be the first release to CPAN since 0.21
     - relaxed decoding of json config files
-    - started to add docs 
+    - started to add docs
     - back to per-dir config files, much saner
     - new commands: show_config, init
     - Better datetime parsing
@@ -251,7 +251,7 @@ Revision history for App::TimeTracker
 
 
 0.20    2009-02-12
-    - switched to new storage system (filesystem base, not sqlite, to 
+    - switched to new storage system (filesystem base, not sqlite, to
       make syncing via git et.al. easier
 
 

@@ -1,16 +1,16 @@
 # ABSTRACT: tracker bash autocomplete
 # PODNAME: tracker_bash_autocomplete
 
-_tracker() 
+_tracker()
 {
     local cur prev opts base
     COMPREPLY=()
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
-    
+
     #  The basic options we'll complete.
     opts=`tracker commands --autocomplete`
-    
+
 #    #  Complete the arguments to some of the basic commands.
 #    case "${prev}" in
 #        rt)
@@ -24,8 +24,8 @@ _tracker()
 #                return 0
 #                ;;
 #    esac
-    
-   COMPREPLY=($(compgen -W "${opts}" -- ${cur}))  
+
+   COMPREPLY=($(compgen -W "${opts}" -- ${cur}))
    return 0
 }
 complete -F _tracker tracker

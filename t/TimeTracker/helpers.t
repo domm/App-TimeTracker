@@ -54,7 +54,7 @@ my %BASE = ( home=>$tmp, config=>{} );
     );
     my $class_name = $class->name;
     $class_name->_load_attribs_worked($class);
-    
+
     no warnings 'redefine';
     local *DateTime::now = sub { return DateTime->new( year => 2011, month => 9, day => 7, hour => 12 ) };
     {
@@ -62,7 +62,7 @@ my %BASE = ( home=>$tmp, config=>{} );
             %BASE,
             this    => 'week',
         });
-        
+
         is($t1->from->iso8601,'2011-09-05T00:00:00','From 1 ok');
         is($t1->to->iso8601,'2011-09-11T23:59:59','To 1 ok');
     }
@@ -72,27 +72,27 @@ my %BASE = ( home=>$tmp, config=>{} );
             %BASE,
             last    => 'week',
         });
-        
+
         is($t2->from->iso8601,'2011-08-29T00:00:00','From 2 ok');
         is($t2->to->iso8601,'2011-09-04T23:59:59','To 2 ok');
     }
-    
+
     {
         my $t3 = $class_name->new({
             %BASE,
             last    => 'month',
         });
-        
+
         is($t3->from->iso8601,'2011-08-01T00:00:00','From 3 ok');
         is($t3->to->iso8601,'2011-08-31T23:59:59','To 3 ok');
     }
-    
+
     {
         my $t4 = $class_name->new({
             %BASE,
             last    => 'day',
         });
-        
+
         is($t4->from->iso8601,'2011-09-06T00:00:00','From 4 ok');
         is($t4->to->iso8601,'2011-09-06T23:59:59','To 4 ok');
     }

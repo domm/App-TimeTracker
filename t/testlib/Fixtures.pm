@@ -30,14 +30,14 @@ sub setup_running {
 
     my $tracker_file = $tmp->file('running.trc');
     copy('t/testdata/running.trc',$tracker_file) || die $!;
-    
+
     foreach my $type (qw(current previous)) {
         my $file = $tmp->file($type);
         my $fh = $file->openw;
         say $fh $tracker_file;
         close $fh;
     }
-    
+
     return $tmp;
 }
 

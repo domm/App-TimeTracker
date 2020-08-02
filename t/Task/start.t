@@ -17,14 +17,14 @@ my $tmp = testlib::Fixtures::setup_tempdir;
         project => 'test',
         start   => DateTime->new(year=>2010,month=>2,day=>26,hour=>10,minute=>5,second=>42),
     });
-    
+
     $capture->start();
     $task->do_start($tmp);
     $capture->stop();
 
     ok(-e $task->storage_location($tmp),'task is saved');
     ok(-e $tmp.'/current','current is set');
-    
+
     my $read = $capture->read;
     like($read,qr/started working on test at 10:05:42/i,'stdout');
 }

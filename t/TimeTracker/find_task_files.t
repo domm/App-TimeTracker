@@ -27,7 +27,7 @@ my $t = App::TimeTracker->new(home=>$tmp,config=>{});
         projects=>['TimeTracker'],
     });
     is(scalar @files,7,'got 7 files');
-    is((scalar grep { /App_TimeTracker/ } @files),7,'all match project'); 
+    is((scalar grep { /App_TimeTracker/ } @files),7,'all match project');
 }
 
 {
