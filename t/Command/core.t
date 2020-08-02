@@ -72,6 +72,9 @@ my $c1 = $p->load_config($tmp->subdir(qw(some_project)));
     my $task = App::TimeTracker::Data::Task->load($tracker_dir->file($basetf.'140000_some_project.trc')->stringify);
     is($task->seconds,15 * 60,'task seconds');
     is($task->duration,'00:15:00','task duration');
+
+    trap {$t->cmd_current};
+    like($trap->stdout, qr/Worked 15 minutes from 14:00:00 till 14:15:00/, '');
 }
 
 { # append
