@@ -134,4 +134,32 @@ my $c2 = $p->load_config($tmp->subdir(qw(other_project)));
     like($trap->stdout,qr/$version/,'version: output');
 }
 
+{ # commands
+    @ARGV = ('commands');
+    my $class = $p->setup_class({});
+
+    my $t = $class->name->new(home=>$home, config=>{});
+    trap {$t->cmd_commands};
+    my @core_commands = qw<
+       append
+       commands
+       continue
+       current
+       init
+       list
+       plugins
+       recalc_trackfile
+       report
+       show_config
+       start
+       stop
+       version
+       worked>;
+    my $output = $trap->stdout;
+    my @lines = split /\n/, $output;
+    @lines = grep !/Available commands/, @lines;
+    s/^\s+//g foreach @lines;  # remove leading whitespace from strings
+    is_deeply(\@lines, \@core_commands, 'default list of core commands is sorted');
+}
+
 done_testing();

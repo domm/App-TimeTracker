@@ -455,6 +455,8 @@ sub cmd_commands {
         push( @commands, $method );
     }
 
+    @commands = sort @commands;
+
     if (   $self->can('autocomplete')
         && $self->autocomplete )
     {
