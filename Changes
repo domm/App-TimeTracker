@@ -1,5 +1,15 @@
 Revision history for App::TimeTracker
 
+3.003  2020-08-02T17:40:42
+    - Sort list of available commands for consistency (Paul Cochrane)
+    - Stop gathering vim `.swp` files when building dist (Paul Cochrane)
+    - Link to YAPC::EU 2011 talk in docs (Paul Cochrane)
+    - Describe installation via tarball and git checkout separately (Paul Cochrane)
+    - Bump the copyright year (Paul Cochrane)
+    - Fix various typos, general cleanup (Paul Cochrane)
+    - Minor pod tidy up. (Mohammad S Anwar)
+
+
 3.002   2019-11-07T12:33:55
     - fix a bug in tracker report (Jozef Kutej)
     - fix PODNAME for tracker_bash_autocomplete, which properly fixes the POD link (Håkon Hægland)
