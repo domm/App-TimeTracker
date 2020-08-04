@@ -475,29 +475,33 @@ sub _load_attribs_worked {
     my ( $class, $meta ) = @_;
     $meta->add_attribute(
         'from' => {
-            isa        => 'TT::DateTime',
-            is         => 'ro',
-            coerce     => 1,
-            lazy_build => 1,
-            #cmd_aliases => [qw/start/],
+            isa           => 'TT::DateTime',
+            is            => 'ro',
+            coerce        => 1,
+            lazy_build    => 1,
+            #cmd_aliases  => [qw/start/],
+            documentation => 'Beginning of time period to report',
         } );
     $meta->add_attribute(
         'to' => {
-            isa    => 'TT::DateTime',
-            is     => 'ro',
-            coerce => 1,
-            #cmd_aliases => [qw/end/],
-            lazy_build => 1,
+            isa           => 'TT::DateTime',
+            is            => 'ro',
+            coerce        => 1,
+            #cmd_aliases  => [qw/end/],
+            lazy_build    => 1,
+            documentation => 'End of time period to report',
         } );
     $meta->add_attribute(
         'this' => {
-            isa => 'TT::Duration',
-            is  => 'ro',
+            isa           => 'TT::Duration',
+            is            => 'ro',
+            documentation => 'Filter by current time period [day|week|month|year], e.g. day=today',
         } );
     $meta->add_attribute(
         'last' => {
-            isa => 'TT::Duration',
-            is  => 'ro',
+            isa           => 'TT::Duration',
+            is            => 'ro',
+            documentation => 'Filter by previous time period [day|week|month|year], e.g. day=yesterday',
         } );
     $meta->add_attribute(
         'fprojects' => {
