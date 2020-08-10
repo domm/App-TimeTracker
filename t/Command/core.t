@@ -20,7 +20,7 @@ $now->set_time_zone('local');
 my $basetf = $now->ymd('').'-';
 my $tracker_dir = $home->subdir($now->year,sprintf("%02d",$now->month));
 
-{ # init 
+{ # init
     @ARGV=('init');
     my $class = $p->setup_class({});
 
