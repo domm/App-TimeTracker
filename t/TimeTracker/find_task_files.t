@@ -32,7 +32,7 @@ my $t = App::TimeTracker->new(home=>$tmp,config=>{});
 
 {
     my @files = $t->find_task_files({
-        from=>DateTime->new(year=>'2011',month=>5,day=>01),
+        from=>DateTime->new(year=>'2011',month=>5,day=>1),
         projects=>['oe1'],
     });
     is(scalar @files,16,'got 16 files');
