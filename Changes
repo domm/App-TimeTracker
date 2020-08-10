@@ -1,5 +1,14 @@
 Revision history for App::TimeTracker
 
+3.004	2020-08-10T07:34:58
+    - make this/last doc example a bit clearer (Thomas Klausner)
+    - Document the --from, --to, --this and --last options (Paul Cochrane)
+    - Fix off-by-one rounding error in Task->rounded_minutes (Paul Cochrane)
+    - Add assertions to test of `current` command (Paul Cochrane)
+    - Remove leading zero from integer (Paul Cochrane)
+    - Purge trailing whitespace in source files (Paul Cochrane)
+
+
 3.003  2020-08-02T17:40:42
     - Sort list of available commands for consistency (Paul Cochrane)
     - Stop gathering vim `.swp` files when building dist (Paul Cochrane)

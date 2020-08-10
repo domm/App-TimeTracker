@@ -632,7 +632,8 @@ sub _say_current_report_interval {
 }
 
 no Moose::Role;
-1;
+
+q{ listening to: Train noises on my way from Wien to Graz }
 
 __END__
 
