@@ -495,13 +495,13 @@ sub _load_attribs_worked {
         'this' => {
             isa           => 'TT::Duration',
             is            => 'ro',
-            documentation => 'Filter by current time period [day|week|month|year], e.g. day=today',
+            documentation => 'Filter by current time period [day|week|month|year], e.g. "--this day" => today',
         } );
     $meta->add_attribute(
         'last' => {
             isa           => 'TT::Duration',
             is            => 'ro',
-            documentation => 'Filter by previous time period [day|week|month|year], e.g. day=yesterday',
+            documentation => 'Filter by previous time period [day|week|month|year], e.g. "--last day" => yesterday',
         } );
     $meta->add_attribute(
         'fprojects' => {
