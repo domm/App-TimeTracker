@@ -29,4 +29,32 @@ use App::TimeTracker::Data::Task;
     is ($task->description_short,'Some Test Task described in a very long sentence...','description_short');
 }
 
+{ # rounded_minutes
+    my $task = App::TimeTracker::Data::Task->new(
+        {
+            project => 'test',
+            start   => DateTime->new(
+                year   => 2010,
+                month  => 2,
+                day    => 26,
+                hour   => 10,
+                minute => 5,
+                second => 0
+            ),
+            description => 'Worked exactly 15 minutes',
+        }
+    );
+    my $stop = DateTime->new(
+        year   => 2010,
+        month  => 2,
+        day    => 26,
+        hour   => 10,
+        minute => 20,
+        second => 0
+    );
+    $task->_calc_duration($stop);
+    is( $task->duration,        '00:15:00', 'task duration is 15 minutes' );
+    is( $task->rounded_minutes, 15,         'rounded_minutes' );
+}
+
 done_testing();
