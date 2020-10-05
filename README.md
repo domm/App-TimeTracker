@@ -4,7 +4,7 @@ App::TimeTracker - time tracking for impatient and lazy command line lovers
 
 # VERSION
 
-version 3.003
+version 3.004
 
 # SYNOPSIS
 

@@ -1,5 +1,9 @@
 Revision history for App::TimeTracker
 
+3.005   tbd
+    - use github-issues instead of RT via dist.ini
+
+
 3.004	2020-08-10T07:34:58
     - make this/last doc example a bit clearer (Thomas Klausner)
     - Document the --from, --to, --this and --last options (Paul Cochrane)
