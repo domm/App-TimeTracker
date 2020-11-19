@@ -301,6 +301,69 @@ __END__
 
 Backend for the C<tracker> command. See L<tracker> and/or C<perldoc tracker> for details.
 
+=head1 INSTALLATION
+
+L<App::TimeTracker> is a L<Perl|http://perl.org> application, and thus requires
+a recent Perl (>= 5.10). It also reuses a lot of code from
+L<CPAN|http://cpan.org>.
+
+=head2 From CPAN
+
+The easiest way to install the current stable version of L<App::TimeTracker> is
+via L<CPAN|http://cpan.org>. There are several different CPAN clients
+available:
+
+=head3 cpanminus
+
+  ~$ cpanm App::TimeTracker
+  --> Working on App::TimeTracker
+  Fetching http://search.cpan.org/CPAN/authors/id/D/DO/DOMM/App-TimeTracker-2.009.tar.gz ... OK
+  Configuring App-TimeTracker-2.009 ... OK
+  Building and testing App-TimeTracker-2.009 ... OK
+  Successfully installed App-TimeTracker-2.009
+  1 distribution installed
+
+If you don't have C<cpanminus> installed yet, L<install it right
+now|http://search.cpan.org/dist/App-cpanminus/lib/App/cpanminus.pm#INSTALLATION>:
+
+  ~$ curl -L http://cpanmin.us | perl - --sudo App::cpanminus
+
+=head3 CPAN.pm
+
+CPAN.pm is available on ancient Perls, and feels a bit ancient, too.
+
+  cpan App::TimeTracker
+
+=head2 From a tarball
+
+To install L<App::TimeTracker> from a tarball, do the usual CPAN module
+install dance:
+
+  ~/perl/App-TimeTracker$ perl Build.PL
+  ~/perl/App-TimeTracker$ ./Build
+  ~/perl/App-TimeTracker$ ./Build test
+  ~/perl/App-TimeTracker$ ./Build install  # might require sudo
+
+=head2 From a git checkout
+
+Clone the repository if you have not already done so, and enter the
+C<App-TimeTracker> directory:
+
+  ~$ git clone git@github.com:domm/App-TimeTracker.git
+  ~$ cd App-TimeTracker
+
+C<App-TimeTracker> uses L<Dist::Zilla> to build, test and install the code,
+hence this must be installed first, e.g. with C<cpanm>:
+
+  ~/path/to/App-Tracker$ cpanm Dist::Zilla
+
+Now install the distribution's dependencies, test and install in the usual
+manner for C<Dist::Zilla> projects:
+
+  ~/path/to/App-Tracker$ dzil listdeps --missing | cpanm
+  ~/path/to/App-Tracker$ dzil test
+  ~/path/to/App-Tracker$ dzil install
+
 =head1 CONTRIBUTORS
 
 Maros Kollar, Klaus Ita, Yanick Champoux, Lukas Rampa, David Schmidt, Michael Kröll, Thomas Sibley, Nelo Onyiah, Jozef Kutej, Roland Lammel, Ruslan Zakirov, Kartik Thakore, Tokuhiro Matsuno, Paul Cochrane, David Provost, Mohammad S Anwar, Håkon Hægland
