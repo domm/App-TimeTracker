@@ -364,6 +364,37 @@ manner for C<Dist::Zilla> projects:
   ~/path/to/App-Tracker$ dzil test
   ~/path/to/App-Tracker$ dzil install
 
+=head1 PLUGINS
+
+Custom commands or adaptations to your workflow can be implemented via
+an "interesting" set of L<Moose>-powered plugins. You can configure
+different sets of plugins for different jobs or projects.
+
+B<Tip:> Use C<tracker plugins> to list all installed plugins. Read more
+about each plugin in C<App::TimeTracker::Command::PLUGIN-NAME>.
+
+=head2 Note about (missing) Plugins
+
+Up to version 2.028 a lot of plugins where included in the main distribution
+C<App-TimeTracker>. To make installation easier and faster, all non-core
+command plugins have been moved into distinct, standalone distributions.
+
+The following plugins are affected:
+
+=over
+
+=item * App::TimeTracker::Git (which also includes SyncViaGit)
+
+=item * App::TimeTracker::RT
+
+=item * App::TimeTracker::TellRemote (which was called Post2IRC earlier)
+
+=item * App::TimeTracker::Overtime has been removed, while the idea is nice, the API and implementation are not good enough.
+
+=item * App::TimeTracker::TextNotify has been removed.
+
+=back
+
 =head1 SOURCE CODE
 
 =head2 git
