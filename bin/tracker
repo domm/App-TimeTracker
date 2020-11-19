@@ -79,7 +79,7 @@ available:
   1 distribution installed
 
 If you don't have C<cpanminus> installed yet, L<install it right
-now|http://search.cpan.org/dist/App-cpanminus/lib/App/cpanminus.pm#INSTALLATION>:
+now|https://metacpan.org/pod/distribution/App-cpanminus/lib/App/cpanminus.pm#INSTALLATION>:
 
   ~$ curl -L http://cpanmin.us | perl - --sudo App::cpanminus
 
@@ -385,16 +385,9 @@ use RT instead.
 =head2 CPAN
 
 L<App::TimeTracker> is distributed via L<CPAN|http://cpan.org/>, the
-Comprehensive Perl Archive Network. Here are a few different views of
-CPAN, offering slightly different features:
-
-=over
-
-=item * L<https://metacpan.org/release/App-TimeTracker/>
-
-=item * L<http://search.cpan.org/dist/App-TimeTracker/>
-
-=back
+Comprehensive Perl Archive Network. To view information about
+L<App::TimeTracker> online, visit the L<metacpan page for
+App::TimeTracker|https://metacpan.org/release/App-TimeTracker/>.
 
 =head1 Viewing and reporting Bugs
 
