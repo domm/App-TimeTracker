@@ -72,10 +72,10 @@ available:
 
   ~$ cpanm App::TimeTracker
   --> Working on App::TimeTracker
-  Fetching http://search.cpan.org/CPAN/authors/id/D/DO/DOMM/App-TimeTracker-2.009.tar.gz ... OK
-  Configuring App-TimeTracker-2.009 ... OK
-  Building and testing App-TimeTracker-2.009 ... OK
-  Successfully installed App-TimeTracker-2.009
+  Fetching http://www.cpan.org/authors/id/D/DO/DOMM/App-TimeTracker-3.004.tar.gz ... OK
+  Configuring App-TimeTracker-3.004 ... OK
+  Building and testing App-TimeTracker-3.004 ... OK
+  Successfully installed App-TimeTracker-3.004
   1 distribution installed
 
 If you don't have C<cpanminus> installed yet, L<install it right
