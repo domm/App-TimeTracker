@@ -396,7 +396,7 @@ CPAN, offering slightly different features:
 
 =back
 
-=head1 Viewing and reporting Bugs
+=head1 Viewing and reporting bugs
 
 To view and report bugs please use the L<GitHub issues page for
 App::TimeTracker|https://github.com/domm/App-TimeTracker/issues>.
