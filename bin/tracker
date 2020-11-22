@@ -379,8 +379,8 @@ a bug, please feel free to L<fork|http://help.github.com/fork-a-repo/> the
 repo and send us L<pull requests|http://help.github.com/send-pull-requests/>
 to merge your changes.
 
-To report a bug, please B<do not> use the C<< issues >> feature from github;
-use RT instead.
+To report a bug, please use the L<GitHub issues page for
+App::TimeTracker|https://github.com/domm/App-TimeTracker/issues>.
 
 =head2 CPAN
 
@@ -389,12 +389,7 @@ Comprehensive Perl Archive Network. To view information about
 L<App::TimeTracker> online, visit the L<metacpan page for
 App::TimeTracker|https://metacpan.org/release/App-TimeTracker/>.
 
-=head1 Viewing and reporting Bugs
+=head1 Viewing and reporting bugs
 
-We use L<rt.cpan.org|http://rt.cpan.org> (thank you
-L<BestPractical|http://rt.bestpractical.com>) for bug reporting. Please do
-not use the C<issues> feature of github! We pay no attention to those...
-
-Please use this URL to view and report bugs:
-
-L<https://rt.cpan.org/Public/Dist/Display.html?Name=App-TimeTracker>
+To view and report bugs please use the L<GitHub issues page for
+App::TimeTracker|https://github.com/domm/App-TimeTracker/issues>.
