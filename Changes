@@ -1,7 +1,13 @@
 Revision history for App::TimeTracker
 
-3.005   tbd
-    - use github-issues instead of RT via dist.ini
+3.005   2020-11-22T17:17:58
+    - Move docs to saner placed (Paul Cochrane)
+    - Update cpanm installation docs (Paul Cochrane)
+    - Replace references to search.cpan.org with metacpan (Paul Cochrane)
+    - Remove unused GitHub::Meta option (Paul Cochrane)
+    - Tell users to use GitHub issues for bug reporting (Paul Cochrane)
+    - use github-issues instead of RT via dist.ini (Thomas Klausner)
+    - Add initial Travis-CI configuration (Paul Cochrane)
 
 
 3.004	2020-08-10T07:34:58
