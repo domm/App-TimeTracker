@@ -185,6 +185,15 @@ sub cmd_worked {
     say $self->beautify_seconds($total);
 }
 
+my %LIST_FORMATS=(
+    compact => [qw(project tag time)],
+    content => [qw(project tag description)],
+    medium  => [qw(project tag time description)],
+    default => [qw(project tag duration start stop)],
+    all     => [qw(project tag duration start stop seconds description file)],
+    long    => [qw( project tag duration start stop description)],
+);
+
 sub cmd_list {
     my $self = shift;
 
@@ -197,32 +206,32 @@ sub cmd_list {
         } );
 
     my $s     = \' | ';
-    my $table = Text::Table->new(
-        "Project",
-        $s, "Tag", $s,
-        "Duration",
-        $s, "Start", $s, "Stop",
-        (   $self->detail
-            ? ( $s, "Seconds", $s, "Description", $s, "File" )
-            : ()
-        ),
-    );
+    my $format = $self->detail ? 'all' : $self->output ? $self->output : 'default';
+    my $selected_fields = $LIST_FORMATS{$format} || $LIST_FORMATS{default};
+    my %fields = map { $_=>1 } @$selected_fields;
+
+    my @header = map { ucfirst($_), $s } @$selected_fields;
+    pop(@header);
+    my $table = Text::Table->new(@header);
+
     my $total=0;
     foreach my $file (@files) {
         my $task = App::TimeTracker::Data::Task->load( $file->stringify );
         my $time = $task->seconds // $task->_build_seconds;
         $total+=$time;
-        $table->add(
-            $task->project,
-            join( ', ', @{ $task->tags } ),
-            $task->duration || 'working',
-            pretty_date( $task->start ),
-            pretty_date( $task->stop ),
-            (   $self->detail
-                ? ( $time, ($task->description_short || ''), $file->stringify )
-                : ()
-            ),
-        );
+
+        my @row;
+        push(@row, $task->project) if $fields{project};
+        push(@row, join( ', ', @{ $task->tags } ) || ' ' ) if $fields{tag};
+        push(@row, $task->duration || 'working') if $fields{duration};
+        push(@row, pretty_date( $task->start ) ) if $fields{start};
+        push(@row, pretty_date( $task->stop ) ) if $fields{stop};
+        push(@row, $task->compact_time) if $fields{time};
+        push(@row, $time) if $fields{seconds};
+        push(@row, $task->description_short || ' ') if $fields{description};
+        push(@row, $file->stringify) if $fields{file};
+
+        $table->add(@row);
     }
 
     print $table->title;
@@ -543,7 +552,13 @@ sub _load_attribs_list {
             isa           => 'Bool',
             is            => 'ro',
             default       => 0,
-            documentation => 'Be detailed',
+            documentation => 'Show all fields',
+        } );
+    $meta->add_attribute(
+        'output' => {
+            isa           => 'Str',
+            is            => 'ro',
+            documentation => 'Specify output format. One of: '.join(', ',sort keys %LIST_FORMATS),
         } );
 }
 
