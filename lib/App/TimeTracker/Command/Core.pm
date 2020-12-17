@@ -261,9 +261,10 @@ sub cmd_report {
         my $task    = App::TimeTracker::Data::Task->load( $file->stringify );
         my $time    = $task->seconds // $task->_build_seconds;
         my $project = $task->project;
-        my $week_num = $task->start->week_number;
+        my $week_num = 'KW' . $task->start->week_number;
 
-        $report->{$week_num} += $time;
+        $report->{$week_num}{'_total'} += $time;
+        $report->{$week_num}{$project}{time} += $time;
 
         if ( $time >= 60 * 60 * 8 ) {
             say "Found dubious trackfile: " . $file->stringify;
