@@ -15,6 +15,7 @@ use File::Copy qw(move);
 use File::Find::Rule;
 use Data::Dumper;
 use Text::Table;
+use DateTime;
 
 sub cmd_start {
     my $self = shift;
@@ -238,33 +239,30 @@ sub cmd_list {
     print $table->title;
     print $table->rule( '-', '+' );
     print $table->body;
-    say "total ".$self->beautify_seconds($total);
+    say "total " . $self->beautify_seconds($total);
 }
 
 sub cmd_report {
     my $self = shift;
 
-    my @files = $self->find_task_files( {
-            from     => $self->from,
+    my @files = $self->find_task_files(
+        {   from     => $self->from,
             to       => $self->to,
             projects => $self->fprojects,
             tags     => $self->ftags,
             parent   => $self->fparent,
-        } );
+        }
+    );
 
-    my $total  = 0;
-    my $report = {};
-    my $format = "%- 20s % 12s\n";
+    my $total    = 0;
+    my $report   = {};
+    my $format   = "%- 20s % 12s\n";
     my $projects = $self->project_tree;
 
     foreach my $file (@files) {
         my $task    = App::TimeTracker::Data::Task->load( $file->stringify );
         my $time    = $task->seconds // $task->_build_seconds;
         my $project = $task->project;
-        my $week_num = 'KW' . $task->start->week_number;
-
-        $report->{$week_num}{'_total'} += $time;
-        $report->{$week_num}{$project}{time} += $time;
 
         if ( $time >= 60 * 60 * 8 ) {
             say "Found dubious trackfile: " . $file->stringify;
@@ -272,57 +270,103 @@ sub cmd_report {
                 . $self->beautify_seconds($time)
                 . " on one task?";
         }
-
         $total += $time;
 
-        $report->{$project}{'_total'} += $time;
+        if ( $self->group eq 'week' ) {
+            my $week_num = 'KW' . $task->start->week_number;
 
-        if ( my $level = $self->detail ) {
-            my $detail = $task->get_detail($level);
-            my $tags   = $detail->{tags};
-            if ($tags && @$tags) {
-                # Only use the first assigned tag to calculate the aggregated times and use it
-                # as tag key.
-                # Otherwise the same trackfiles would be counted multiple times and the
-                # aggregated sums would not match up.
-                $report->{$project}{ $tags->[0] }{time} += $time;
+            $report->{$week_num}{'_total'} += $time;
+            $report->{$week_num}{$project}{time} += $time;
+            $report->{$week_num}{'_start'} = pretty_date(
+                $self->_first_day_of_week(
+                    $task->start->year, $task->start->week_number
+                )
+            ) unless $report->{$week_num}{'_start'};
+            $report->{$week_num}{'_end'} = pretty_date(
+                $self->_first_day_of_week( $task->start->year,
+                    $task->start->week_number )->add( { days => 7 } )
+                    ->subtract( { seconds => 1 } )
+            ) unless $report->{$week_num}{'_end'};
+        }
 
-                foreach my $tag (@$tags) {
-                    $report->{$project}{ $tags->[0] }{desc} //= '';
+        if ( $self->group eq 'project' ) {
+            $report->{$project}{'_total'} += $time;
 
-                    if ( my $desc = $detail->{desc} ) {
-                        $report->{$project}{ $tags->[0] }{desc} .= $desc
-                            . "\n"
-                            if index( $report->{$project}{ $tags->[0] }{desc},
-                            $desc ) == -1;
+            if ( my $level = $self->detail ) {
+                my $detail = $task->get_detail($level);
+                my $tags   = $detail->{tags};
+                if ( $tags && @$tags ) {
+
+                    # Only use the first assigned tag to calculate the aggregated times and use it
+                    # as tag key.
+                    # Otherwise the same trackfiles would be counted multiple times and the
+                    # aggregated sums would not match up.
+                    $report->{$project}{ $tags->[0] }{time} += $time;
+
+                    foreach my $tag (@$tags) {
+                        $report->{$project}{ $tags->[0] }{desc} //= '';
+
+                        if ( my $desc = $detail->{desc} ) {
+                            $report->{$project}{ $tags->[0] }{desc} .= $desc
+                                . "\n"
+                                if
+                                index( $report->{$project}{ $tags->[0] }{desc},
+                                $desc ) == -1;
+                        }
                     }
                 }
-            }
-            else {
-                $report->{$project}{'_untagged'} += $time;
+                else {
+                    $report->{$project}{'_untagged'} += $time;
+                }
             }
         }
     }
 
-    # sum child-time to all ancestors
-    my %top_nodes;
-    foreach my $project ( sort keys %$report ) {
-        my @ancestors;
-        $self->_get_ancestors($report, $projects, $project, \@ancestors);
-        my $time = $report->{$project}{'_total'} || 0;
-        foreach my $ancestor (@ancestors) {
-            $report->{$ancestor}{'_kids'} += $time;
+    if ( $self->group eq 'project' ) {
+
+        # sum child-time to all ancestors
+        my %top_nodes;
+        foreach my $project ( sort keys %$report ) {
+            my @ancestors;
+            $self->_get_ancestors( $report, $projects, $project, \@ancestors );
+            my $time = $report->{$project}{'_total'} || 0;
+            foreach my $ancestor (@ancestors) {
+                $report->{$ancestor}{'_kids'} += $time;
+            }
+            $top_nodes{ $ancestors[0] }++ if @ancestors;
+            $top_nodes{$project}++        if !@ancestors;
         }
-        $top_nodes{$ancestors[0]}++ if @ancestors;
-        $top_nodes{$project}++ if !@ancestors;
+
+        $self->_say_current_report_interval;
+        my $padding    = '';
+        my $tagpadding = '     ';
+        foreach my $project ( sort keys %top_nodes ) {
+            $self->_print_report_tree( $report, $projects, $project, $padding,
+                $tagpadding );
+        }
     }
 
-    $self->_say_current_report_interval;
-    my $padding    = '';
-    my $tagpadding = '     ';
-    foreach my $project ( sort keys %top_nodes ) {
-        $self->_print_report_tree( $report, $projects, $project, $padding,
-            $tagpadding );
+    if ( $self->group eq 'week' ) {
+        my $s      = \' | ';
+        my @header = map { ucfirst($_), $s } qw(week start end time);
+        pop(@header);
+        my $table = Text::Table->new(@header);
+
+        foreach my $week ( sort keys %$report ) {
+            my @row;
+
+            push @row, $week;
+            push @row, $report->{$week}->{_start};
+            push @row, $report->{$week}->{_end};
+            push @row, $self->beautify_seconds( $report->{$week}->{_total} );
+
+            $table->add(@row);
+        }
+
+        print $table->title;
+        print $table->rule( '-', '+' );
+        print $table->body;
+
     }
 
     printf( $format, 'total', $self->beautify_seconds($total) );
@@ -335,6 +379,14 @@ sub _get_ancestors {
         unshift( @$ancestors, $parent );
         $self->_get_ancestors( $report, $projects, $parent, $ancestors );
     }
+}
+
+sub _first_day_of_week {
+    my ( $self, $year, $week ) = @_;
+
+    # Week 1 is defined as the one containing January 4:
+    return DateTime->new( year => $year, month => 1, day => 4 )
+        ->add( weeks => ( $week - 1 ) )->truncate( to => 'week' );
 }
 
 sub _print_report_tree {
@@ -572,10 +624,19 @@ sub _load_attribs_report {
     $class->_load_attribs_worked($meta);
     $meta->add_attribute(
         'detail' => {
-            isa => enum( [qw(tag description)] ),
-            is => 'ro',
+            isa           => enum( [qw(tag description)] ),
+            is            => 'ro',
             documentation => 'Be detailed: [tag|description]',
-        } );
+        }
+    );
+    $meta->add_attribute(
+        'group' => {
+            isa           => enum( [qw(project week)] ),
+            is            => 'ro',
+            default       => 'project',
+            documentation => 'Genereta Report by week or project.'
+        }
+    );
 }
 
 sub _load_attribs_start {
