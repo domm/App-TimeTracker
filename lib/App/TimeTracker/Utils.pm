@@ -16,7 +16,7 @@ our @EXPORT_OK   = qw(pretty_date now error_message);
 our %EXPORT_TAGS = ( all => \@EXPORT_OK );
 
 sub error_message {
-    return _message( 'bold red', @_ );
+    _message( 'bold red', @_ );
 }
 
 sub _message {
