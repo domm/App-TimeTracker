@@ -140,7 +140,8 @@ sub setup_class {
 
             if ($cmd eq 'start' && !$self->has_project) {
                 error_message(
-                    "Could not find project\nUse --project or chdir into the project directory"
+                    "Could not find project; did you forget to run `tracker init`?\n" .
+                    "If not, use --project or chdir into the project directory."
                 );
                 exit;
             }

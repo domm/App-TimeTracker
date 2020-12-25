@@ -28,8 +28,8 @@ my $config = {};
     );
     trap { $t->cmd_start };
     my $expected_start_help_output = <<'EOF';
-Could not find project
-Use --project or chdir into the project directory
+Could not find project; did you forget to run `tracker init`?
+If not, use --project or chdir into the project directory.
 EOF
     is( colorstrip( $trap->stdout ),
         $expected_start_help_output,
