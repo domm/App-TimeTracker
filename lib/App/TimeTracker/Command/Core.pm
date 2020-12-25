@@ -8,6 +8,7 @@ use 5.010;
 use Moose::Role;
 use Moose::Util::TypeConstraints;
 use App::TimeTracker::Utils qw(now pretty_date error_message);
+use App::TimeTracker::Constants qw(MISSING_PROJECT_HELP_MSG);
 use File::Copy qw(move);
 use File::Find::Rule;
 use Data::Dumper;
@@ -17,10 +18,7 @@ sub cmd_start {
     my $self = shift;
 
     unless ( $self->has_current_project ) {
-        error_message(
-            "Could not find project; did you forget to run `tracker init`?\n" .
-            "If not, use --project or chdir into the project directory."
-        );
+        error_message( MISSING_PROJECT_HELP_MSG );
         exit;
     }
     $self->cmd_stop('no_exit');

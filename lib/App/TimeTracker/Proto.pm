@@ -17,6 +17,7 @@ use Carp;
 use Try::Tiny;
 
 use App::TimeTracker::Data::Task;
+use App::TimeTracker::Constants qw(MISSING_PROJECT_HELP_MSG);
 
 has 'home' => (
     is         => 'ro',
@@ -139,10 +140,7 @@ sub setup_class {
             $load_attribs_for_command = '_load_attribs_' . $cmd;
 
             if ($cmd eq 'start' && !$self->has_project) {
-                error_message(
-                    "Could not find project; did you forget to run `tracker init`?\n" .
-                    "If not, use --project or chdir into the project directory."
-                );
+                error_message( MISSING_PROJECT_HELP_MSG );
                 exit;
             }
 
