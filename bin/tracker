@@ -15,6 +15,9 @@ __END__
 
 =head1 SYNOPSIS
 
+  # initialize tracker for the 'Some-Project' directory
+  ~/perl/Some-Project$ tracker init
+
   ~/perl/Some-Project$ tracker start
   Started working on Some-Project at 09:03:41
 
