@@ -1,5 +1,9 @@
 Revision history for App::TimeTracker
 
+3.007	2020-12-28T20:53:03
+    - set github bugtracker (Thomas Klausner)
+
+
 3.006   2020-12-28T20:34:29
     - test for global report (list all) and report filtered by project (Thomas Klausner)
     - Add more details to init command documentation (Paul Cochrane)
