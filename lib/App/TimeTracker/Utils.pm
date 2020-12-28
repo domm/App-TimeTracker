@@ -12,11 +12,15 @@ use Exporter;
 use parent qw(Exporter);
 
 our @EXPORT      = qw();
-our @EXPORT_OK   = qw(pretty_date now error_message);
+our @EXPORT_OK   = qw(pretty_date now error_message warning_message);
 our %EXPORT_TAGS = ( all => \@EXPORT_OK );
 
 sub error_message {
     _message( 'bold red', @_ );
+}
+
+sub warning_message {
+    return _message( 'bold yellow', @_ );
 }
 
 sub _message {
