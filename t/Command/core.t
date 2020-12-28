@@ -167,30 +167,24 @@ my $c2 = $p->load_config($tmp->subdir(qw(other_project)));
     is_deeply(\@lines, \@core_commands, 'default list of core commands is sorted');
 }
 
-{ # report
+{ # report global
     @ARGV = ('report');
-    my $class = $p->setup_class( {} );
-    my $t = $class->name->new( home => $home, config => {} );
+    my $class = $p->setup_class( $c1, 'report' );
+    my $t = $class->name->new( home => $home, config => $c1 );
     trap { $t->cmd_report };
-    my $datetime_regex = qr/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/;
-    # like(
-    #     $trap->stdout,
-    #     qr/^From $datetime_regex to $datetime_regex you worked on:\s+total\s+0/,
-    #     'report output without project shows zero hours worked'
-    # );
+    like ($trap->stdout, qr/total\s+00:45:00/, 'report global');
+};
 
-    $class = $p->setup_class( $c1, 'report' );
-    $t = $class->name->new(
+{ # report filter project
+    @ARGV = ('report');
+    my $class = $p->setup_class( $c1, 'report' );
+    my $t = $class->name->new(
         home             => $home,
         config           => $c1,
-        _current_project => 'some_project'
+        fprojects =>  ['some_project']
     );
     trap { $t->cmd_report };
-    like(
-        $trap->stdout,
-        qr/^From $datetime_regex to $datetime_regex you worked on/,
-        'report output with project'
-    );
+    like ($trap->stdout, qr/total\s+00:30:00/, 'report filter project');
 }
 
 done_testing();
