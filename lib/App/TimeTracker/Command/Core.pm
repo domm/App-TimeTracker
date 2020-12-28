@@ -840,7 +840,10 @@ The same options as for L<report|/report>
 
     ~/perl/Your-Project$ tracker init
 
-Create a rather empty F<.tracker.json> config file in the current directory.
+Initialize current directory as a project in which to track time.  This step
+is required before one can use time tracking commands such as
+L<start|/start> and L<stop|/stop>.  The initialization step creates a rather
+empty F<.tracker.json> config file in the current directory.
 
 =head3 No options
 
