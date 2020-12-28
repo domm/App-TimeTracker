@@ -20,7 +20,7 @@ sub error_message {
 }
 
 sub warning_message {
-    return _message( 'bold yellow', @_ );
+    _message( 'bold yellow', @_ );
 }
 
 sub _message {
