@@ -1,5 +1,15 @@
 Revision history for App::TimeTracker
 
+3.006   2020-12-28T20:34:29
+    - test for global report (list all) and report filtered by project (Thomas Klausner)
+    - Add more details to init command documentation (Paul Cochrane)
+    - Extract duplicate error messages into Constants package (Paul Cochrane)
+    - Add init command hint to start command help message (Paul Cochrane)
+    - Test current start command help output without project (Paul Cochrane)
+    - Add an initial test for report command (Paul Cochrane)
+    - add --output opt to "report" command to show different fields in the report table (Thomas Klausner)
+
+
 3.005   2020-11-22T17:17:58
     - Move docs to saner placed (Paul Cochrane)
     - Update cpanm installation docs (Paul Cochrane)
