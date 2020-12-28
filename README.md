@@ -4,7 +4,7 @@ App::TimeTracker - time tracking for impatient and lazy command line lovers
 
 # VERSION
 
-version 3.005
+version 3.006
 
 # SYNOPSIS
 
@@ -12,13 +12,13 @@ Backend for the `tracker` command. See [tracker](https://metacpan.org/pod/tracke
 
 # INSTALLATION
 
-[App::TimeTracker](https://metacpan.org/pod/App%3A%3ATimeTracker) is a [Perl](http://perl.org) application, and thus requires
+[App::TimeTracker](https://metacpan.org/pod/App::TimeTracker) is a [Perl](http://perl.org) application, and thus requires
 a recent Perl (>= 5.10). It also reuses a lot of code from
 [CPAN](http://cpan.org).
 
 ## From CPAN
 
-The easiest way to install the current stable version of [App::TimeTracker](https://metacpan.org/pod/App%3A%3ATimeTracker) is
+The easiest way to install the current stable version of [App::TimeTracker](https://metacpan.org/pod/App::TimeTracker) is
 via [CPAN](http://cpan.org). There are several different CPAN clients
 available:
 
@@ -45,7 +45,7 @@ CPAN.pm is available on ancient Perls, and feels a bit ancient, too.
 
 ## From a tarball
 
-To install [App::TimeTracker](https://metacpan.org/pod/App%3A%3ATimeTracker) from a tarball, do the usual CPAN module
+To install [App::TimeTracker](https://metacpan.org/pod/App::TimeTracker) from a tarball, do the usual CPAN module
 install dance:
 
     ~/perl/App-TimeTracker$ perl Build.PL
@@ -61,7 +61,7 @@ Clone the repository if you have not already done so, and enter the
     ~$ git clone git@github.com:domm/App-TimeTracker.git
     ~$ cd App-TimeTracker
 
-`App-TimeTracker` uses [Dist::Zilla](https://metacpan.org/pod/Dist%3A%3AZilla) to build, test and install the code,
+`App-TimeTracker` uses [Dist::Zilla](https://metacpan.org/pod/Dist::Zilla) to build, test and install the code,
 hence this must be installed first, e.g. with `cpanm`:
 
     ~/path/to/App-Tracker$ cpanm Dist::Zilla
@@ -103,11 +103,11 @@ The following plugins are affected:
 We use `git` for version control and maintain a public repository on
 [github](http://github.com).
 
-You can find the latest version of [App::TimeTracker](https://metacpan.org/pod/App%3A%3ATimeTracker) here:
+You can find the latest version of [App::TimeTracker](https://metacpan.org/pod/App::TimeTracker) here:
 
 [https://github.com/domm/App-TimeTracker](https://github.com/domm/App-TimeTracker)
 
-If you want to work on [App::TimeTracker](https://metacpan.org/pod/App%3A%3ATimeTracker), add a feature, add a plugin or fix
+If you want to work on [App::TimeTracker](https://metacpan.org/pod/App::TimeTracker), add a feature, add a plugin or fix
 a bug, please feel free to [fork](http://help.github.com/fork-a-repo/) the
 repo and send us [pull requests](http://help.github.com/send-pull-requests/)
 to merge your changes.
@@ -117,7 +117,7 @@ use RT instead.
 
 ## CPAN
 
-[App::TimeTracker](https://metacpan.org/pod/App%3A%3ATimeTracker) is distributed via [CPAN](http://cpan.org/), the
+[App::TimeTracker](https://metacpan.org/pod/App::TimeTracker) is distributed via [CPAN](http://cpan.org/), the
 Comprehensive Perl Archive Network. Here are a few different views of
 CPAN, offering slightly different features:
 
