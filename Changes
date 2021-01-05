@@ -1,5 +1,10 @@
 Revision history for App::TimeTracker
 
+{{$NEXT}}
+    - fix global report test that breaks if the test were run before 14:30 (Thomas Klausner)
+    - switch to Dist::Zilla::PluginBundle::Author::DOMM
+
+
 3.007	2020-12-28T20:53:03
     - set github bugtracker (Thomas Klausner)
 

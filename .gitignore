@@ -13,3 +13,4 @@ App-TimeTracker-*
 cover_db
 MANIFEST.bak
 META.yml
+local/
