@@ -170,7 +170,7 @@ my $c2 = $p->load_config($tmp->subdir(qw(other_project)));
 { # report global
     @ARGV = ('report');
     my $class = $p->setup_class( $c1, 'report' );
-    my $t = $class->name->new( home => $home, config => $c1 );
+    my $t = $class->name->new( home => $home, config => $c1, this=>'day' );
     trap { $t->cmd_report };
     like ($trap->stdout, qr/total\s+00:45:00/, 'report global');
 };
@@ -179,9 +179,11 @@ my $c2 = $p->load_config($tmp->subdir(qw(other_project)));
     @ARGV = ('report');
     my $class = $p->setup_class( $c1, 'report' );
     my $t = $class->name->new(
-        home             => $home,
-        config           => $c1,
-        fprojects =>  ['some_project']
+        home      => $home,
+        config    => $c1,
+        this      => 'day',
+        fprojects => ['some_project']
+
     );
     trap { $t->cmd_report };
     like ($trap->stdout, qr/total\s+00:30:00/, 'report filter project');
