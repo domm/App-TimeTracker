@@ -1,7 +1,9 @@
 package App::TimeTracker::Data::Task;
-use 5.010;
 
 # ABSTRACT: App::TimeTracker Task storage
+# VERSION
+
+use 5.010;
 
 use Moose;
 use App::TimeTracker::Utils qw(now);
@@ -10,8 +12,8 @@ use App::TimeTracker;
 use DateTime::Format::ISO8601;
 use DateTime::Format::Duration;
 use User::pwent;
-
 use MooseX::Storage;
+
 with Storage(
     format => [ JSONpm => { json_opts => { pretty => 1, canonical => 1 } } ],
     io     => "File",

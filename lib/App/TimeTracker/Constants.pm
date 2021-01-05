@@ -1,9 +1,11 @@
 package App::TimeTracker::Constants;
+
+# ABSTRACT: App::TimeTracker pre-defined constants
+# VERSION
+
 use strict;
 use warnings;
 use 5.010;
-
-# ABSTRACT: App::TimeTracker pre-defined constants
 
 use Exporter;
 use parent qw(Exporter);

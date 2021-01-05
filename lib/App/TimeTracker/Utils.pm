@@ -1,13 +1,14 @@
 package App::TimeTracker::Utils;
+
+# ABSTRACT: Utility Methods/Functions for App::TimeTracker
+# VERSION
+
 use strict;
 use warnings;
 use 5.010;
 
-# ABSTRACT: Utility Methods/Functions for App::TimeTracker
-
 use Scalar::Util qw(blessed);
 use Term::ANSIColor;
-
 use Exporter;
 use parent qw(Exporter);
 

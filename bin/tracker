@@ -1,5 +1,9 @@
 #!/usr/bin/perl
 
+# ABSTRACT: run App::TimeTracker
+# PODNAME: tracker
+# VERSION
+
 use strict;
 use warnings;
 use App::TimeTracker::Proto;
@@ -7,9 +11,6 @@ use App::TimeTracker::Proto;
 binmode(STDOUT, ":utf8");
 
 my $app = App::TimeTracker::Proto->new->run;
-
-# ABSTRACT: run App::TimeTracker
-# PODNAME: tracker
 
 __END__
 

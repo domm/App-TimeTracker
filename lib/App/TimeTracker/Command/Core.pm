@@ -1,9 +1,11 @@
 package App::TimeTracker::Command::Core;
+
+# ABSTRACT: App::TimeTracker Core commands
+# VERSION
+
 use strict;
 use warnings;
 use 5.010;
-
-# ABSTRACT: App::TimeTracker Core commands
 
 use Moose::Role;
 use Moose::Util::TypeConstraints;

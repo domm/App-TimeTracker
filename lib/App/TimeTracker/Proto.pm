@@ -1,12 +1,13 @@
 package App::TimeTracker::Proto;
+
+# ABSTRACT: App::TimeTracker Proto Class
+# VERSION
+
 use strict;
 use warnings;
 use 5.010;
 
-# ABSTRACT: App::TimeTracker Proto Class
-
 use App::TimeTracker::Utils qw(error_message);
-
 use Moose;
 use MooseX::Types::Path::Class;
 use File::HomeDir ();
@@ -15,7 +16,6 @@ use Hash::Merge qw(merge);
 use JSON::XS;
 use Carp;
 use Try::Tiny;
-
 use App::TimeTracker::Data::Task;
 use App::TimeTracker::Constants qw(MISSING_PROJECT_HELP_MSG);
 
