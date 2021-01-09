@@ -32,8 +32,7 @@ Could not find project; did you forget to run `tracker init`?
 If not, use --project or chdir into the project directory.
 EOF
     is( colorstrip( $trap->stdout ),
-        $expected_start_help_output,
-        'Start command help output with undefined project' );
+        $expected_start_help_output, 'Start command help output with undefined project' );
 }
 
 done_testing();
