@@ -4,7 +4,7 @@ App::TimeTracker - time tracking for impatient and lazy command line lovers
 
 # VERSION
 
-version 3.008
+version 3.009
 
 # SYNOPSIS
 
@@ -136,7 +136,7 @@ Please use this URL to view and report bugs:
 
 # CONTRIBUTORS
 
-Maros Kollar, Klaus Ita, Yanick Champoux, Lukas Rampa, David Schmidt, Michael Kröll, Thomas Sibley, Nelo Onyiah, Jozef Kutej, Roland Lammel, Ruslan Zakirov, Kartik Thakore, Tokuhiro Matsuno, Paul Cochrane, David Provost, Mohammad S Anwar, Håkon Hægland
+Maros Kollar, Klaus Ita, Yanick Champoux, Lukas Rampa, David Schmidt, Michael Kröll, Thomas Sibley, Nelo Onyiah, Jozef Kutej, Roland Lammel, Ruslan Zakirov, Kartik Thakore, Tokuhiro Matsuno, Paul Cochrane, David Provost, Mohammad S Anwar, Håkon Hægland, Thomas Mantl
 
 # AUTHOR
 

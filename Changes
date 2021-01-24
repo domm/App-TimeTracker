@@ -2,6 +2,13 @@ Revision history for App::TimeTracker
 
 {{$NEXT}}
 
+3.009     2021-01-24 19:53:24+01:00
+    - add week-overview as report-option (Thomas Mantl)
+    - Apply perltidy settings to all test files (Paul Cochrane)
+    - min Author bundle version (Thomas Klausner)
+    - Fix Dist::Zilla build problems (Paul Cochrane)
+
+
 3.008     2021-01-05 12:14:08+01:00
     - fix global report test that breaks if the test were run before 14:30 (Thomas Klausner)
     - switch to Dist::Zilla::PluginBundle::Author::DOMM
