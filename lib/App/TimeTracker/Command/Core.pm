@@ -278,20 +278,18 @@ sub cmd_report {
         $total += $time;
 
         if ( $self->group eq 'week' ) {
-            my $week_num = 'KW' . $task->start->week_number;
+            my $week_num = $task->start->week_number;
 
             $report->{$week_num}{'_total'} += $time;
             $report->{$week_num}{$project}{time} += $time;
-            $report->{$week_num}{'_start'} = pretty_date(
-                $self->_first_day_of_week(
+            unless ($report->{$week_num}{'_start'}) {
+                $report->{$week_num}{'_start'} = $self->_first_day_of_week(
                     $task->start->year, $task->start->week_number
-                )
-            ) unless $report->{$week_num}{'_start'};
-            $report->{$week_num}{'_end'} = pretty_date(
-                $self->_first_day_of_week( $task->start->year,
-                    $task->start->week_number )->add( { days => 7 } )
-                    ->subtract( { seconds => 1 } )
-            ) unless $report->{$week_num}{'_end'};
+                )->dmy('.');
+                my $end = $task->start->add( { days => 6, hours=>23, minutes=>59 } );
+                $report->{$week_num}{'_end'} =
+                    $self->_first_day_of_week( $end->year, $end->week_number )->dmy('.')
+            }
         }
 
         if ( $self->group eq 'project' ) {
