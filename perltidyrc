@@ -1,0 +1,26 @@
+# perltidy settings for this project
+--maximum-line-length=100
+--standard-output
+--standard-error-output
+--nooutdent-long-lines
+--stack-opening-tokens
+--nospace-for-semicolon
+--opening-brace-always-on-right
+--opening-token-right
+--noopening-sub-brace-on-new-line
+--vertical-tightness=2
+--continuation-indentation=4   # ugly with closing parens, but nice with code
+
+# this results in  } } } ); on one line, which I think is ugly
+#--stack-closing-tokens
+
+# defaults, but here for docu:
+--indent-columns=4
+--paren-tightness=1
+--brace-tightness=1
+--square-bracket-tightness=1
+--block-brace-tightness=1
+--closing-token-indentation=0
+
+#--comma-arrow-breakpoints=0
+#--line-up-parentheses
