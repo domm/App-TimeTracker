@@ -29,6 +29,7 @@ sub cmd_start {
     my $task = App::TimeTracker::Data::Task->new(
         {   start       => $self->at || now(),
             project     => $self->project,
+            id          => $self->id,
             tags        => $self->tags,
             description => $self->description,
         }
@@ -148,6 +149,7 @@ sub cmd_append {
         my $task = App::TimeTracker::Data::Task->new(
             {   start   => $prev->stop,
                 project => $self->project,
+                id      => $self->id,
                 tags    => $self->tags,
             }
         );
@@ -171,6 +173,7 @@ sub cmd_continue {
         my $task = App::TimeTracker::Data::Task->new(
             {   start   => $self->at || now(),
                 project => $prev->project,
+                id      => $self->id,
                 tags    => $prev->tags,
             }
         );
@@ -686,6 +689,14 @@ sub _load_attribs_start {
             isa           => 'Str',
             is            => 'ro',
             documentation => 'Project name',
+            lazy_build    => 1,
+        }
+    );
+    $meta->add_attribute(
+        'id' => {
+            isa           => 'Str',
+            is            => 'ro',
+            documentation => 'Task ident',
             lazy_build    => 1,
         }
     );

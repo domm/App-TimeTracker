@@ -110,6 +110,12 @@ has '_current_project' => (
     traits    => ['NoGetopt'],
 );
 
+has 'id' => (
+    isa     => 'Maybe[Str]',
+    is      => 'rw',
+    documentation => 'Task identifier (e.g. github issue #)'
+);
+
 has 'tags' => (
     isa     => 'ArrayRef',
     is      => 'ro',
