@@ -308,8 +308,7 @@ sub cmd_report {
                     $self->_first_day_of_week( $end->year, $end->week_number )->dmy('.')
             }
         }
-
-        if ( $self->group eq 'project' ) {
+        elsif ( $self->group eq 'project' ) {
             $report->{$project}{'_total'} += $time;
 
             if ( my $level = $self->detail ) {
@@ -365,8 +364,7 @@ sub cmd_report {
                 $tagpadding );
         }
     }
-
-    if ( $self->group eq 'week' ) {
+    elsif ( $self->group eq 'week' ) {
         my $s      = \' | ';
         my @header = map { ucfirst($_), $s } qw(week start end time);
         pop(@header);
