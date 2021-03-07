@@ -436,16 +436,19 @@ sub _print_report_tree {
         ) {
             my $time = $data->{$tag}{time};
 
+            my $nice_tag = $tag;
+            $nice_tag =~s/^\.(.*?)=//;
+
             if ( $detail eq 'description' ) {
                 my $desc = $data->{$tag}{desc} || 'no desc';
                 $desc =~ s/\s+$//;
                 $desc =~ s/\v/, /g;
                 say sprintf( $padding . $tagpadding . $format . '   %s',
-                    $tag, $self->beautify_seconds($time), $desc );
+                    $nice_tag, $self->beautify_seconds($time), $desc );
             }
             elsif ( $detail eq 'tag' ) {
                 say sprintf( $padding . $tagpadding . $format,
-                    $tag, $self->beautify_seconds($time) );
+                    $nice_tag, $self->beautify_seconds($time) );
             }
         }
     }
