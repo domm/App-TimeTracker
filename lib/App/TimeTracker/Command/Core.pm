@@ -35,7 +35,21 @@ sub cmd_start {
     );
     $self->_current_task($task);
 
-    $task->do_start( $self->home );
+    $self->_do_start($task);
+}
+
+sub _do_start {
+    my ($self, $task) = @_;
+
+    my $saved_to = $task->save($self->home);
+
+    my $fh = $self->home->file('current')->openw;
+    say $fh $saved_to;
+    close $fh;
+
+    say "Started working on "
+        . $task->say_project_tags . " at "
+        . $task->start->hms;
 }
 
 sub cmd_stop {
@@ -138,7 +152,7 @@ sub cmd_append {
             }
         );
         $self->_current_task($task);
-        $task->do_start( $self->home );
+        $self->_do_start( $task );
     }
     else {
         say
@@ -161,7 +175,7 @@ sub cmd_continue {
             }
         );
         $self->_current_task($task);
-        $task->do_start( $self->home );
+        $self->_do_start( $task );
     }
     else {
         say
@@ -652,7 +666,7 @@ sub _load_attribs_report {
             isa           => enum( [qw(project week)] ),
             is            => 'ro',
             default       => 'project',
-            documentation => 'Genereta Report by week or project.'
+            documentation => 'Generet a report by week or project.'
         }
     );
 }

@@ -73,6 +73,11 @@ has 'project' => (
     is       => 'ro',
     required => 1,
 );
+has 'id' => (
+    isa      => 'Maybe[Str]',
+    is       => 'ro',
+    required => 0,
+);
 has 'description' => (
     isa      => 'Maybe[Str]',
     is       => 'ro',
@@ -162,20 +167,6 @@ sub say_project_tags {
     $rv .= ' (' . join( ', ', @$tags ) . ')' if @$tags;
     $rv .= ' ' . $self->description if $self->description;
     return $rv;
-}
-
-sub do_start {
-    my ( $self, $home ) = @_;
-
-    my $saved_to = $self->save($home);
-
-    my $fh = $home->file('current')->openw;
-    say $fh $saved_to;
-    close $fh;
-
-    say "Started working on "
-        . $self->say_project_tags . " at "
-        . $self->start->hms;
 }
 
 sub rounded_minutes {
