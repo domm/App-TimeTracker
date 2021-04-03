@@ -411,8 +411,7 @@ a bug, please feel free to L<fork|http://help.github.com/fork-a-repo/> the
 repo and send us L<pull requests|http://help.github.com/send-pull-requests/>
 to merge your changes.
 
-To report a bug, please B<do not> use the C<< issues >> feature from github;
-use RT instead.
+To report a bug, please use the C<< issues >> feature from GitHub.
 
 =head2 CPAN
 
@@ -430,13 +429,9 @@ CPAN, offering slightly different features:
 
 =head1 Viewing and reporting Bugs
 
-We use L<rt.cpan.org|http://rt.cpan.org> (thank you
-L<BestPractical|http://rt.bestpractical.com>) for bug reporting. Please do
-not use the C<issues> feature of github! We pay no attention to those...
-
 Please use this URL to view and report bugs:
 
-L<https://rt.cpan.org/Public/Dist/Display.html?Name=App-TimeTracker>
+L<https://github.com/domm/App-TimeTracker/issues>
 
 =head1 CONTRIBUTORS
 
