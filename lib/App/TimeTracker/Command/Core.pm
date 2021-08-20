@@ -482,7 +482,7 @@ sub cmd_init {
 EOCONFIG
 
     my $projects_file = $self->home->file('projects.json');
-    my $coder         = JSON::XS->new->utf8->pretty->relaxed;
+    my $coder         = JSON::XS->new->utf8->pretty->canonical->relaxed;
     if ( -e $projects_file ) {
         my $projects = $coder->decode( scalar $projects_file->slurp );
         $projects->{$project} =
