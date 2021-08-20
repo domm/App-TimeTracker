@@ -14,6 +14,8 @@ my $tmp  = testlib::Fixtures::setup_tempdir;
 my $home = $tmp->subdir('.TimeTracker');
 $tmp->subdir('some_project')->mkpath;
 $tmp->subdir('other_project')->mkpath;
+$tmp->subdir('project_name_auto')->mkpath;
+$tmp->subdir('project_name_custom')->mkpath;
 my $p   = App::TimeTracker::Proto->new( home => $home );
 my $now = DateTime->now;
 $now->set_time_zone('local');
@@ -39,6 +41,35 @@ my $tracker_dir = $home->subdir( $now->year, sprintf( "%02d", $now->month ) );
     file_exists_ok( $home->file('projects.json') );
     file_exists_ok( $home->file('tracker.json') );
     file_exists_ok( $tmp->file( 'some_project', '.tracker.json' ) );
+
+}
+
+{    # init (setting project name)
+    file_not_exists_ok( $tmp->file( 'project_name_auto',  '.tracker.json' ) );
+    file_not_exists_ok( $tmp->file( 'project_name_custom', '.tracker.json' ) );
+
+    @ARGV = ('init');
+    my $class = $p->setup_class( {} );
+
+    {
+        # _current_project not set
+        my $t = $class->name->new( home => $home, config => {} );
+        trap { $t->cmd_init( $tmp->subdir('project_name_auto') ) };
+
+        file_exists_ok( $tmp->file( 'project_name_auto', '.tracker.json' ) );
+        my $config = $p->load_config( $tmp->subdir(qw(project_name_auto)) );
+        is $config->{project}, 'project_name_auto', 'automatic project name';
+    }
+
+    {
+        # _current_project is set
+        my $t = $class->name->new( home => $home, config => {}, _current_project => 'my-custom-project' );
+        trap { $t->cmd_init( $tmp->subdir('project_name_custom') ) };
+
+        file_exists_ok( $tmp->file( 'project_name_custom', '.tracker.json' ) );
+        my $config = $p->load_config( $tmp->subdir(qw(project_name_custom)) );
+        is $config->{project}, 'my-custom-project', 'custom project name';
+    }
 
 }
 
