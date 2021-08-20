@@ -191,7 +191,7 @@ WALKUP: while ( $try++ < 30 ) {
             $config = merge( $config, $this_config );
 
             my @path    = $config_file->parent->dir_list;
-            my $project = $path[-1];
+            my $project = exists $this_config->{project} ? $this_config->{project} : $path[-1];
             $cfl->{$project} = $config_file->stringify;
             $self->project($project)
                 unless $self->has_project;
