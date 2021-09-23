@@ -1,6 +1,13 @@
 Revision history for App::TimeTracker
 
 {{$NEXT}}
+    - remove old corner case when an unknown project is passed explicitly (Thomas Klausner)
+    - Set the project attribute from config file if possible (Zakariyya Mughal)
+    - Add flag to init command to set project name (Zakariyya Mughal)
+    - Output projects.json using canonical setting (Zakariyya Mughal)
+    - Tell users to submit bugs via GitHub (Paul Cochrane)
+    - remove german KW, simplify week-start/stop calc (Thomas Klausner)
+
 
 3.009     2021-01-24 19:53:24+01:00
     - add week-overview as report-option (Thomas Mantl)
