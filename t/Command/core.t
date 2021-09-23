@@ -14,6 +14,8 @@ my $tmp  = testlib::Fixtures::setup_tempdir;
 my $home = $tmp->subdir('.TimeTracker');
 $tmp->subdir('some_project')->mkpath;
 $tmp->subdir('other_project')->mkpath;
+$tmp->subdir('project_name_auto')->mkpath;
+$tmp->subdir('project_name_custom')->mkpath;
 my $p   = App::TimeTracker::Proto->new( home => $home );
 my $now = DateTime->now;
 $now->set_time_zone('local');
@@ -40,6 +42,94 @@ my $tracker_dir = $home->subdir( $now->year, sprintf( "%02d", $now->month ) );
     file_exists_ok( $home->file('tracker.json') );
     file_exists_ok( $tmp->file( 'some_project', '.tracker.json' ) );
 
+}
+
+{    # init (setting project name)
+    file_not_exists_ok( $tmp->file( 'project_name_auto',  '.tracker.json' ) );
+    file_not_exists_ok( $tmp->file( 'project_name_custom', '.tracker.json' ) );
+
+    @ARGV = ('init');
+    my $class = $p->setup_class( {} );
+
+    {
+        my $p   = App::TimeTracker::Proto->new( home => $home );
+        # _current_project not set
+        my $t = $class->name->new( home => $home, config => {} );
+        trap { $t->cmd_init( $tmp->subdir('project_name_auto') ) };
+
+        file_exists_ok( $tmp->file( 'project_name_auto', '.tracker.json' ) );
+        my $config = $p->load_config( $tmp->subdir(qw(project_name_auto)) );
+        is $config->{project}, 'project_name_auto', 'automatic project name';
+        is $p->project, 'project_name_auto', 'project attribute set correctly';
+    }
+
+    {
+        my $p   = App::TimeTracker::Proto->new( home => $home );
+        # _current_project is set
+        my $t = $class->name->new( home => $home, config => {}, _current_project => 'my-custom-project' );
+        trap { $t->cmd_init( $tmp->subdir('project_name_custom') ) };
+
+        file_exists_ok( $tmp->file( 'project_name_custom', '.tracker.json' ) );
+        my $config = $p->load_config( $tmp->subdir(qw(project_name_custom)) );
+        is $config->{project}, 'my-custom-project', 'custom project name';
+        is $p->project, 'my-custom-project', 'project attribute set from file';
+    }
+
+}
+
+{    # init (setting up project tree)
+    @ARGV = ('init');
+    my $class = $p->setup_class( {} );
+
+    my $project_dir = $tmp->subdir('project-top');
+    my $subproj0_dir = $project_dir->subdir('subproj0');
+    $subproj0_dir->mkpath;
+    my $subproj1_dir = $project_dir->subdir('subproj1');
+    $subproj1_dir->mkpath;
+
+    {
+        my $p   = App::TimeTracker::Proto->new( home => $home );
+        # _current_project not set
+        {
+            my $t = $class->name->new( home => $home, config => {}, _current_project => 'top' );
+            trap { $t->cmd_init( $project_dir ) };
+        }
+
+        {
+            my $t = $class->name->new( home => $home, config => {}, _current_project => 'sub' );
+            trap { $t->cmd_init( $subproj0_dir ) };
+        }
+
+        {
+            my $t = $class->name->new( home => $home, config => {} );
+            trap { $t->cmd_init( $subproj1_dir ) };
+            # set config without "project" key so that last component of path
+            # must be used
+            $subproj1_dir->file('.tracker.json')->spew("{}");
+        }
+
+        my $tracker_files = superhashof({
+            'top' => "" . $project_dir->file('.tracker.json'),
+            'sub' => "" . $subproj0_dir->file('.tracker.json'),
+            'subproj1' => "" . $subproj1_dir->file('.tracker.json'),
+        });
+        my $projects_data;
+
+        $projects_data = $p->slurp_projects;
+        cmp_deeply $projects_data, $tracker_files, 'after init of all projects';
+
+        $p->load_config( $project_dir );
+        $projects_data = $p->slurp_projects;
+        cmp_deeply $projects_data, $tracker_files, 'after loading top project';
+
+        $p->load_config( $subproj0_dir );
+        $projects_data = $p->slurp_projects;
+        cmp_deeply $projects_data, $tracker_files, 'after loading sub project';
+
+        $p->load_config( $subproj1_dir );
+        $projects_data = $p->slurp_projects;
+        cmp_deeply $projects_data, $tracker_files, 'after loading subproj1 project';
+    }
 }
 
 my $c1 = $p->load_config( $tmp->subdir(qw(some_project)) );

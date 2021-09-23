@@ -472,8 +472,13 @@ sub cmd_init {
         exit;
     }
 
-    my @dirs    = $cwd->dir_list;
-    my $project = $dirs[-1];
+    my $project;
+    if( $self->has_current_project ) {
+        $project = $self->_current_project;
+    } else {
+        my @dirs    = $cwd->dir_list;
+        $project = $dirs[-1];
+    }
     my $fh      = $cwd->file('.tracker.json')->openw;
     say $fh <<EOCONFIG;
 {
@@ -700,6 +705,18 @@ sub _load_attribs_recalc_trackfile {
             isa      => 'Str',
             is       => 'ro',
             required => 1,
+        }
+    );
+}
+
+sub _load_attribs_init {
+    my ( $class, $meta ) = @_;
+    $meta->add_attribute(
+        'project' => {
+            isa           => 'Str',
+            is            => 'ro',
+            documentation => 'Project name to initialize',
+            lazy_build    => 1,
         }
     );
 }
