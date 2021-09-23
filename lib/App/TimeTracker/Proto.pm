@@ -82,7 +82,7 @@ has 'json_decoder' => ( is => 'ro', isa => 'JSON::XS', lazy_build => 1 );
 
 sub _build_json_decoder {
     my $self = shift;
-    return JSON::XS->new->utf8->pretty->relaxed;
+    return JSON::XS->new->utf8->pretty->canonical->relaxed;
 }
 
 sub run {
